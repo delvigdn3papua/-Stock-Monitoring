@@ -1,0 +1,3002 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Coverage Monitoring</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ============================================================
+           CSS VARIABLES - LIGHT & DARK MODE
+           ============================================================ */
+        :root {
+            --bg-body: #f5f7fa;
+            --bg-card: #ffffff;
+            --bg-table: #ffffff;
+            --bg-table-header: #ffffff;
+            --bg-table-row-hover: #f8fafc;
+            --bg-table-light: #fafbfc;
+            --bg-table-light-hover: #f1f4f8;
+            --bg-filter: #ffffff;
+            --bg-navbar: #ffffff;
+            --bg-modal: #ffffff;
+            --bg-sticky-shadow: rgba(0,0,0,0.04);
+            --bg-badge-secondary: #e9ecef;
+            --bg-input: #ffffff;
+            
+            --text-primary: #1a1a2e;
+            --text-secondary: #475569;
+            --text-muted: #8293a6;
+            --text-customer: #0a0a1a;
+            --text-border: #eef2f6;
+            --text-border-dark: #e5e7eb;
+            --text-card-border: #e8ecf0;
+            
+            --shadow-card: 0 2px 12px rgba(0,0,0,0.04);
+            --shadow-sticky: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-modal: 0 24px 80px rgba(0,0,0,0.18);
+            
+            --transition-smooth: 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+            --transition-collapse: 0.18s ease;
+        }
+        
+        /* Dark Mode */
+        [data-bs-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-table: #111827;
+            --bg-table-header: #1e293b;
+            --bg-table-row-hover: #1f2937;
+            --bg-table-light: #1a2332;
+            --bg-table-light-hover: #1f2937;
+            --bg-filter: #1e293b;
+            --bg-navbar: #0f172a;
+            --bg-modal: #1e293b;
+            --bg-sticky-shadow: rgba(0,0,0,0.3);
+            --bg-badge-secondary: #334155;
+            --bg-input: #1e293b;
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --text-customer: #f8fafc;
+            --text-border: #334155;
+            --text-border-dark: #334155;
+            --text-card-border: #334155;
+            
+            --shadow-card: 0 2px 12px rgba(0,0,0,0.2);
+            --shadow-sticky: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-modal: 0 24px 80px rgba(0,0,0,0.4);
+        }
+        
+        /* ============================================================
+           GLOBAL
+           ============================================================ */
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: var(--text-border-dark); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        
+        /* ============================================================
+           NAVBAR
+           ============================================================ */
+        .navbar {
+            background-color: var(--bg-navbar);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            padding: 10px 0;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .navbar-brand { font-weight: 700; font-size: 1.15rem; color: var(--text-primary); }
+        .navbar-brand i { font-size: 1.5rem; color: #007aff; }
+        .navbar .text-muted { color: var(--text-muted) !important; }
+        
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            background: var(--bg-table-light);
+            border: 1px solid var(--text-border);
+            border-radius: 50px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .theme-toggle:hover { background: var(--bg-table-row-hover); border-color: var(--text-muted); }
+        .theme-toggle i { font-size: 14px; }
+        [data-bs-theme="light"] .theme-toggle .dark-icon { display: none; }
+        [data-bs-theme="dark"] .theme-toggle .light-icon { display: none; }
+        
+        /* Notification Bell */
+        .notification-wrapper { position: relative; display: inline-flex; align-items: center; }
+        .notification-bell {
+            background: transparent; border: none; color: var(--text-secondary);
+            font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 8px;
+            transition: all 0.15s ease; position: relative;
+        }
+        .notification-bell:hover { background: var(--bg-table-light); color: var(--text-primary); }
+        .notification-badge {
+            position: absolute; top: -2px; right: -2px; background: #dc3545; color: #fff;
+            font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 50%;
+            min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+            border: 2px solid var(--bg-navbar); transition: all 0.3s ease;
+        }
+        .notification-badge.hidden { opacity: 0; transform: scale(0.5); pointer-events: none; }
+        
+        /* Notification Panel */
+        .notification-panel {
+            position: absolute; top: 40px; right: 0; width: 380px; max-height: 420px;
+            overflow-y: auto; background: var(--bg-card); border: 1px solid var(--text-border);
+            border-radius: 16px; box-shadow: var(--shadow-modal); padding: 16px 0;
+            z-index: 300; display: none; transition: all 0.2s ease;
+        }
+        .notification-panel.show { display: block; animation: slideDownNotif 0.2s ease; }
+        @keyframes slideDownNotif {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .notification-panel-header {
+            padding: 0 16px 12px 16px; border-bottom: 1px solid var(--text-border);
+            font-weight: 700; font-size: 14px; color: var(--text-primary);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .notification-panel-header .clear-btn {
+            background: none; border: none; color: var(--text-muted);
+            font-size: 12px; cursor: pointer; font-weight: 600;
+        }
+        .notification-panel-header .clear-btn:hover { color: var(--text-primary); }
+        .notification-item {
+            padding: 10px 16px; border-bottom: 1px solid var(--text-border);
+            transition: background 0.15s ease; cursor: default;
+        }
+        .notification-item:last-child { border-bottom: none; }
+        .notification-item:hover { background: var(--bg-table-row-hover); }
+        .notification-item .notif-title { font-weight: 600; font-size: 13px; color: var(--text-primary); }
+        .notification-item .notif-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .notification-item .notif-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        .notification-empty {
+            padding: 30px 16px; text-align: center; color: var(--text-muted); font-size: 13px;
+        }
+        .notification-empty i { font-size: 28px; display: block; margin-bottom: 8px; opacity: 0.5; }
+        
+        /* ============================================================
+           FILTER PANEL - STICKY
+           ============================================================ */
+        .filter-panel-wrapper {
+            position: sticky;
+            top: 56px;
+            z-index: 150;
+            background-color: var(--bg-body);
+            padding-top: 8px;
+            padding-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .filter-panel-wrapper .card {
+            border-radius: 12px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--text-border);
+            background: var(--bg-filter);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* ============================================================
+           KPI SECTION - STICKY
+           ============================================================ */
+        .kpi-wrapper {
+            position: sticky;
+            top: 126px;
+            z-index: 140;
+            background-color: var(--bg-body);
+            padding-top: 8px;
+            padding-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .card-kpi {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+            border-left: 4px solid #007aff;
+            cursor: default;
+            border-radius: 12px;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--text-border);
+        }
+        .card-kpi:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+        .kpi-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); font-weight: 600; }
+        .kpi-value { font-size: 24px; font-weight: 700; color: var(--text-primary); line-height: 1.3; margin-top: 2px; }
+        .card-kpi .border-left-blue { border-left-color: #0d6efd; }
+        .card-kpi .border-left-green { border-left-color: #198754; }
+        .card-kpi .border-left-yellow { border-left-color: #ffc107; }
+        .card-kpi .border-left-red { border-left-color: #dc3545; }
+        
+        /* ============================================================
+           TABLE - PREMIUM APPLE STYLE
+           ============================================================ */
+        .table-wrapper {
+            position: relative;
+            max-height: 60vh;
+            overflow: auto;
+            border-radius: 12px;
+            border: 1px solid var(--text-border);
+            background: var(--bg-table);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .table-custom {
+            font-size: 14px;
+            margin-bottom: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            min-width: 900px;
+        }
+        
+        /* ============================================================
+           HEADER - STICKY + PREMIUM
+           ============================================================ */
+        .table-custom thead th {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: var(--bg-table-header);
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--text-border-dark);
+            padding: 14px 8px;
+            box-shadow: var(--shadow-sticky);
+            white-space: nowrap;
+            text-align: left;
+            vertical-align: middle;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* ============================================================
+           STICKY COLUMNS - TIDAK DIUBAH
+           ============================================================ */
+        .table-custom .col-sticky {
+            position: sticky;
+            z-index: 20;
+            background: var(--bg-table);
+            transition: background-color 0.3s ease;
+        }
+        .table-custom .col-sticky-no { 
+            left: 0; 
+            min-width: 44px; 
+            max-width: 44px; 
+            z-index: 25;
+            text-align: center !important;
+            padding: 14px 4px !important;
+        }
+        .table-custom .col-sticky-depo { 
+            left: 44px; 
+            min-width: 110px; 
+            max-width: 110px; 
+            z-index: 24;
+            text-align: left !important;
+            padding: 14px 8px !important;
+        }
+        .table-custom .col-sticky-customer { 
+            left: 154px; 
+            min-width: 160px; 
+            max-width: 160px; 
+            z-index: 23;
+            text-align: left !important;
+            padding: 14px 8px !important;
+        }
+        
+        .table-custom thead th.col-sticky {
+            z-index: 35;
+            background: var(--bg-table-header);
+        }
+        .table-custom thead th.col-sticky-no { z-index: 40; }
+        .table-custom thead th.col-sticky-depo { z-index: 39; }
+        .table-custom thead th.col-sticky-customer { z-index: 38; }
+        
+        /* Hover effect for sticky columns */
+        .table-custom tbody tr:hover .col-sticky {
+            background-color: var(--bg-table-row-hover);
+        }
+        .table-custom tbody tr:hover .col-sticky-no {
+            background-color: var(--bg-table-row-hover);
+        }
+        
+        /* ============================================================
+           METRIC COLUMNS - ALIGNMENT FIX
+           ============================================================ */
+        /* Header metrik - center alignment, width kecil */
+        .table-custom thead th.metric-header {
+            text-align: center !important;
+            min-width: 68px;
+            max-width: 68px;
+            width: 68px;
+            padding: 14px 4px !important;
+            vertical-align: middle !important;
+        }
+        
+        /* Body metrik - center alignment */
+        .table-custom tbody td.metric-cell {
+            text-align: center !important;
+            padding: 12px 4px !important;
+            vertical-align: middle !important;
+            min-width: 68px;
+            max-width: 68px;
+            width: 68px;
+        }
+        
+        /* Aksi column */
+        .table-custom thead th.aksi-header {
+            text-align: center !important;
+            min-width: 85px;
+            max-width: 85px;
+            width: 85px;
+            padding: 14px 4px !important;
+        }
+        .table-custom tbody td.aksi-cell {
+            text-align: center !important;
+            padding: 12px 4px !important;
+            vertical-align: middle !important;
+            min-width: 85px;
+            max-width: 85px;
+            width: 85px;
+        }
+        
+        /* Kategori badge di aksi column */
+        .badge-kategori-count {
+            font-size: 10px;
+            padding: 3px 10px;
+            background: var(--bg-badge-secondary) !important;
+            color: var(--text-muted) !important;
+            font-weight: 600;
+            border-radius: 12px;
+            display: inline-block;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* ============================================================
+           TABLE BODY
+           ============================================================ */
+        .table-custom tbody td {
+            padding: 12px 8px;
+            vertical-align: middle;
+            font-size: 14px;
+            border-bottom: 1px solid var(--text-border);
+            background: var(--bg-table);
+            color: var(--text-secondary);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Left alignment untuk sticky columns body */
+        .table-custom tbody td.col-sticky-depo {
+            text-align: left !important;
+        }
+        .table-custom tbody td.col-sticky-customer {
+            text-align: left !important;
+        }
+        .table-custom tbody td.col-sticky-no {
+            text-align: center !important;
+        }
+        
+        /* Hover Row */
+        .table-custom tbody tr:hover td {
+            background-color: var(--bg-table-row-hover);
+            transition: background-color 0.15s ease;
+        }
+        .table-custom tbody tr:hover .col-sticky {
+            background-color: var(--bg-table-row-hover);
+        }
+        
+        /* Customer Bold */
+        .customer-name {
+            font-weight: 700;
+            color: var(--text-customer);
+            letter-spacing: -0.01em;
+        }
+        
+        /* Sub-Kategori */
+        .sub-kategori-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .sub-kategori-name {
+            font-weight: 600;
+            color: #007aff;
+        }
+        
+        .sub-indent {
+            padding-left: 20px !important;
+        }
+        .sub-indent-first {
+            padding-left: 8px !important;
+        }
+        
+        /* Row expander */
+        .table-light td {
+            background-color: var(--bg-table-light) !important;
+        }
+        .table-light:hover td {
+            background-color: var(--bg-table-light-hover) !important;
+        }
+        .table-light .col-sticky {
+            background-color: var(--bg-table-light) !important;
+        }
+        .table-light:hover .col-sticky {
+            background-color: var(--bg-table-light-hover) !important;
+        }
+        
+        /* Collapse Animation */
+        .collapse {
+            transition: height 0.18s ease;
+        }
+        
+        /* ============================================================
+           BADGES - CENTER ALIGNMENT
+           ============================================================ */
+        .badge-wos {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 700 !important;
+            color: #ffffff !important;
+            border-radius: 8px;
+            min-width: 48px;
+            text-align: center;
+            letter-spacing: 0.2px;
+            vertical-align: middle;
+        }
+        .badge-wos .wos-label { font-weight: 400; font-size: 9px; opacity: 0.7; }
+        .bg-orange { background-color: #fd7e14 !important; color: #ffffff !important; }
+        .badge-infinity { background-color: #dc3545 !important; color: #ffffff !important; }
+        .badge-excluded {
+            background-color: var(--bg-badge-secondary) !important;
+            color: var(--text-muted) !important;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin-left: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* ============================================================
+           BUTTON DETAIL SKU
+           ============================================================ */
+        .btn-detail-apple {
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--text-border-dark);
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            vertical-align: middle;
+        }
+        .btn-detail-apple:hover {
+            background: var(--bg-table-row-hover);
+            border-color: var(--text-muted);
+            transform: scale(1.02);
+            color: var(--text-primary);
+        }
+        .btn-detail-apple i { font-size: 11px; }
+        
+        /* ============================================================
+           BADGE STATUS
+           ============================================================ */
+        .badge-status-sold {
+            background: #d4edda; color: #155724; font-size: 12px; font-weight: 700;
+            padding: 4px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .badge-status-stock {
+            background: #fff3cd; color: #856404; font-size: 12px; font-weight: 700;
+            padding: 4px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;
+        }
+        
+        /* ============================================================
+           AGING BADGE
+           ============================================================ */
+        .aging-badge {
+            display: inline-block; padding: 4px 14px; font-size: 12px; font-weight: 700;
+            border-radius: 20px; min-width: 90px; text-align: center;
+        }
+        .aging-green { background-color: #d4edda; color: #155724; }
+        .aging-yellow { background-color: #fff3cd; color: #856404; }
+        .aging-orange { background-color: #ffe5cc; color: #cc7a00; }
+        .aging-red { background-color: #f8d7da; color: #721c24; }
+        
+        /* ============================================================
+           CHARGER COVERAGE
+           ============================================================ */
+        .coverage-na {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 3px 14px; border-radius: 999px; background: var(--bg-table-light);
+            color: var(--text-muted); font-size: 12px; font-weight: 600; font-style: italic;
+            border: none; line-height: 1.5; letter-spacing: 0.2px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* ============================================================
+           SPINNER LOADING
+           ============================================================ */
+        .spinner-loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .spinner-loading .spinner-border {
+            width: 16px;
+            height: 16px;
+            border-width: 2px;
+        }
+        
+        .transition-icon { transition: transform 0.25s ease; display: inline-block; }
+        
+        /* ============================================================
+           ERROR BANNER
+           ============================================================ */
+        .error-banner {
+            background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24;
+            padding: 12px 18px; border-radius: 10px; margin-bottom: 16px; font-size: 13px; display: none;
+        }
+        .error-banner i { margin-right: 10px; font-size: 16px; }
+        .error-banner.info-banner {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        .error-banner.info-banner i { color: #0c5460; }
+        
+        /* ============================================================
+           CLICKABLE ROW
+           ============================================================ */
+        .clickable-row { cursor: pointer; }
+        .clickable-row:hover td { background-color: var(--bg-table-row-hover) !important; }
+        .clickable-row:hover .col-sticky { background-color: var(--bg-table-row-hover) !important; }
+        
+        /* ============================================================
+           IMEI CODE
+           ============================================================ */
+        .imei-code {
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            user-select: all;
+            -webkit-user-select: all;
+            cursor: pointer;
+            padding: 2px 0;
+            display: inline-block;
+            letter-spacing: 0.3px;
+            transition: color 0.15s ease;
+        }
+        .imei-code:hover { color: #007aff; }
+        
+        /* ============================================================
+           FILTER
+           ============================================================ */
+        .filter-label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px;
+            transition: color 0.3s ease;
+        }
+        .form-select-sm-custom {
+            font-size: 14px; padding: 6px 12px; border-radius: 8px;
+            border: 1px solid var(--text-border-dark);
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .form-select-sm-custom:focus {
+            border-color: #007aff; box-shadow: 0 0 0 3px rgba(0,122,255,0.1); outline: none;
+        }
+        .form-select-sm-custom option { background-color: var(--bg-input); color: var(--text-primary); }
+        
+        /* ============================================================
+           MODAL - ANIMASI SMOOTH
+           ============================================================ */
+        .modal {
+            --bs-modal-transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+        }
+        .modal.fade .modal-dialog {
+            transform: translateY(12px) scale(0.98);
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+        }
+        .modal.show .modal-dialog { transform: translateY(0) scale(1); }
+        
+        .modal-content-premium {
+            border-radius: 20px; border: 1px solid var(--text-border);
+            box-shadow: var(--shadow-modal); overflow: hidden;
+            background: var(--bg-modal);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .modal-header-premium {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            color: #ffffff; padding: 20px 28px; border-bottom: none;
+        }
+        [data-bs-theme="dark"] .modal-header-premium {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        .modal-header-premium .modal-title {
+            font-weight: 700; font-size: 18px; display: flex; align-items: center; gap: 10px;
+        }
+        .modal-header-premium .modal-title i { color: #007aff; font-size: 22px; }
+        .modal-body-premium { padding: 24px 28px; background: var(--bg-modal); transition: background-color 0.3s ease; }
+        .modal-footer-premium {
+            border-top: 1px solid var(--text-border); padding: 16px 28px;
+            background: var(--bg-modal); transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* ============================================================
+           NOTIFICATION MODAL
+           ============================================================ */
+        .notif-modal .modal-content {
+            border-radius: 20px; border: 1px solid var(--text-border);
+            box-shadow: var(--shadow-modal); background: var(--bg-modal);
+            max-width: 480px; margin: 0 auto;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .notif-modal .modal-header {
+            border-bottom: 1px solid var(--text-border); padding: 20px 24px 16px 24px;
+            background: var(--bg-modal); transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .notif-modal .modal-header .modal-title {
+            font-weight: 700; font-size: 17px; color: var(--text-primary);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .notif-modal .modal-header .modal-title i { color: #007aff; font-size: 20px; }
+        .notif-modal .modal-body {
+            padding: 20px 24px 24px 24px; background: var(--bg-modal);
+            color: var(--text-secondary); transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .notif-modal .modal-footer {
+            border-top: 1px solid var(--text-border); padding: 16px 24px;
+            background: var(--bg-modal); transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .notif-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 0; border-bottom: 1px solid var(--text-border);
+            transition: border-color 0.3s ease;
+        }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item .label { font-weight: 500; color: var(--text-secondary); font-size: 14px; }
+        .notif-item .value { font-weight: 700; font-size: 15px; color: var(--text-primary); }
+        .notif-item .value.positive { color: #28a745; }
+        .notif-item .value.warning { color: #ffc107; }
+        .notif-item .value.danger { color: #dc3545; }
+        .notif-item .value.info { color: #0d6efd; }
+        
+        .notif-divider { border-top: 1px solid var(--text-border); margin: 12px 0; transition: border-color 0.3s ease; }
+        
+        /* ============================================================
+           REFRESH BUTTON
+           ============================================================ */
+        .btn-refresh {
+            border-radius: 8px; font-weight: 600; font-size: 13px; padding: 6px 16px;
+            background: transparent; border: 1px solid var(--text-border-dark);
+            color: var(--text-secondary); transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-refresh:hover {
+            background: var(--bg-table-row-hover); border-color: var(--text-muted); color: var(--text-primary);
+        }
+        .btn-refresh .spinner-border-sm {
+            width: 14px;
+            height: 14px;
+            border-width: 2px;
+        }
+        .btn-refresh .btn-text { transition: opacity 0.15s ease; }
+        .btn-refresh.loading .btn-text { opacity: 0.6; }
+        .btn-refresh .spinner-container { display: none; }
+        .btn-refresh.loading .spinner-container { display: inline-flex; }
+        .btn-refresh.loading .icon-refresh { display: none; }
+        
+        /* ============================================================
+           APPLE CARD PREMIUM (POPUP)
+           ============================================================ */
+        .apple-card {
+            background: var(--bg-card); border-radius: 16px; border: 1px solid var(--text-card-border);
+            overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow-card);
+            transition: box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .apple-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+        .apple-card-header {
+            background: linear-gradient(135deg, var(--bg-table-light) 0%, var(--bg-table-row-hover) 100%);
+            padding: 14px 20px; border-bottom: 1px solid var(--text-card-border);
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .apple-card-header .sku-name {
+            font-weight: 700; font-size: 16px; color: var(--text-primary);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .apple-card-header .sku-name i { color: #007aff; font-size: 18px; }
+        .apple-card-header .sku-stats { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .apple-card-header .sku-stats .stat-item {
+            background: var(--bg-card); padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 700; border: 1px solid var(--text-card-border);
+            display: inline-flex; align-items: center; gap: 4px; color: var(--text-primary);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        .apple-card-header .sku-stats .stat-item.primary { border-color: #007aff; color: #007aff; }
+        .apple-card-header .sku-stats .stat-item.success { border-color: #28a745; color: #28a745; }
+        .apple-card-header .sku-stats .stat-item.warning { border-color: #ffc107; color: #856404; }
+        .apple-card-header .sku-stats .stat-item.dark { border-color: var(--text-border-dark); color: var(--text-primary); }
+        
+        .apple-card-body { padding: 0; overflow-x: auto; }
+        .apple-card-body .table-imei-premium {
+            width: 100%; border-collapse: collapse; font-size: 13px;
+        }
+        .apple-card-body .table-imei-premium thead th {
+            background-color: var(--bg-table-light); color: var(--text-secondary);
+            font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 10px 14px; border-bottom: 2px solid var(--text-border); text-align: left;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .apple-card-body .table-imei-premium thead th.text-center { text-align: center; }
+        .apple-card-body .table-imei-premium tbody td {
+            padding: 10px 14px; border-bottom: 1px solid var(--text-border);
+            vertical-align: middle; color: var(--text-secondary);
+            transition: border-color 0.3s ease, color 0.3s ease;
+        }
+        .apple-card-body .table-imei-premium tbody tr:last-child td { border-bottom: none; }
+        .apple-card-body .table-imei-premium tbody tr:hover { background-color: var(--bg-table-row-hover); }
+        .apple-card-body .table-imei-premium .imei-cell {
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-weight: 600; font-size: 14px; color: var(--text-primary);
+            letter-spacing: 0.3px; cursor: pointer; transition: color 0.15s ease;
+        }
+        .apple-card-body .table-imei-premium .imei-cell:hover { color: #007aff; }
+        .apple-card-body .table-imei-premium .badge-status-sold-premium {
+            background: #d4edda; color: #155724; font-weight: 700; font-size: 11px;
+            padding: 4px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+        }
+        .apple-card-body .table-imei-premium .badge-status-stock-premium {
+            background: #fff3cd; color: #856404; font-weight: 700; font-size: 11px;
+            padding: 4px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+        }
+        .apple-card-body .table-imei-premium .aging-badge-premium {
+            font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 20px;
+            display: inline-block; min-width: 85px; text-align: center;
+        }
+        .apple-card-body .table-imei-premium .aging-green-premium { background: #d4edda; color: #155724; }
+        .apple-card-body .table-imei-premium .aging-yellow-premium { background: #fff3cd; color: #856404; }
+        .apple-card-body .table-imei-premium .aging-orange-premium { background: #ffe5cc; color: #cc7a00; }
+        .apple-card-body .table-imei-premium .aging-red-premium { background: #f8d7da; color: #721c24; }
+        
+        .apple-card-footer {
+            padding: 10px 20px; background: var(--bg-table-light);
+            border-top: 1px solid var(--text-border); font-size: 12px; color: var(--text-muted);
+            display: flex; justify-content: space-between; align-items: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* ============================================================
+           ACCORDION IMEI - EXPAND / COLLAPSE
+           ============================================================ */
+        .imei-accordion-wrapper {
+            margin-top: 4px;
+        }
+
+        .imei-accordion-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.2px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .imei-accordion-toggle:hover {
+            background-color: var(--bg-table-row-hover);
+            color: var(--text-primary);
+        }
+
+        .imei-accordion-toggle .arrow-icon {
+            display: inline-block;
+            font-size: 12px;
+            transition: transform 0.25s ease;
+            color: var(--text-muted);
+        }
+
+        .imei-accordion-toggle .arrow-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .imei-accordion-toggle .title-text {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .imei-accordion-toggle .badge-count {
+            background: var(--bg-badge-secondary);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-left: auto;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .imei-accordion-body {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+            opacity: 0;
+        }
+
+        .imei-accordion-body.expanded {
+            max-height: 2000px;
+            opacity: 1;
+        }
+
+        .imei-accordion-body .table-imei-premium {
+            border-top: 1px solid var(--text-border);
+        }
+
+        [data-bs-theme="dark"] .imei-accordion-toggle:hover {
+            background-color: var(--bg-table-row-hover);
+            color: var(--text-primary);
+        }
+
+        [data-bs-theme="dark"] .imei-accordion-toggle .title-text {
+            color: var(--text-primary);
+        }
+
+        [data-bs-theme="dark"] .imei-accordion-toggle .arrow-icon {
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+           DUPLICATE WARNING - FIXED
+           ============================================================ */
+        .duplicate-warning-wrapper {
+            margin-top: 4px;
+        }
+
+        .duplicate-main-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #721c24;
+            transition: color 0.2s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            background: transparent;
+            border: none;
+        }
+
+        .duplicate-main-toggle:hover {
+            color: #a71d2a;
+        }
+
+        .duplicate-main-toggle .arrow-icon {
+            display: inline-block;
+            font-size: 11px;
+            transition: transform 0.25s ease;
+            color: #721c24;
+        }
+
+        .duplicate-main-toggle .arrow-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .duplicate-main-toggle .badge-count {
+            background: rgba(114, 28, 36, 0.12);
+            color: #721c24;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-left: 4px;
+        }
+
+        .duplicate-main-body {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+            opacity: 0;
+            margin-top: 8px;
+        }
+
+        .duplicate-main-body.expanded {
+            max-height: 5000px;
+            opacity: 1;
+        }
+
+        .duplicate-imei-item {
+            margin-bottom: 8px;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--bg-card);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .duplicate-imei-item:hover {
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .duplicate-imei-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #721c24;
+            background: #fef2f2;
+            transition: background 0.2s ease, color 0.2s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            flex-wrap: wrap;
+        }
+
+        .duplicate-imei-toggle:hover {
+            background: #fde8e8;
+            color: #a71d2a;
+        }
+
+        .duplicate-imei-toggle .arrow-icon {
+            display: inline-block;
+            font-size: 11px;
+            transition: transform 0.25s ease;
+            color: #721c24;
+            flex-shrink: 0;
+        }
+
+        .duplicate-imei-toggle .arrow-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .duplicate-imei-toggle .imei-code {
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 13px;
+            color: #721c24;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+
+        .duplicate-imei-toggle .duplicate-summary {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-left: auto;
+            font-weight: 500;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .duplicate-imei-toggle .duplicate-summary .badge-locations {
+            background: rgba(114, 28, 36, 0.12);
+            color: #721c24;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+
+        .duplicate-imei-toggle .duplicate-summary .location-preview {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .duplicate-imei-body {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+            opacity: 0;
+        }
+
+        .duplicate-imei-body.expanded {
+            max-height: 3000px;
+            opacity: 1;
+        }
+
+        .duplicate-imei-body .table-duplicate-detail {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .duplicate-imei-body .table-duplicate-detail thead th {
+            background-color: #f8d7da;
+            color: #721c24;
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 8px 14px;
+            border-bottom: 2px solid #f5c6cb;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .duplicate-imei-body .table-duplicate-detail thead th.text-center {
+            text-align: center;
+        }
+
+        .duplicate-imei-body .table-duplicate-detail tbody td {
+            padding: 8px 14px;
+            border-bottom: 1px solid #f5c6cb;
+            vertical-align: middle;
+            color: var(--text-secondary);
+            background-color: var(--bg-card);
+        }
+
+        .duplicate-imei-body .table-duplicate-detail tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .duplicate-imei-body .table-duplicate-detail tbody tr:hover td {
+            background-color: var(--bg-table-row-hover);
+        }
+
+        .duplicate-imei-body .table-duplicate-detail .depo-cell,
+        .duplicate-imei-body .table-duplicate-detail .customer-cell {
+            color: var(--text-secondary);
+        }
+
+        .duplicate-imei-body .table-duplicate-detail .sku-cell {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Dark Mode */
+        [data-bs-theme="dark"] .duplicate-main-toggle {
+            color: #f5a0a0;
+        }
+
+        [data-bs-theme="dark"] .duplicate-main-toggle:hover {
+            color: #f8c0c0;
+        }
+
+        [data-bs-theme="dark"] .duplicate-main-toggle .arrow-icon {
+            color: #f5a0a0;
+        }
+
+        [data-bs-theme="dark"] .duplicate-main-toggle .badge-count {
+            background: rgba(245, 160, 160, 0.15);
+            color: #f5a0a0;
+        }
+
+        [data-bs-theme="dark"] .duplicate-imei-item {
+            border-color: #5a2a2a;
+            background: var(--bg-card);
+        }
+
+        [data-bs-theme="dark"] .duplicate-imei-toggle {
+            background: #3a1a1a;
+            color: #f5a0a0;
+        }
+
+        [data-bs-theme="dark"] .duplicate-imei-toggle:hover {
+            background: #4a2a2a;
+            color: #f8c0c0;
+        }
+
+        [data-bs-theme="dark"] .duplicate-imei-toggle .arrow-icon {
+            color: #f5a0a0;
+        }
+
+        [data-bs-theme="dark"] .duplicate-imei-toggle .imei-code {
+            color: #f5a0a0;
+        }
+
+        [data-bs-theme="dark"] .duplicate-imei-toggle .duplicate-summary .badge-locations {
+            background: rgba(245, 160, 160, 0.15);
+            color: #f5a0a0;
+        }
+
+        [data-bs-theme="dark"] .duplicate-imei-body .table-duplicate-detail thead th {
+            background-color: #3a1a1a;
+            color: #f5a0a0;
+            border-bottom-color: #5a2a2a;
+        }
+
+        [data-bs-theme="dark"] .duplicate-imei-body .table-duplicate-detail tbody td {
+            border-bottom-color: #2a1a1a;
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+        }
+
+        [data-bs-theme="dark"] .duplicate-imei-body .table-duplicate-detail tbody tr:hover td {
+            background-color: var(--bg-table-row-hover);
+        }
+
+        [data-bs-theme="dark"] .duplicate-imei-body .table-duplicate-detail .sku-cell {
+            color: var(--text-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .duplicate-imei-toggle {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            .duplicate-imei-toggle .imei-code {
+                font-size: 12px;
+            }
+            .duplicate-imei-toggle .duplicate-summary {
+                font-size: 11px;
+                width: 100%;
+                margin-left: 0;
+                padding-left: 22px;
+            }
+            .duplicate-imei-body .table-duplicate-detail {
+                font-size: 12px;
+            }
+            .duplicate-imei-body .table-duplicate-detail thead th,
+            .duplicate-imei-body .table-duplicate-detail tbody td {
+                padding: 6px 10px;
+            }
+            .duplicate-main-toggle {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .duplicate-imei-toggle {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+            .duplicate-imei-toggle .imei-code {
+                font-size: 11px;
+            }
+            .duplicate-imei-toggle .duplicate-summary {
+                font-size: 10px;
+                padding-left: 18px;
+            }
+            .duplicate-imei-toggle .duplicate-summary .badge-locations {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
+            .duplicate-imei-body .table-duplicate-detail {
+                font-size: 11px;
+            }
+            .duplicate-imei-body .table-duplicate-detail thead th,
+            .duplicate-imei-body .table-duplicate-detail tbody td {
+                padding: 4px 8px;
+            }
+            .duplicate-main-toggle {
+                font-size: 11px;
+            }
+            .duplicate-main-toggle .badge-count {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
+        }
+        
+        /* ============================================================
+           RESPONSIVE - EXISTING
+           ============================================================ */
+        @media (max-width: 768px) {
+            .kpi-value { font-size: 20px; }
+            .card-kpi { padding: 10px 14px; margin-bottom: 8px; }
+            .filter-panel-wrapper { top: 48px; }
+            .filter-panel-wrapper .card { padding: 12px !important; }
+            .kpi-wrapper { top: 118px; }
+            .table-wrapper { max-height: 50vh; border-radius: 8px; }
+            .table-custom { font-size: 12px; min-width: 700px; }
+            
+            .table-custom .col-sticky-no { min-width: 32px; max-width: 32px; left: 0; padding: 10px 2px !important; }
+            .table-custom .col-sticky-depo { min-width: 70px; max-width: 70px; left: 32px; padding: 10px 4px !important; }
+            .table-custom .col-sticky-customer { min-width: 100px; max-width: 100px; left: 102px; padding: 10px 4px !important; }
+            
+            .table-custom thead th.metric-header {
+                min-width: 52px;
+                max-width: 52px;
+                width: 52px;
+                padding: 10px 2px !important;
+                font-size: 9px;
+            }
+            .table-custom tbody td.metric-cell {
+                min-width: 52px;
+                max-width: 52px;
+                width: 52px;
+                padding: 8px 2px !important;
+                font-size: 11px;
+            }
+            
+            .table-custom thead th.aksi-header {
+                min-width: 65px;
+                max-width: 65px;
+                width: 65px;
+                padding: 10px 2px !important;
+            }
+            .table-custom tbody td.aksi-cell {
+                min-width: 65px;
+                max-width: 65px;
+                width: 65px;
+                padding: 8px 2px !important;
+            }
+            
+            .badge-wos { font-size: 10px; padding: 2px 8px; min-width: 36px; }
+            .badge-wos .wos-label { font-size: 8px; }
+            .btn-detail-apple { font-size: 10px; padding: 2px 8px; }
+            .btn-detail-apple i { font-size: 9px; }
+            .badge-kategori-count { font-size: 9px; padding: 2px 8px; }
+            
+            .navbar-brand { font-size: 1rem; }
+            .navbar-brand i { font-size: 1.4rem; }
+            .apple-card-header { flex-direction: column; align-items: flex-start; }
+            .apple-card-header .sku-stats { width: 100%; justify-content: flex-start; }
+            .modal-body-premium { padding: 16px; }
+            .modal-header-premium { padding: 16px 20px; }
+            .apple-card-body .table-imei-premium { font-size: 12px; }
+            .apple-card-body .table-imei-premium thead th,
+            .apple-card-body .table-imei-premium tbody td { padding: 6px 10px; }
+            .coverage-na { font-size: 11px; padding: 2px 10px; }
+            .sub-kategori-label { font-size: 11px; }
+            .notification-panel { width: 300px; right: -40px; }
+            .notif-modal .modal-content { max-width: 100%; margin: 10px; }
+            .sub-indent { padding-left: 16px !important; }
+            .sub-indent-first { padding-left: 4px !important; }
+            .imei-accordion-toggle { font-size: 12px; padding: 8px 12px 8px 12px; }
+        }
+        
+        @media (max-width: 480px) {
+            .kpi-value { font-size: 18px; }
+            .table-custom .col-sticky-customer { min-width: 80px; max-width: 80px; left: 82px; }
+            .table-custom .col-sticky-depo { min-width: 50px; max-width: 50px; left: 28px; }
+            .table-custom .col-sticky-no { min-width: 28px; max-width: 28px; left: 0; }
+            
+            .table-custom thead th.metric-header {
+                min-width: 42px;
+                max-width: 42px;
+                width: 42px;
+                padding: 8px 1px !important;
+                font-size: 8px;
+            }
+            .table-custom tbody td.metric-cell {
+                min-width: 42px;
+                max-width: 42px;
+                width: 42px;
+                padding: 6px 1px !important;
+                font-size: 10px;
+            }
+            .table-custom thead th.aksi-header {
+                min-width: 55px;
+                max-width: 55px;
+                width: 55px;
+                padding: 8px 1px !important;
+            }
+            .table-custom tbody td.aksi-cell {
+                min-width: 55px;
+                max-width: 55px;
+                width: 55px;
+                padding: 6px 1px !important;
+            }
+            
+            .badge-wos { font-size: 9px; padding: 2px 6px; min-width: 30px; }
+            .badge-wos .wos-label { display: none; }
+            .btn-detail-apple { font-size: 9px; padding: 2px 6px; }
+            .btn-detail-apple i { display: none; }
+            .badge-kategori-count { font-size: 8px; padding: 2px 6px; }
+            
+            .filter-panel-wrapper { top: 44px; }
+            .kpi-wrapper { top: 114px; }
+            .modal-dialog { margin: 8px; }
+            .modal-header-premium .modal-title { font-size: 15px; }
+            .notification-panel { width: 280px; right: -50px; }
+            .btn-refresh { font-size: 12px; padding: 4px 12px; }
+            .btn-refresh .btn-text { display: none; }
+            .imei-accordion-toggle { font-size: 11px; padding: 6px 10px 6px 10px; }
+            .imei-accordion-toggle .badge-count { font-size: 9px; padding: 1px 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="fa-brands fa-apple me-2"></i>
+                <span>Apple Coverage Monitoring</span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                    <i class="fa-regular fa-sun light-icon"></i>
+                    <i class="fa-regular fa-moon dark-icon"></i>
+                    <span id="themeLabel">Light</span>
+                </button>
+                
+                <div class="notification-wrapper">
+                    <button class="notification-bell" onclick="toggleNotificationPanel()" id="notifBell">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-badge hidden" id="notifBadge">0</span>
+                    </button>
+                    <div class="notification-panel" id="notifPanel">
+                        <div class="notification-panel-header">
+                            <span>Notifications</span>
+                            <button class="clear-btn" onclick="clearAllNotifications()">Clear All</button>
+                        </div>
+                        <div id="notifList"></div>
+                    </div>
+                </div>
+                
+                <span class="text-muted me-1" style="font-size: 11px;">Last Sync:</span>
+                <span id="syncTime" class="badge bg-light text-dark fw-bold px-3 py-2" style="font-size: 11px;">-</span>
+                
+                <button onclick="fetchData()" class="btn-refresh" id="refreshBtn">
+                    <span class="icon-refresh"><i class="fa-solid fa-rotate"></i></span>
+                    <span class="spinner-container"><span class="spinner-border spinner-border-sm" role="status"></span></span>
+                    <span class="btn-text">Refresh</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-3 px-md-4 pb-4">
+
+        <!-- ERROR BANNER -->
+        <div id="errorBanner" class="error-banner">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="errorMessage"></span>
+            <div id="duplicateDetailContainer" style="margin-top: 8px;"></div>
+        </div>
+
+        <div class="filter-panel-wrapper">
+            <div class="card p-3 p-md-4">
+                <div class="row g-2 g-md-3">
+                    <div class="col-6 col-md-3">
+                        <div class="filter-label">Depo</div>
+                        <select id="filterDepo" class="form-select form-select-sm-custom w-100" onchange="applyFilters()">
+                            <option value="">Semua Depo</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="filter-label">Customer</div>
+                        <select id="filterCustomer" class="form-select form-select-sm-custom w-100" onchange="applyFilters()">
+                            <option value="">Semua Customer</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="filter-label">Kategori</div>
+                        <select id="filterKategori" class="form-select form-select-sm-custom w-100" onchange="applyFilters()">
+                            <option value="">Semua Kategori</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="filter-label">Nama Barang</div>
+                        <select id="filterBarang" class="form-select form-select-sm-custom w-100" onchange="applyFilters()">
+                            <option value="">Semua Nama Barang</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kpi-wrapper">
+            <div class="row g-2 g-md-3">
+                <div class="col-6 col-md-3">
+                    <div class="card-kpi border-left-blue">
+                        <div class="kpi-title"><i class="fa-solid fa-boxes me-1"></i>Total Sell Thru</div>
+                        <div class="kpi-value" id="kpiSellThru">0</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card-kpi border-left-green">
+                        <div class="kpi-title"><i class="fa-solid fa-arrow-up me-1"></i>Total Sell Out</div>
+                        <div class="kpi-value" id="kpiSellOut">0</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card-kpi border-left-yellow">
+                        <div class="kpi-title"><i class="fa-solid fa-warehouse me-1"></i>Total Stock C.I</div>
+                        <div class="kpi-value" id="kpiStockCI">0</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card-kpi border-left-red">
+                        <div class="kpi-title"><i class="fa-solid fa-clock me-1"></i>Average WOS (L4W)</div>
+                        <div class="kpi-value" id="kpiAvgWOS">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="border-radius: 12px; border: 1px solid var(--text-border); box-shadow: var(--shadow-card); background: var(--bg-card); transition: background-color 0.3s ease, border-color 0.3s ease;">
+            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center border-bottom" style="border-color: var(--text-border); transition: border-color 0.3s ease;">
+                <h5 class="m-0 fw-bold" style="font-size: 16px; color: var(--text-primary);"><i class="fa-solid fa-layer-group text-primary me-2"></i>Summary Stock &amp; Penjualan</h5>
+                <span class="text-muted" style="font-size: 12px;" id="rowCount">0 rows</span>
+            </div>
+            <div class="table-wrapper" id="tableWrapper">
+                <table class="table table-custom table-hover mb-0" id="mainTable">
+                    <thead>
+                        <tr>
+                            <th class="col-sticky col-sticky-no text-center" style="width:44px;">No</th>
+                            <th class="col-sticky col-sticky-depo" style="width:110px;">Depo</th>
+                            <th class="col-sticky col-sticky-customer" style="width:160px;">Customer</th>
+                            <th class="metric-header">Sell Thru</th>
+                            <th class="metric-header">Sell Out</th>
+                            <th class="metric-header">Stock C.I</th>
+                            <th class="metric-header">Sell Out L4W</th>
+                            <th class="metric-header">Avg Weekly</th>
+                            <th class="metric-header">WOS</th>
+                            <th class="aksi-header">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content modal-content-premium">
+                <div class="modal-header modal-header-premium">
+                    <h5 class="modal-title" id="modalTitle">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                        <span id="modalTitleText">Detail IMEI</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body modal-body-premium" id="modalBody"></div>
+                <div class="modal-footer modal-footer-premium">
+                    <span style="font-size: 12px; color: var(--text-muted);">
+                        <i class="fa-regular fa-circle-check text-success me-1"></i> Terjual &nbsp;|&nbsp;
+                        <i class="fa-regular fa-clock text-warning me-1"></i> Stock
+                    </span>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade notif-modal" id="notifModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fa-regular fa-bell"></i> Data Synchronization</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="notifModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <script>
+        // ============================================================
+        // GLOBAL VARIABLES
+        // ============================================================
+        var rawData = [];
+        var previousData = null;
+        var notificationCount = 0;
+        var notifications = [];
+        var myModal = new bootstrap.Modal(document.getElementById('detailModal'));
+        var notifModal = new bootstrap.Modal(document.getElementById('notifModal'));
+        var isNotifPanelOpen = false;
+
+        var imeiIndex = {};
+        var duplicateMap = {};
+        var duplicateImeiList = [];
+
+        // ============================================================
+        // THEME TOGGLE
+        // ============================================================
+        function toggleTheme() {
+            var html = document.documentElement;
+            var currentTheme = html.getAttribute('data-bs-theme');
+            var newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-bs-theme', newTheme);
+            document.getElementById('themeLabel').textContent = newTheme.charAt(0).toUpperCase() + newTheme.slice(1);
+            localStorage.setItem('apple-theme', newTheme);
+        }
+
+        function loadTheme() {
+            var savedTheme = localStorage.getItem('apple-theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            document.getElementById('themeLabel').textContent = savedTheme.charAt(0).toUpperCase() + savedTheme.slice(1);
+        }
+
+        // ============================================================
+        // NOTIFICATION SYSTEM
+        // ============================================================
+        function toggleNotificationPanel() {
+            isNotifPanelOpen = !isNotifPanelOpen;
+            var panel = document.getElementById('notifPanel');
+            panel.classList.toggle('show', isNotifPanelOpen);
+            if (isNotifPanelOpen) renderNotifications();
+        }
+
+        function renderNotifications() {
+            var list = document.getElementById('notifList');
+            if (notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="notification-empty">
+                        <i class="fa-regular fa-bell-slash"></i>
+                        No notifications
+                    </div>
+                `;
+                return;
+            }
+            var html = '';
+            for (var i = notifications.length - 1; i >= 0; i--) {
+                var n = notifications[i];
+                html += `
+                    <div class="notification-item">
+                        <div class="notif-title">${n.title}</div>
+                        <div class="notif-desc">${n.desc || ''}</div>
+                        <div class="notif-time">${n.time}</div>
+                    </div>
+                `;
+            }
+            list.innerHTML = html;
+        }
+
+        function clearAllNotifications() {
+            notifications = [];
+            notificationCount = 0;
+            updateNotificationBadge();
+            renderNotifications();
+            document.getElementById('notifPanel').classList.remove('show');
+            isNotifPanelOpen = false;
+        }
+
+        function updateNotificationBadge() {
+            var badge = document.getElementById('notifBadge');
+            if (notificationCount > 0) {
+                badge.textContent = notificationCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function addNotification(title, desc, time) {
+            notifications.push({ title: title, desc: desc || '', time: time || getCurrentTime() });
+            notificationCount++;
+            updateNotificationBadge();
+        }
+
+        function getCurrentTime() {
+            var now = new Date();
+            return now.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function showNotificationModal(data) {
+            var body = document.getElementById('notifModalBody');
+            
+            var newRecords = data.newRecords || 0;
+            var updatedRecords = data.updatedRecords || 0;
+            var deletedRecords = data.deletedRecords || 0;
+            var duplicateCount = getValidDuplicateCount();
+            var totalData = data.totalData || 0;
+            var lastSync = data.lastSync || getCurrentTime();
+            
+            var hasAnyChange = newRecords > 0 || updatedRecords > 0 || deletedRecords > 0;
+            
+            if (!hasAnyChange) {
+                body.innerHTML = `
+                    <div style="text-align:center; padding:20px 0;">
+                        <i class="fa-regular fa-circle-check" style="font-size:48px; color:#28a745;"></i>
+                        <h5 style="margin-top:16px; color:var(--text-primary);">No Changes Detected</h5>
+                        <p style="color:var(--text-muted);">Master Data is up to date.</p>
+                    </div>
+                `;
+            } else {
+                var html = `
+                    <div style="margin-bottom:12px; font-weight:600; color:var(--text-primary); font-size:15px;">
+                        <i class="fa-regular fa-circle-check text-success me-2"></i> Master Data Updated
+                    </div>
+                `;
+                
+                if (newRecords > 0) {
+                    html += `<div class="notif-item"><span class="label"><i class="fa-regular fa-plus-circle text-primary me-2"></i> New Record</span><span class="value info">${newRecords}</span></div>`;
+                }
+                if (updatedRecords > 0) {
+                    html += `<div class="notif-item"><span class="label"><i class="fa-regular fa-pen-to-square text-warning me-2"></i> Updated Record</span><span class="value warning">${updatedRecords}</span></div>`;
+                }
+                if (deletedRecords > 0) {
+                    html += `<div class="notif-item"><span class="label"><i class="fa-regular fa-trash-can text-danger me-2"></i> Deleted Record</span><span class="value danger">${deletedRecords}</span></div>`;
+                }
+                
+                // ✅ UX Improvement: Catatan duplicate tanpa angka
+                if (duplicateCount > 0) {
+                    html += `
+                        <div class="notif-divider"></div>
+                        <div style="padding: 8px 0; display: flex; align-items: center; gap: 8px; color: #856404; background: #fff3cd; border-radius: 6px; padding: 8px 12px; margin-top: 4px;">
+                            <i class="fa-regular fa-triangle-exclamation" style="font-size: 14px; color: #856404;"></i>
+                            <span style="font-size: 13px; font-weight: 500;">⚠ Duplicate Warning masih ditemukan.</span>
+                            <span style="font-size: 12px; font-weight: 400; color: #856404;">Silakan buka panel Duplicate Warning di bagian atas dashboard.</span>
+                        </div>
+                    `;
+                }
+                
+                html += `<div class="notif-divider"></div>`;
+                html += `<div class="notif-item"><span class="label">Total Data</span><span class="value">${totalData.toLocaleString('id-ID')}</span></div>`;
+                html += `<div class="notif-item"><span class="label">Last Sync</span><span class="value" style="font-size:13px; font-weight:600;">${lastSync}</span></div>`;
+                
+                body.innerHTML = html;
+                
+                var notifTitle = 'Master Data Updated';
+                var parts = [];
+                if (newRecords > 0) parts.push(newRecords + ' New');
+                if (updatedRecords > 0) parts.push(updatedRecords + ' Updated');
+                if (deletedRecords > 0) parts.push(deletedRecords + ' Deleted');
+                // ✅ Tidak tambahkan duplicate ke notifDesc
+                var notifDesc = parts.join(', ');
+                addNotification(notifTitle, notifDesc, lastSync);
+            }
+            
+            notifModal.show();
+        }
+
+        // ============================================================
+        // HELPER FUNCTIONS
+        // ============================================================
+        function isChargerSKU(skuName) {
+            if (!skuName) return false;
+            var name = String(skuName).toLowerCase();
+            return name.includes('20w usb-c power adapter') || 
+                   name.includes('30w usb-c power adapter') ||
+                   name.includes('20w usb-c') ||
+                   name.includes('30w usb-c') ||
+                   name.includes('power adapter');
+        }
+
+        function detectChanges(newData, oldData) {
+            if (!oldData) {
+                return {
+                    hasChanges: true,
+                    newRecords: newData ? newData.length : 0,
+                    updatedRecords: 0,
+                    deletedRecords: 0,
+                    duplicates: 0
+                };
+            }
+            
+            var oldIds = {};
+            var newIds = {};
+            
+            if (oldData && oldData.length > 0) {
+                for (var i = 0; i < oldData.length; i++) {
+                    if (oldData[i] && oldData[i]._id) oldIds[oldData[i]._id] = true;
+                }
+            }
+            
+            if (newData && newData.length > 0) {
+                for (var i = 0; i < newData.length; i++) {
+                    if (newData[i] && newData[i]._id) newIds[newData[i]._id] = true;
+                }
+            }
+            
+            var newRecords = 0;
+            var deletedRecords = 0;
+            
+            for (var id in newIds) {
+                if (!oldIds[id]) newRecords++;
+            }
+            for (var id in oldIds) {
+                if (!newIds[id]) deletedRecords++;
+            }
+            
+            return {
+                hasChanges: (newRecords > 0 || deletedRecords > 0),
+                newRecords: newRecords,
+                updatedRecords: 0,
+                deletedRecords: deletedRecords,
+                duplicates: 0
+            };
+        }
+
+        function setLoadingState(isLoading) {
+            var btn = document.getElementById('refreshBtn');
+            if (isLoading) {
+                btn.classList.add('loading');
+                btn.disabled = true;
+            } else {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        // ============================================================
+        // SINGLE SOURCE OF TRUTH - GET VALID DUPLICATE COUNT
+        // ============================================================
+        function getValidDuplicateCount() {
+            if (!duplicateMap || typeof duplicateMap !== 'object') {
+                return 0;
+            }
+            return Object.keys(duplicateMap).length;
+        }
+
+        // ============================================================
+        // BUILD IMEI INDEX - Menggunakan PUSH
+        // ============================================================
+        function buildIMEIIndex(data) {
+            var index = {};
+            
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                return index;
+            }
+            
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i];
+                if (!row || !row.barang || !Array.isArray(row.barang)) continue;
+                
+                var depo = row.depo || '-';
+                var customer = row.customer || '-';
+                var kategori = row.kategori || '-';
+                
+                for (var j = 0; j < row.barang.length; j++) {
+                    var barang = row.barang[j];
+                    if (!barang || !barang.details || !Array.isArray(barang.details)) continue;
+                    
+                    var namaBarang = barang.nama || '-';
+                    
+                    for (var k = 0; k < barang.details.length; k++) {
+                        var detail = barang.details[k];
+                        if (!detail) continue;
+                        
+                        var imei = detail.imei || detail.serial || '';
+                        if (!imei) continue;
+                        
+                        var normalizedImei = imei.toString().trim();
+                        
+                        if (!index[normalizedImei]) {
+                            index[normalizedImei] = [];
+                        }
+                        
+                        index[normalizedImei].push({
+                            depo: depo,
+                            customer: customer,
+                            kategori: kategori,
+                            namaBarang: namaBarang,
+                            imei: imei,
+                            tanggalSellThru: detail.tanggalSellThru || '-',
+                            coverageActive: detail.coverage || '-',
+                            isValidCoverage: detail.isValidCoverage,
+                            status: detail.isValidCoverage === false ? 'Stock' : 'Terjual'
+                        });
+                    }
+                }
+            }
+            
+            console.log("📊 IMEI INDEX BUILT:", Object.keys(index).length, "unique IMEIs");
+            return index;
+        }
+
+        // ============================================================
+        // BUILD DUPLICATE MAP - Menyimpan SEMUA record
+        // ============================================================
+        function buildDuplicateMap(duplicateData) {
+            var map = {};
+            var uniqueList = [];
+            
+            if (!duplicateData || !Array.isArray(duplicateData) || duplicateData.length === 0) {
+                return { map: map, list: uniqueList };
+            }
+            
+            var uniqueImeiMap = {};
+            for (var i = 0; i < duplicateData.length; i++) {
+                var item = duplicateData[i];
+                if (!item) continue;
+                
+                var imei = item.imei || item.serial || item.serialNumber || '';
+                if (!imei) continue;
+                
+                var normalizedImei = imei.toString().trim();
+                if (!uniqueImeiMap[normalizedImei]) {
+                    uniqueImeiMap[normalizedImei] = true;
+                    uniqueList.push(normalizedImei);
+                }
+            }
+            
+            for (var j = 0; j < uniqueList.length; j++) {
+                var imei = uniqueList[j];
+                var locations = imeiIndex[imei] || [];
+                
+                if (locations.length > 0) {
+                    map[imei] = locations;
+                } else {
+                    map[imei] = [{
+                        depo: '-',
+                        customer: '-',
+                        kategori: '-',
+                        namaBarang: '-',
+                        imei: imei,
+                        tanggalSellThru: '-',
+                        coverageActive: '-',
+                        isValidCoverage: null,
+                        status: 'Unknown'
+                    }];
+                }
+            }
+            
+            console.log("📊 DUPLICATE MAP BUILT:", Object.keys(map).length, "IMEIs");
+            for (var key in map) {
+                if (map.hasOwnProperty(key)) {
+                    console.log("   " + key + ":", map[key].length, "records");
+                    if (map[key].length < 2) {
+                        console.warn("   ⚠️ WARNING: " + key + " hanya memiliki", map[key].length, "record (minimal 2 diperlukan)");
+                    }
+                }
+            }
+            
+            return { map: map, list: uniqueList };
+        }
+
+        // ============================================================
+        // GENERATE DUPLICATE SUMMARY
+        // ============================================================
+        function generateDuplicateSummary(locations) {
+            if (!locations || locations.length === 0) return '';
+            
+            var count = locations.length;
+            var depoSet = {};
+            var depoList = [];
+            
+            for (var i = 0; i < locations.length; i++) {
+                var depo = locations[i].depo || '-';
+                if (!depoSet[depo]) {
+                    depoSet[depo] = true;
+                    depoList.push(depo);
+                }
+            }
+            
+            var summaryText = count + ' Record';
+            
+            if (depoList.length > 0 && depoList.length <= 3) {
+                summaryText += ' • ' + depoList.join(' ↔ ');
+            } else if (depoList.length > 3) {
+                summaryText += ' • ' + depoList.slice(0, 3).join(' ↔ ') + ' +' + (depoList.length - 3) + ' lagi';
+            }
+            
+            return summaryText;
+        }
+
+        // ============================================================
+        // BUILD DUPLICATE DETAIL TABLE - Loop SEMUA record
+        // ============================================================
+        function buildDuplicateDetailTable(locations) {
+            if (!locations || locations.length === 0) {
+                return '<div class="text-muted p-4 text-center">Tidak ada data detail.</div>';
+            }
+            
+            var tableHtml = '';
+            tableHtml += `
+                <table class="table-duplicate-detail">
+                    <thead>
+                        <tr>
+                            <th style="width:45px;" class="text-center">No</th>
+                            <th>Depo</th>
+                            <th>Customer</th>
+                            <th>Nama Barang / SKU</th>
+                            <th style="width:140px;" class="text-center">Tanggal Sell Thru</th>
+                            <th style="width:140px;" class="text-center">Coverage Active</th>
+                            <th style="width:110px;" class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            for (var i = 0; i < locations.length; i++) {
+                var loc = locations[i];
+                
+                var statusBadge = '';
+                if (loc.status === 'Stock') {
+                    statusBadge = '<span class="badge-status-stock-premium"><i class="fa-regular fa-clock"></i> Stock</span>';
+                } else if (loc.status === 'Terjual') {
+                    statusBadge = '<span class="badge-status-sold-premium"><i class="fa-regular fa-circle-check"></i> Terjual</span>';
+                } else {
+                    statusBadge = '<span class="badge-status-stock-premium" style="background:#e9ecef; color:#6c757d;"><i class="fa-regular fa-question-circle"></i> Unknown</span>';
+                }
+                
+                tableHtml += `
+                    <tr>
+                        <td class="text-center text-muted fw-bold" style="vertical-align: middle;">${i + 1}</td>
+                        <td class="depo-cell" style="vertical-align: middle;">${loc.depo || '-'}</td>
+                        <td class="customer-cell" style="vertical-align: middle;">${loc.customer || '-'}</td>
+                        <td class="sku-cell" style="vertical-align: middle;">${loc.namaBarang || '-'}</td>
+                        <td class="text-center" style="vertical-align: middle;">${loc.tanggalSellThru || '-'}</td>
+                        <td class="text-center" style="vertical-align: middle;">
+                            ${loc.coverageActive && loc.coverageActive !== '-' ? loc.coverageActive : '<span class="coverage-na">Not Applicable</span>'}
+                        </td>
+                        <td class="text-center" style="vertical-align: middle;">${statusBadge}</td>
+                    </tr>
+                `;
+            }
+            
+            tableHtml += `</tbody></table>`;
+            return tableHtml;
+        }
+
+        // ============================================================
+        // RENDER DUPLICATE WARNING - Hanya render jika valid
+        // ============================================================
+        function renderDuplicateWarning(duplicateData) {
+            var container = document.getElementById('duplicateDetailContainer');
+            if (!container) return false;
+            
+            container.innerHTML = '';
+            
+            if (!duplicateData || !Array.isArray(duplicateData) || duplicateData.length === 0) {
+                duplicateMap = {};
+                duplicateImeiList = [];
+                return false;
+            }
+            
+            var uniqueImeiList = getUniqueDuplicateImeiList(duplicateData);
+            
+            if (uniqueImeiList.length === 0) {
+                duplicateMap = {};
+                duplicateImeiList = [];
+                return false;
+            }
+            
+            var result = buildDuplicateMap(duplicateData);
+            duplicateMap = result.map;
+            duplicateImeiList = result.list;
+            
+            // Filter hanya IMEI dengan >= 2 record
+            var validImeiList = [];
+            for (var i = 0; i < duplicateImeiList.length; i++) {
+                var imei = duplicateImeiList[i];
+                var locations = duplicateMap[imei] || [];
+                if (locations.length >= 2) {
+                    validImeiList.push(imei);
+                } else {
+                    console.warn("⚠️ SKIP IMEI:", imei, "- hanya", locations.length, "record");
+                    delete duplicateMap[imei];
+                }
+            }
+            duplicateImeiList = validImeiList;
+            
+            if (duplicateImeiList.length === 0) {
+                console.warn("⚠️ Tidak ada IMEI dengan minimal 2 record");
+                container.innerHTML = '';
+                duplicateMap = {};
+                duplicateImeiList = [];
+                return false;
+            }
+            
+            // ✅ Gunakan Single Source of Truth
+            var totalDuplicates = getValidDuplicateCount();
+            var html = '';
+            
+            html += `
+                <div class="duplicate-warning-wrapper">
+                    <button class="duplicate-main-toggle" onclick="toggleMainDuplicate()">
+                        <span class="arrow-icon" id="duplicateMainArrow">▶</span>
+                        Show Detail
+                        <span class="badge-count">${totalDuplicates} IMEI Duplicate</span>
+                    </button>
+                    <div class="duplicate-main-body" id="duplicateMainBody">
+            `;
+            
+            for (var i = 0; i < duplicateImeiList.length; i++) {
+                var imei = duplicateImeiList[i];
+                var locations = duplicateMap[imei] || [];
+                var count = locations.length;
+                var itemId = 'duplicateItem_' + i;
+                var summaryText = generateDuplicateSummary(locations);
+                
+                html += `
+                    <div class="duplicate-imei-item">
+                        <button class="duplicate-imei-toggle" onclick="toggleDuplicateItem('${itemId}')">
+                            <span class="arrow-icon" id="${itemId}_arrow">▶</span>
+                            <span class="imei-code">${imei}</span>
+                            <span class="duplicate-summary">
+                                <span class="badge-locations">${count} Record</span>
+                                <span class="location-preview">${summaryText}</span>
+                            </span>
+                        </button>
+                        <div class="duplicate-imei-body" id="${itemId}">
+                            ${buildDuplicateDetailTable(locations)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            
+            if (totalDuplicates === 1) {
+                setTimeout(function() {
+                    toggleMainDuplicate();
+                }, 300);
+            }
+            
+            return true;
+        }
+
+        // ============================================================
+        // UPDATE DUPLICATE HEADER - Berdasarkan duplicateMap
+        // ============================================================
+        function updateDuplicateHeader() {
+            var errorBanner = document.getElementById('errorBanner');
+            var errorMsg = document.getElementById('errorMessage');
+            var container = document.getElementById('duplicateDetailContainer');
+            
+            if (!errorBanner || !errorMsg) return;
+            
+            // ✅ Gunakan Single Source of Truth
+            var validCount = getValidDuplicateCount();
+            
+            if (validCount > 0) {
+                errorBanner.className = 'error-banner';
+                errorBanner.style.display = 'block';
+                errorMsg.innerHTML = '⚠️ Ditemukan <strong>' + validCount +
+                    '</strong> IMEI / Serial Number Duplicate';
+                errorMsg.innerHTML += '<br><span style="font-size: 12px; font-weight: 400;">Data duplicate tidak dihitung pada dashboard.</span>';
+            } else {
+                errorBanner.style.display = 'none';
+                // ✅ Gunakan container yang sudah ada
+                if (container) {
+                    container.innerHTML = '';
+                }
+            }
+        }
+
+        // ============================================================
+        // TOGGLE FUNCTIONS
+        // ============================================================
+        function toggleMainDuplicate() {
+            var body = document.getElementById('duplicateMainBody');
+            var arrow = document.getElementById('duplicateMainArrow');
+            
+            if (!body || !arrow) return;
+            
+            var isExpanded = body.classList.contains('expanded');
+            
+            if (isExpanded) {
+                body.classList.remove('expanded');
+                arrow.textContent = '▶';
+                arrow.classList.remove('expanded');
+            } else {
+                body.classList.add('expanded');
+                arrow.textContent = '▼';
+                arrow.classList.add('expanded');
+            }
+        }
+
+        function toggleDuplicateItem(itemId) {
+            var body = document.getElementById(itemId);
+            var arrow = document.getElementById(itemId + '_arrow');
+            
+            if (!body || !arrow) return;
+            
+            var isExpanded = body.classList.contains('expanded');
+            
+            if (isExpanded) {
+                body.classList.remove('expanded');
+                arrow.textContent = '▶';
+                arrow.classList.remove('expanded');
+            } else {
+                body.classList.add('expanded');
+                arrow.textContent = '▼';
+                arrow.classList.add('expanded');
+            }
+        }
+
+        // ============================================================
+        // GET UNIQUE DUPLICATE IMEI LIST
+        // ============================================================
+        function getUniqueDuplicateImeiList(duplicateData) {
+            var uniqueList = [];
+            var uniqueMap = {};
+            
+            if (!duplicateData || !Array.isArray(duplicateData)) {
+                return uniqueList;
+            }
+            
+            for (var i = 0; i < duplicateData.length; i++) {
+                var item = duplicateData[i];
+                var imei = item.imei || item.serial || '';
+                if (imei) {
+                    var normalized = imei.toString().trim();
+                    if (!uniqueMap[normalized]) {
+                        uniqueMap[normalized] = true;
+                        uniqueList.push(normalized);
+                    }
+                }
+            }
+            
+            return uniqueList;
+        }
+
+        // ============================================================
+        // FETCH DATA FROM BACKEND
+        // ============================================================
+        function fetchData() {
+            console.log("=== FETCH DATA START ===");
+            setLoadingState(true);
+
+            google.script.run
+                .withSuccessHandler(function(response) {
+                    console.log("Response received");
+                    setLoadingState(false);
+
+                    if (!response || !response.success) {
+                        var errorMsg = response && response.error ? response.error : 'Unknown Error';
+                        console.error("Error from backend:", errorMsg);
+                        var errorBanner = document.getElementById('errorBanner');
+                        var errorMsgEl = document.getElementById('errorMessage');
+                        errorBanner.style.display = 'block';
+                        errorMsgEl.innerHTML = '⚠️ Gagal load data: ' + errorMsg;
+                        document.getElementById('tableBody').innerHTML =
+                            '<tr><td colspan="10" class="text-center text-danger py-4">' +
+                            '<i class="fa-solid fa-circle-exclamation me-2"></i>Gagal load data: ' + errorMsg +
+                            '</td></tr>';
+                        return;
+                    }
+
+                    console.log("✅ Response success");
+
+                    var timestamp = Date.now();
+                    var newData = [];
+                    if (response.rows && response.rows.length > 0) {
+                        for (var i = 0; i < response.rows.length; i++) {
+                            var row = response.rows[i];
+                            if (row) {
+                                row._id = "ROW_" + i + "_" + timestamp;
+                                newData.push(row);
+                            }
+                        }
+                    }
+                    
+                    console.log("Data rows:", newData.length);
+
+                    var changeResult = detectChanges(newData, previousData);
+                    
+                    previousData = newData.slice();
+                    rawData = newData;
+
+                    // ============================================================
+                    // BUILD IMEI INDEX
+                    // ============================================================
+                    imeiIndex = buildIMEIIndex(rawData);
+                    console.log("📊 IMEI Index built with", Object.keys(imeiIndex).length, "unique IMEIs");
+
+                    document.getElementById('syncTime').innerText = response.lastSync || '-';
+                    document.getElementById('rowCount').innerText = rawData.length + ' rows';
+
+                    // ============================================================
+                    // PROSES DUPLICATE DENGAN SINGLE SOURCE OF TRUTH
+                    // ============================================================
+                    // ✅ Ambil data duplicate dari backend (hanya untuk data mentah)
+                    var duplicateData = response.errors && response.errors.duplicates ? response.errors.duplicates : [];
+
+                    // ✅ Render duplicate warning - ini akan membangun duplicateMap
+                    var hasValidDuplicates = renderDuplicateWarning(duplicateData);
+
+                    // ✅ Update header berdasarkan duplicateMap (menggunakan helper)
+                    updateDuplicateHeader();
+
+                    // ✅ Jika tidak ada duplicate valid, pastikan container kosong
+                    if (!hasValidDuplicates) {
+                        var container = document.getElementById('duplicateDetailContainer');
+                        if (container) {
+                            container.innerHTML = '';
+                        }
+                    }
+
+                    // ✅ Notification Modal hanya muncul jika ada perubahan data sinkronisasi
+                    if (changeResult.hasChanges) {
+                        var notifData = {
+                            newRecords: changeResult.newRecords,
+                            updatedRecords: changeResult.updatedRecords,
+                            deletedRecords: changeResult.deletedRecords,
+                            totalData: newData.length,
+                            lastSync: response.lastSync || getCurrentTime()
+                        };
+                        showNotificationModal(notifData);
+                    }
+
+                    // ============================================================
+                    // RENDER DATA
+                    // ============================================================
+                    try {
+                        var kpi = response.kpi || { sellThru: 0, sellOut: 0, stockCI: 0, avgWOS: 0 };
+                        document.getElementById('kpiSellThru').innerText = (kpi.sellThru || 0).toLocaleString('id-ID');
+                        document.getElementById('kpiSellOut').innerText = (kpi.sellOut || 0).toLocaleString('id-ID');
+                        document.getElementById('kpiStockCI').innerText = (kpi.stockCI || 0).toLocaleString('id-ID');
+                        var avgWos = kpi.avgWOS || 0;
+                        if (avgWos === "∞" || avgWos === Infinity || avgWos === 'Infinity') {
+                            document.getElementById('kpiAvgWOS').innerHTML = '∞';
+                        } else {
+                            document.getElementById('kpiAvgWOS').innerText = typeof avgWos === 'number' ? avgWos.toFixed(2) : avgWos;
+                        }
+                    } catch (e) {
+                        console.error("Error updating KPI:", e);
+                    }
+
+                    try {
+                        setupFilters(response.filter || { depo: [], customer: [], kategori: [] });
+                        setupBarangDropdown(rawData);
+                    } catch (e) {
+                        console.error("Error setting up filters:", e);
+                    }
+
+                    try {
+                        renderTable(rawData);
+                        console.log("=== FETCH DATA COMPLETE ===");
+                    } catch (e) {
+                        console.error("Error rendering table:", e);
+                        document.getElementById('tableBody').innerHTML =
+                            '<tr><td colspan="10" class="text-center text-danger py-4">' +
+                            '<i class="fa-solid fa-circle-exclamation me-2"></i>Error rendering data: ' + e.message +
+                            '</td></tr>';
+                    }
+
+                })
+                .withFailureHandler(function(err) {
+                    console.error("Connection error:", err);
+                    setLoadingState(false);
+
+                    var errorBanner = document.getElementById('errorBanner');
+                    var errorMsg = document.getElementById('errorMessage');
+                    errorBanner.style.display = 'block';
+                    errorMsg.innerHTML = '⚠️ Koneksi Error: ' + (err.message || 'Unknown Error');
+
+                    document.getElementById('tableBody').innerHTML =
+                        '<tr><td colspan="10" class="text-center text-danger py-4">' +
+                        '<i class="fa-solid fa-circle-exclamation me-2"></i>Koneksi Error: ' + (err.message || 'Unknown Error') +
+                        '</td></tr>';
+                })
+                .loadDashboard();
+        }
+
+        // ============================================================
+        // SETUP FILTERS
+        // ============================================================
+        function setupFilters(filterData) {
+            if (!filterData) return;
+
+            var depoSel = document.getElementById('filterDepo');
+            var custSel = document.getElementById('filterCustomer');
+            var katSel = document.getElementById('filterKategori');
+
+            var prevDepo = depoSel.value;
+            var prevCust = custSel.value;
+            var prevKat = katSel.value;
+
+            depoSel.innerHTML = '<option value="">Semua Depo</option>';
+            custSel.innerHTML = '<option value="">Semua Customer</option>';
+            katSel.innerHTML = '<option value="">Semua Kategori</option>';
+
+            if (filterData.depo && Array.isArray(filterData.depo)) {
+                for (var i = 0; i < filterData.depo.length; i++) {
+                    var d = filterData.depo[i];
+                    if (d) depoSel.innerHTML += '<option value="' + d + '">' + d + '</option>';
+                }
+            }
+            if (filterData.customer && Array.isArray(filterData.customer)) {
+                for (var i = 0; i < filterData.customer.length; i++) {
+                    var c = filterData.customer[i];
+                    if (c) custSel.innerHTML += '<option value="' + c + '">' + c + '</option>';
+                }
+            }
+            if (filterData.kategori && Array.isArray(filterData.kategori)) {
+                for (var i = 0; i < filterData.kategori.length; i++) {
+                    var k = filterData.kategori[i];
+                    if (k) katSel.innerHTML += '<option value="' + k + '">' + k + '</option>';
+                }
+            }
+
+            depoSel.value = prevDepo;
+            custSel.value = prevCust;
+            katSel.value = prevKat;
+        }
+
+        function setupBarangDropdown(rows) {
+            var barangSel = document.getElementById('filterBarang');
+            var prevBarang = barangSel.value;
+
+            var uniqueBarang = [];
+            if (rows && Array.isArray(rows)) {
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    if (row && row.barang && Array.isArray(row.barang)) {
+                        for (var j = 0; j < row.barang.length; j++) {
+                            var b = row.barang[j];
+                            if (b && b.nama && uniqueBarang.indexOf(b.nama) === -1) {
+                                uniqueBarang.push(b.nama);
+                            }
+                        }
+                    }
+                }
+            }
+
+            uniqueBarang.sort();
+
+            barangSel.innerHTML = '<option value="">Semua Nama Barang</option>';
+            for (var i = 0; i < uniqueBarang.length; i++) {
+                var bName = uniqueBarang[i];
+                barangSel.innerHTML += '<option value="' + bName.replace(/"/g, '&quot;') + '">' + bName + '</option>';
+            }
+
+            barangSel.value = prevBarang;
+        }
+
+        // ============================================================
+        // APPLY FILTERS
+        // ============================================================
+        function applyFilters() {
+            var selectedDepo = document.getElementById('filterDepo').value;
+            var selectedCust = document.getElementById('filterCustomer').value;
+            var selectedKat = document.getElementById('filterKategori').value;
+            var selectedBarang = document.getElementById('filterBarang').value;
+
+            var filtered = [];
+
+            if (rawData && Array.isArray(rawData)) {
+                for (var i = 0; i < rawData.length; i++) {
+                    var row = rawData[i];
+                    if (!row) continue;
+                    
+                    var matchDepo = !selectedDepo || row.depo === selectedDepo;
+                    var matchCust = !selectedCust || row.customer === selectedCust;
+                    var matchKat = !selectedKat || row.kategori === selectedKat;
+
+                    if (matchDepo && matchCust && matchKat) {
+                        if (selectedBarang) {
+                            var filteredBarangList = [];
+                            for (var j = 0; j < (row.barang || []).length; j++) {
+                                var b = row.barang[j];
+                                if (b && b.nama === selectedBarang) {
+                                    filteredBarangList.push(b);
+                                }
+                            }
+
+                            if (filteredBarangList.length > 0) {
+                                var copyRow = JSON.parse(JSON.stringify(row));
+                                copyRow.barang = filteredBarangList;
+
+                                var sumSellThru = 0, sumSellOut = 0, sumStockCI = 0, sumSellOut28 = 0;
+                                for (var k = 0; k < filteredBarangList.length; k++) {
+                                    var b2 = filteredBarangList[k];
+                                    sumSellThru += (parseInt(b2.sellThru) || 0);
+                                    sumSellOut += (parseInt(b2.sellOut) || 0);
+                                    sumStockCI += (parseInt(b2.stockCI) || 0);
+                                    sumSellOut28 += (parseInt(b2.sellOut28) || 0);
+                                }
+
+                                copyRow.sellThru = sumSellThru;
+                                copyRow.sellOut = sumSellOut;
+                                copyRow.stockCI = sumStockCI;
+                                copyRow.sellOut28 = sumSellOut28;
+                                copyRow.avgSellOutL4W = sumSellOut28 > 0 ? parseFloat((sumSellOut28 / 4).toFixed(2)) : 0;
+
+                                if (copyRow.avgSellOutL4W > 0 && sumStockCI > 0) {
+                                    copyRow.wos = parseFloat((sumStockCI / copyRow.avgSellOutL4W).toFixed(2));
+                                } else if (sumStockCI > 0 && sumSellOut28 === 0) {
+                                    copyRow.wos = "∞";
+                                } else {
+                                    copyRow.wos = 0;
+                                }
+
+                                copyRow._id = row._id;
+                                filtered.push(copyRow);
+                            }
+                        } else {
+                            var copyRow = JSON.parse(JSON.stringify(row));
+                            copyRow._id = row._id;
+                            filtered.push(copyRow);
+                        }
+                    }
+                }
+            }
+
+            renderTable(filtered);
+            recalculateKPI(filtered);
+            document.getElementById('rowCount').innerText = filtered.length + ' rows';
+        }
+
+        // ============================================================
+        // RECALCULATE KPI
+        // ============================================================
+        function recalculateKPI(filteredRows) {
+            var sellThru = 0, sellOut = 0, stockCI = 0, sellOut28 = 0;
+
+            if (filteredRows && Array.isArray(filteredRows)) {
+                for (var i = 0; i < filteredRows.length; i++) {
+                    var r = filteredRows[i];
+                    if (!r) continue;
+                    sellThru += (r.sellThru || 0);
+                    sellOut += (r.sellOut || 0);
+                    stockCI += (r.stockCI || 0);
+                    sellOut28 += (r.sellOut28 || 0);
+                }
+            }
+
+            var avgWOS = 0;
+            if (stockCI > 0) {
+                if (sellOut28 > 0) {
+                    var avgL4W = sellOut28 / 4;
+                    avgWOS = parseFloat((stockCI / avgL4W).toFixed(2));
+                } else {
+                    avgWOS = "∞";
+                }
+            } else {
+                avgWOS = 0;
+            }
+
+            document.getElementById('kpiSellThru').innerText = sellThru.toLocaleString('id-ID');
+            document.getElementById('kpiSellOut').innerText = sellOut.toLocaleString('id-ID');
+            document.getElementById('kpiStockCI').innerText = stockCI.toLocaleString('id-ID');
+            
+            if (avgWOS === "∞") {
+                document.getElementById('kpiAvgWOS').innerHTML = '∞';
+            } else {
+                document.getElementById('kpiAvgWOS').innerText = avgWOS > 0 ? avgWOS.toFixed(2) : '0';
+            }
+        }
+
+        // ============================================================
+        // WOS BADGE
+        // ============================================================
+        function getWosBadgeElement(wosValue) {
+            if (wosValue === "∞" || wosValue === Infinity || wosValue === 'Infinity') {
+                return '<span class="badge-wos badge-infinity">∞</span>';
+            }
+
+            var val = parseFloat(wosValue);
+
+            if (isNaN(val)) return '<span class="badge-wos bg-secondary">N/A</span>';
+            if (val === 0) return '<span class="badge-wos bg-secondary">0</span>';
+
+            var colorClass = '';
+            if (val < 4) colorClass = 'bg-success';
+            else if (val >= 4 && val <= 5) colorClass = 'bg-orange';
+            else colorClass = 'bg-danger';
+
+            return '<span class="badge-wos ' + colorClass + '">' + val.toFixed(1) + ' <span class="wos-label">W</span></span>';
+        }
+
+        function getStockCIStyle(stockValue) {
+            var val = parseInt(stockValue);
+            if (val === 0) return 'text-danger fw-bold';
+            return '';
+        }
+
+        // ============================================================
+        // RENDER TABLE
+        // ============================================================
+        function renderTable(rows) {
+            var tbody = document.getElementById('tableBody');
+            
+            if (!rows || !Array.isArray(rows) || rows.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4"><i class="fa-solid fa-inbox me-2"></i>Data tidak ditemukan.</td></tr>';
+                return;
+            }
+
+            var grouped = {};
+            var groupKeys = [];
+            
+            for (var i = 0; i < rows.length; i++) {
+                var r = rows[i];
+                if (!r) continue;
+                var key = (r.depo || '') + "|" + (r.customer || '');
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        depo: r.depo || '',
+                        customer: r.customer || '',
+                        sellThru: 0,
+                        sellOut: 0,
+                        stockCI: 0,
+                        sellOut28: 0,
+                        kategoriList: []
+                    };
+                    groupKeys.push(key);
+                }
+
+                var g = grouped[key];
+                g.sellThru += (r.sellThru || 0);
+                g.sellOut += (r.sellOut || 0);
+                g.stockCI += (r.stockCI || 0);
+                g.sellOut28 += (r.sellOut28 || 0);
+
+                g.kategoriList.push({
+                    kategori: r.kategori || '',
+                    sellThru: r.sellThru || 0,
+                    sellOut: r.sellOut || 0,
+                    stockCI: r.stockCI || 0,
+                    sellOut28: r.sellOut28 || 0,
+                    avgSellOutL4W: r.avgSellOutL4W || 0,
+                    wos: r.wos || 0,
+                    isExcluded: r.isExcluded || false,
+                    _id: r._id || ''
+                });
+            }
+
+            groupKeys.sort();
+
+            var htmlParts = [];
+            var globalIndex = 1;
+            var timestamp = Date.now();
+
+            for (var ki = 0; ki < groupKeys.length; ki++) {
+                var key = groupKeys[ki];
+                var group = grouped[key];
+                var totalKategori = group.kategoriList.length;
+
+                var groupAvgL4W = group.sellOut28 > 0 ? parseFloat((group.sellOut28 / 4).toFixed(2)) : 0;
+                var customerWos = 0;
+                if (groupAvgL4W > 0 && group.stockCI > 0) {
+                    customerWos = parseFloat((group.stockCI / groupAvgL4W).toFixed(2));
+                } else if (group.stockCI > 0 && group.sellOut28 === 0) {
+                    customerWos = "∞";
+                }
+
+                var collapseId = "collapse_" + globalIndex + "_" + timestamp;
+                var customerWosBadge = getWosBadgeElement(customerWos);
+                var customerStockClass = getStockCIStyle(group.stockCI);
+
+                htmlParts.push(`
+                    <tr class="table-light clickable-row" data-bs-toggle="collapse" data-bs-target=".${collapseId}" aria-expanded="false">
+                        <td class="col-sticky col-sticky-no text-center text-muted fw-bold">${globalIndex}</td>
+                        <td class="col-sticky col-sticky-depo">${group.depo}</td>
+                        <td class="col-sticky col-sticky-customer customer-name">${group.customer}</td>
+                        <td class="metric-cell fw-semibold">${group.sellThru}</td>
+                        <td class="metric-cell text-success fw-semibold">${group.sellOut}</td>
+                        <td class="metric-cell ${customerStockClass} fw-semibold">${group.stockCI}</td>
+                        <td class="metric-cell fw-semibold">${group.sellOut28}</td>
+                        <td class="metric-cell fw-semibold">${groupAvgL4W.toFixed(1)}</td>
+                        <td class="metric-cell">${customerWosBadge}</td>
+                        <td class="aksi-cell">
+                            <span class="badge-kategori-count">${totalKategori} Kategori</span>
+                        </td>
+                    </tr>
+                `);
+
+                for (var kj = 0; kj < group.kategoriList.length; kj++) {
+                    var katData = group.kategoriList[kj];
+                    var katWosBadge = getWosBadgeElement(katData.wos);
+                    var katStockClass = getStockCIStyle(katData.stockCI);
+                    var excludedBadge = katData.isExcluded ? '<span class="badge-excluded">Excluded</span>' : '';
+                    var idForButton = katData._id || '';
+
+                    htmlParts.push(`
+                        <tr class="collapse ${collapseId} bg-white">
+                            <td class="col-sticky col-sticky-no"></td>
+                            <td class="col-sticky col-sticky-depo sub-indent-first"></td>
+                            <td class="col-sticky col-sticky-customer sub-indent">
+                                <span class="sub-kategori-label"><i class="fa-solid fa-arrow-turn-up fa-rotate-90 me-2"></i>Sub-Kategori:</span>
+                                <span class="sub-kategori-name">${katData.kategori} ${excludedBadge}</span>
+                            </td>
+                            <td class="metric-cell fw-semibold">${katData.sellThru}</td>
+                            <td class="metric-cell text-success fw-semibold">${katData.sellOut}</td>
+                            <td class="metric-cell ${katStockClass} fw-semibold">${katData.stockCI}</td>
+                            <td class="metric-cell fw-semibold">${katData.sellOut28}</td>
+                            <td class="metric-cell fw-semibold">${katData.avgSellOutL4W.toFixed(1)}</td>
+                            <td class="metric-cell">${katWosBadge}</td>
+                            <td class="aksi-cell">
+                                <button class="btn-detail-apple" onclick="event.stopPropagation(); showBarangDetailById('${idForButton}')">
+                                    <i class="fa-regular fa-rectangle-list"></i> Detail
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                }
+
+                globalIndex++;
+            }
+
+            tbody.innerHTML = htmlParts.join('');
+            setupAccordionIcons();
+        }
+
+        function setupAccordionIcons() {
+            var collapseElements = document.querySelectorAll('.collapse');
+            for (var i = 0; i < collapseElements.length; i++) {
+                var el = collapseElements[i];
+                el.addEventListener('show.bs.collapse', function() {
+                    var parentRow = this.previousElementSibling;
+                    while (parentRow && !parentRow.classList.contains('table-light')) {
+                        parentRow = parentRow.previousElementSibling;
+                    }
+                    if (parentRow) {
+                        var icon = parentRow.querySelector('.transition-icon');
+                        if (icon) icon.style.transform = 'rotate(90deg)';
+                        parentRow.setAttribute('aria-expanded', 'true');
+                    }
+                });
+                el.addEventListener('hide.bs.collapse', function() {
+                    var parentRow = this.previousElementSibling;
+                    while (parentRow && !parentRow.classList.contains('table-light')) {
+                        parentRow = parentRow.previousElementSibling;
+                    }
+                    if (parentRow) {
+                        var icon = parentRow.querySelector('.transition-icon');
+                        if (icon) icon.style.transform = 'rotate(0deg)';
+                        parentRow.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+        }
+
+        function toggleImeiAccordion(accordionId) {
+            var body = document.getElementById(accordionId);
+            var arrow = document.getElementById(accordionId + '_arrow');
+            
+            if (!body || !arrow) return;
+            
+            var isExpanded = body.classList.contains('expanded');
+            
+            if (isExpanded) {
+                body.classList.remove('expanded');
+                arrow.textContent = '▶';
+                arrow.classList.remove('expanded');
+            } else {
+                body.classList.add('expanded');
+                arrow.textContent = '▼';
+                arrow.classList.add('expanded');
+            }
+        }
+
+        // ============================================================
+        // SHOW BARANG DETAIL BY ID
+        // ============================================================
+        function showBarangDetailById(id) {
+            if (!id) {
+                alert('Data tidak ditemukan!');
+                return;
+            }
+
+            var rowDataSelected = null;
+            for (var i = 0; i < rawData.length; i++) {
+                if (rawData[i] && rawData[i]._id === id) {
+                    rowDataSelected = rawData[i];
+                    break;
+                }
+            }
+
+            if (!rowDataSelected) {
+                alert('Data tidak ditemukan!');
+                return;
+            }
+
+            var titleText = (rowDataSelected.depo || '') + ' - ' + (rowDataSelected.customer || '') + ' (' + (rowDataSelected.kategori || '') + ')';
+            document.getElementById('modalTitleText').innerText = titleText;
+
+            var bodyHtml = '';
+            if (rowDataSelected.barang && Array.isArray(rowDataSelected.barang)) {
+                for (var i = 0; i < rowDataSelected.barang.length; i++) {
+                    var b = rowDataSelected.barang[i];
+                    if (!b) continue;
+
+                    var wosDisplay = b.wos;
+                    if (b.wos === "∞" || b.wos === Infinity) wosDisplay = '∞';
+
+                    var today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    var maxAging = 0;
+                    var stockCount = 0;
+                    var isCharger = isChargerSKU(b.nama || '');
+
+                    if (b.details && Array.isArray(b.details)) {
+                        for (var j = 0; j < b.details.length; j++) {
+                            var item = b.details[j];
+                            if (!item) continue;
+                            var isStock = item.isValidCoverage === false;
+                            if (isStock) {
+                                stockCount++;
+                                if (!isCharger && item.tanggalSellThru && item.tanggalSellThru !== '-') {
+                                    var sellDate = parseDateFromString(item.tanggalSellThru);
+                                    if (sellDate) {
+                                        var diff = Math.floor((today.getTime() - sellDate.getTime()) / (1000 * 60 * 60 * 24));
+                                        if (diff > maxAging) maxAging = diff;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    var agingSummaryHtml = '';
+                    if (!isCharger) {
+                        if (maxAging > 0) {
+                            var agingColor = getAgingColor(maxAging);
+                            var agingIcon = getAgingIcon(maxAging);
+                            agingSummaryHtml = '<span class="' + agingColor + ' aging-badge">' + agingIcon + ' Stock Tertua: ' + maxAging + ' Hari</span>';
+                        } else if (stockCount > 0) {
+                            agingSummaryHtml = '<span class="aging-green aging-badge">🟢 Stock Tertua: < 1 Hari</span>';
+                        }
+                    }
+
+                    bodyHtml += `
+                        <div class="apple-card">
+                            <div class="apple-card-header">
+                                <div class="sku-name">
+                                    <i class="fa-solid fa-mobile-screen-button"></i>
+                                    ${b.nama || '-'}
+                                </div>
+                                <div class="sku-stats">
+                                    <span class="stat-item primary">📦 ST: ${b.sellThru || 0}</span>
+                                    <span class="stat-item success">✅ SO: ${b.sellOut || 0}</span>
+                                    <span class="stat-item warning">📥 CI: ${b.stockCI || 0}</span>
+                                    <span class="stat-item dark">📊 WOS: ${typeof wosDisplay === 'number' ? wosDisplay.toFixed(1) : wosDisplay}</span>
+                                    ${agingSummaryHtml ? agingSummaryHtml : ''}
+                                </div>
+                            </div>
+                            <div class="apple-card-body">
+                                ${renderImeiPremiumTable(b.details, b.nama)}
+                            </div>
+                            <div class="apple-card-footer">
+                                <span><i class="fa-regular fa-circle-check text-success me-1"></i> Terjual: ${b.sellOut || 0}</span>
+                                <span><i class="fa-regular fa-clock text-warning me-1"></i> Stock: ${b.stockCI || 0}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                bodyHtml = '<div class="text-muted p-4 text-center">Tidak ada detail SKU untuk kategori ini.</div>';
+            }
+
+            document.getElementById('modalBody').innerHTML = bodyHtml;
+            myModal.show();
+        }
+
+        // ============================================================
+        // RENDER IMEI TABLE - DENGAN ACCORDION EXPAND/COLLAPSE
+        // ============================================================
+        function renderImeiPremiumTable(details, skuName) {
+            if (!details || !Array.isArray(details) || details.length === 0) {
+                return '<div class="text-muted p-4 text-center" style="font-size:13px;">Tidak ada detail IMEI untuk barang ini.</div>';
+            }
+
+            var isCharger = isChargerSKU(skuName || '');
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            var sortedData = [];
+            for (var i = 0; i < details.length; i++) {
+                var item = details[i];
+                if (!item) continue;
+                var aging = 0;
+                var isStock = item.isValidCoverage === false;
+                
+                if (isStock && !isCharger && item.tanggalSellThru && item.tanggalSellThru !== '-') {
+                    var sellDate = parseDateFromString(item.tanggalSellThru);
+                    if (sellDate) {
+                        aging = Math.floor((today.getTime() - sellDate.getTime()) / (1000 * 60 * 60 * 24));
+                    }
+                }
+                
+                sortedData.push({ item: item, aging: aging, isStock: isStock });
+            }
+
+            sortedData.sort(function(a, b) {
+                if (a.isStock && !b.isStock) return -1;
+                if (!a.isStock && b.isStock) return 1;
+                if (a.isStock && b.isStock) return b.aging - a.aging;
+                return 0;
+            });
+
+            var totalItems = sortedData.length;
+            var accordionId = 'imeiAccordion_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+            
+            var tableHtml = '';
+            tableHtml += `
+            <table class="table-imei-premium">
+                <thead>
+                    <tr>
+                        <th style="width:45px;" class="text-center">No</th>
+                        <th>Nomor Seri / IMEI</th>
+                        <th class="text-center" style="width:160px;">Sell Thru</th>
+                        <th class="text-center" style="width:180px;">Coverage Active</th>
+                        <th class="text-center" style="width:140px;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            for (var i = 0; i < sortedData.length; i++) {
+                var d = sortedData[i].item;
+                var aging = sortedData[i].aging;
+                var isStock = sortedData[i].isStock;
+                
+                var sellDate = parseDateFromString(d.tanggalSellThru);
+                var formattedSellDate = sellDate ? formatDateShort(sellDate) : (d.tanggalSellThru || '-');
+
+                var coverageDisplay = '';
+                var statusBadge = '';
+                
+                if (isCharger) {
+                    coverageDisplay = '<span class="coverage-na">Not Applicable</span>';
+                    statusBadge = isStock ? 
+                        '<span class="badge-status-stock-premium"><i class="fa-regular fa-clock"></i> Stock</span>' :
+                        '<span class="badge-status-sold-premium"><i class="fa-regular fa-circle-check"></i> Terjual</span>';
+                } else if (isStock) {
+                    var agingColor = getAgingColor(aging);
+                    var agingIcon = getAgingIcon(aging);
+                    var agingText = aging > 0 ? aging + ' Hari' : '< 1 Hari';
+                    coverageDisplay = '<span class="aging-badge-premium ' + agingColor + '">' + agingIcon + ' Aging ' + agingText + '</span>';
+                    statusBadge = '<span class="badge-status-stock-premium"><i class="fa-regular fa-clock"></i> Stock</span>';
+                } else {
+                    var coverageDate = parseDateFromString(d.coverage);
+                    var formattedCoverage = coverageDate ? formatDateShort(coverageDate) : (d.coverage || '-');
+                    coverageDisplay = '<span style="font-weight:600; color:var(--text-primary);">' + formattedCoverage + '</span>';
+                    statusBadge = '<span class="badge-status-sold-premium"><i class="fa-regular fa-circle-check"></i> Terjual</span>';
+                }
+
+                tableHtml += `
+                    <tr>
+                        <td class="text-center text-muted fw-bold" style="vertical-align: middle;">${i + 1}</td>
+                        <td style="vertical-align: middle;">
+                            <span class="imei-cell" title="Klik untuk copy/select">${d.imei || '-'}</span>
+                        </td>
+                        <td class="text-center" style="vertical-align: middle;">${formattedSellDate}</td>
+                        <td class="text-center" style="vertical-align: middle;">${coverageDisplay}</td>
+                        <td class="text-center" style="vertical-align: middle;">${statusBadge}</td>
+                    </tr>
+                `;
+            }
+
+            tableHtml += `</tbody></table>`;
+            
+            var html = `
+                <div class="imei-accordion-wrapper">
+                    <div class="imei-accordion-toggle" onclick="toggleImeiAccordion('${accordionId}')">
+                        <span class="arrow-icon" id="${accordionId}_arrow">▶</span>
+                        <span class="title-text">Daftar IMEI</span>
+                        <span class="badge-count">${totalItems} IMEI</span>
+                    </div>
+                    <div class="imei-accordion-body" id="${accordionId}">
+                        ${tableHtml}
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        // ============================================================
+        // FUNGSI PEMBANTU
+        // ============================================================
+        function formatDateShort(date) {
+            if (!date || !(date instanceof Date) || isNaN(date.getTime())) return '-';
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            return date.getDate().toString().padStart(2, '0') + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+        }
+
+        function parseDateFromString(dateStr) {
+            if (!dateStr || dateStr === '-') return null;
+            
+            var months = {
+                'jan': 0, 'januari': 0, 'feb': 1, 'februari': 1,
+                'mar': 2, 'maret': 2, 'apr': 3, 'april': 3,
+                'mei': 4, 'may': 4, 'jun': 5, 'juni': 5,
+                'jul': 6, 'juli': 6, 'agu': 7, 'agustus': 7, 'aug': 7,
+                'sep': 8, 'september': 8, 'okt': 9, 'oktober': 9, 'oct': 9,
+                'nov': 10, 'november': 10, 'des': 11, 'desember': 11, 'dec': 11
+            };
+            
+            var str = String(dateStr).trim();
+            var parts = str.split(/[-\s]+/);
+            if (parts.length === 3) {
+                var day = parseInt(parts[0], 10);
+                var monthStr = parts[1].toLowerCase();
+                var year = parseInt(parts[2], 10);
+                var month = null;
+                if (months[monthStr] !== undefined) month = months[monthStr];
+                else if (monthStr.length >= 3 && months[monthStr.substring(0, 3)] !== undefined) month = months[monthStr.substring(0, 3)];
+                if (!isNaN(day) && month !== null && !isNaN(year) && day > 0 && day <= 31) {
+                    var date = new Date(year, month, day);
+                    if (!isNaN(date.getTime())) return date;
+                }
+            }
+            var date = new Date(str);
+            if (!isNaN(date.getTime())) return date;
+            return null;
+        }
+
+        function getAgingColor(aging) {
+            if (aging <= 0) return 'aging-green-premium';
+            if (aging <= 30) return 'aging-green-premium';
+            if (aging <= 60) return 'aging-yellow-premium';
+            if (aging <= 90) return 'aging-orange-premium';
+            return 'aging-red-premium';
+        }
+
+        function getAgingIcon(aging) {
+            if (aging <= 0) return '🟢';
+            if (aging <= 30) return '🟢';
+            if (aging <= 60) return '🟡';
+            if (aging <= 90) return '🟠';
+            return '🔴';
+        }
+
+        function showBarangDetail(rowIndex) {
+            if (rowIndex >= 0 && rowIndex < rawData.length) {
+                var row = rawData[rowIndex];
+                if (row && row._id) {
+                    showBarangDetailById(row._id);
+                    return;
+                }
+            }
+            alert('Data tidak ditemukan!');
+        }
+
+        // ============================================================
+        // LOAD THEME ON START
+        // ============================================================
+        loadTheme();
+
+        document.addEventListener('click', function(e) {
+            var panel = document.getElementById('notifPanel');
+            var bell = document.getElementById('notifBell');
+            if (isNotifPanelOpen && !panel.contains(e.target) && !bell.contains(e.target)) {
+                panel.classList.remove('show');
+                isNotifPanelOpen = false;
+            }
+        });
+
+        // ============================================================
+        // AUTO REFRESH ON LOAD
+        // ============================================================
+        fetchData();
+    </script>
+</body>
+</html>
