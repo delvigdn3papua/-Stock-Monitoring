@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0e14">
+    <title>Apple Coverage · Mobile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ============================================================
+           CSS VARIABLES
+           ============================================================ */
+        :root {
+            --bg-body: #f0f4fa;
+            --bg-card: rgba(255,255,255,0.88);
+            --bg-card-solid: #ffffff;
+            --bg-nav: rgba(255,255,255,0.92);
+            --bg-nav-bottom: rgba(255,255,255,0.94);
+            --bg-input: #f2f6fb;
+            --bg-skeleton: #e8edf4;
+            --bg-skeleton-shine: #dce3ed;
+            --text-primary: #0a1a2b;
+            --text-secondary: #2c4b6f;
+            --text-muted: #5e6f86;
+            --text-light: #8a9bb0;
+            --border-color: rgba(200, 215, 230, 0.3);
+            --shadow-card: 0 2px 16px rgba(0,0,0,0.04);
+            --shadow-nav: 0 -2px 20px rgba(0,0,0,0.06);
+            --radius-card: 20px;
+            --radius-btn: 14px;
+            --transition-fast: 0.15s ease;
+            --transition-smooth: 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --bg-body: #0a0e14;
+            --bg-card: rgba(20, 27, 36, 0.92);
+            --bg-card-solid: #141b24;
+            --bg-nav: rgba(15, 22, 32, 0.92);
+            --bg-nav-bottom: rgba(15, 22, 32, 0.94);
+            --bg-input: #1a2330;
+            --bg-skeleton: #1e2a3a;
+            --bg-skeleton-shine: #2a3a4a;
+            --text-primary: #e8edf4;
+            --text-secondary: #a0b8d0;
+            --text-muted: #6a7f9a;
+            --text-light: #5a6f8a;
+            --border-color: rgba(48, 60, 80, 0.4);
+            --shadow-card: 0 2px 16px rgba(0,0,0,0.3);
+            --shadow-nav: 0 -2px 20px rgba(0,0,0,0.4);
+        }
+
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        * {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important;
+            box-sizing: border-box;
+        }
+        ::selection { background: transparent !important; }
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 3px; height: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 10px; }
+
+        /* ============================================================
+           LOADING SCREEN
+           ============================================================ */
+        #loadingScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a0e14;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        #loadingScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #loadingScreen .loader-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 20px;
+        }
+        .loader-icon {
+            width: 56px;
+            height: 56px;
+            animation: pulse-loader 1.2s ease-in-out infinite;
+        }
+        @keyframes pulse-loader {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.92); opacity: 0.6; }
+        }
+        .loader-icon svg { width: 100%; height: 100%; }
+        .loader-icon .fill-primary { fill: #ff6b35; }
+        .loader-icon .fill-secondary { fill: #ff8c5a; }
+        #loadingScreen .loader-title {
+            color: #e8edf4;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        #loadingScreen .loader-subtitle {
+            color: #6a7f9a;
+            font-size: 0.6rem;
+            font-weight: 500;
+        }
+        #loadingScreen .loader-progress {
+            width: 160px;
+            height: 3px;
+            background: #1a2330;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        #loadingScreen .loader-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b35, #ff8c5a);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* ============================================================
+           NAVBAR
+           ============================================================ */
+        .navbar-app {
+            background: var(--bg-nav);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 56px;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .navbar-app .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .navbar-app .brand .icon {
+            background: linear-gradient(145deg, #1a1a1a, #2c2c2c);
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .navbar-app .brand .title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+        .navbar-app .brand .subtitle {
+            font-size: 0.5rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: block;
+        }
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .navbar-actions .sync-badge {
+            background: var(--bg-input);
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .navbar-actions .btn-icon {
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .navbar-actions .btn-icon:active { transform: scale(0.88); }
+        .navbar-actions .btn-icon:hover { background: var(--bg-input); }
+
+        /* ============================================================
+           STICKY KPI
+           ============================================================ */
+        .kpi-sticky-wrapper {
+            position: sticky;
+            top: 56px;
+            z-index: 90;
+            background: var(--bg-body);
+            padding: 8px 12px 8px;
+            transition: background 0.3s ease;
+        }
+        .kpi-sticky-wrapper .kpi-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 2px 0;
+        }
+        .kpi-sticky-wrapper .kpi-scroll::-webkit-scrollbar { display: none; }
+        .kpi-sticky-wrapper .kpi-mini {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 14px;
+            padding: 8px 14px;
+            flex: 0 0 auto;
+            min-width: 80px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .kpi-sticky-wrapper .kpi-mini .label {
+            font-size: 0.45rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .kpi-sticky-wrapper .kpi-mini .value {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        .kpi-sticky-wrapper .kpi-mini .value.text-success { color: #2b8c5e; }
+        .kpi-sticky-wrapper .kpi-mini .value.text-danger { color: #dc3545; }
+        .kpi-sticky-wrapper .kpi-mini .value.text-warning { color: #e6a020; }
+
+        /* ============================================================
+           MAIN CONTENT
+           ============================================================ */
+        .main-content {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 0 12px 12px;
+        }
+
+        /* ============================================================
+           SEARCH BAR
+           ============================================================ */
+        .search-bar {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: var(--radius-card);
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .search-bar i {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            outline: none;
+            padding: 4px 0;
+        }
+        .search-bar input::placeholder {
+            color: var(--text-light);
+            font-weight: 400;
+        }
+        .search-bar .clear-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            cursor: pointer;
+            padding: 0 4px;
+            display: none;
+        }
+        .search-bar .clear-btn.show { display: block; }
+
+        /* ============================================================
+           QUICK FILTER CHIPS
+           ============================================================ */
+        .chips-wrapper {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 2px 0 10px;
+            margin-bottom: 2px;
+        }
+        .chips-wrapper::-webkit-scrollbar { display: none; }
+        .chip {
+            background: var(--bg-input);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+        .chip:active { transform: scale(0.94); }
+        .chip.active {
+            background: #2b8c5e;
+            color: #ffffff;
+            border-color: #2b8c5e;
+        }
+        .chip.active:active { transform: scale(0.94); }
+        [data-theme="dark"] .chip.active { background: #2b8c5e; }
+
+        /* ============================================================
+           WORST WOS CARD
+           ============================================================ */
+        .worst-wos-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: var(--radius-card);
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 12px;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .worst-wos-card .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .worst-wos-card .header .title {
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .worst-wos-card .header .title i { font-size: 0.6rem; animation: pulse-warning 2s infinite; }
+        @keyframes pulse-warning { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .worst-wos-card .header .badge-count {
+            background: var(--bg-input);
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .worst-wos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .worst-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 10px;
+            border-radius: 10px;
+            background: rgba(220, 53, 69, 0.04);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+        }
+        .worst-item:active { transform: scale(0.97); background: rgba(220, 53, 69, 0.1); }
+        .worst-item .left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+        .worst-item .rank {
+            font-weight: 700;
+            font-size: 0.5rem;
+            color: #dc3545;
+            min-width: 20px;
+        }
+        .worst-item .name {
+            font-weight: 600;
+            font-size: 0.55rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .worst-item .wos-value {
+            font-weight: 700;
+            font-size: 0.5rem;
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.08);
+            padding: 1px 10px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        .worst-item .arrow {
+            color: var(--text-light);
+            font-size: 0.4rem;
+            margin-left: 4px;
+            opacity: 0.3;
+        }
+        [data-theme="dark"] .worst-item { background: rgba(220, 53, 69, 0.06); }
+        [data-theme="dark"] .worst-item:active { background: rgba(220, 53, 69, 0.12); }
+        [data-theme="dark"] .worst-item .name { color: #c8d2e0; }
+        .worst-empty {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 6px 0;
+        }
+
+        /* ============================================================
+           CUSTOMER CARDS
+           ============================================================ */
+        .customer-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        .customer-card:active { transform: scale(0.99); }
+        .customer-card .main {
+            padding: 12px 14px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .customer-card .main .left {
+            flex: 1;
+            min-width: 0;
+        }
+        .customer-card .main .left .depo {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .customer-card .main .left .name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-top: 1px;
+        }
+        .customer-card .main .stats {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .customer-card .main .stats .stat {
+            text-align: center;
+        }
+        .customer-card .main .stats .stat .num {
+            font-weight: 800;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            display: block;
+            line-height: 1.1;
+        }
+        .customer-card .main .stats .stat .num.text-success { color: #2b8c5e; }
+        .customer-card .main .stats .stat .num.text-danger { color: #dc3545; }
+        .customer-card .main .stats .stat .lbl {
+            font-size: 0.4rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+        .customer-card .main .chevron {
+            width: 26px; height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--bg-input);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            margin-left: 4px;
+        }
+        .customer-card .main .chevron i {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+        .customer-card .main .chevron.open i { transform: rotate(180deg); }
+
+        .customer-card .body-collapse {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+        .customer-card .body-collapse.open {
+            max-height: 2000px;
+            opacity: 1;
+        }
+        .customer-card .body-collapse .inner {
+            padding: 4px 14px 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        .customer-card .body-collapse .kategori-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 4px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .customer-card .body-collapse .kategori-row:active { transform: scale(0.98); }
+        .customer-card .body-collapse .kategori-row:last-child { border-bottom: none; }
+        .customer-card .body-collapse .kategori-row .kname {
+            font-weight: 600;
+            font-size: 0.65rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .customer-card .body-collapse .kategori-row .kname .badge-excluded {
+            font-size: 0.4rem;
+            background: var(--bg-input);
+            color: var(--text-muted);
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .customer-card .body-collapse .kategori-row .kstats {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .customer-card .body-collapse .kategori-row .kstats .ks {
+            text-align: center;
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 20px;
+        }
+        .customer-card .body-collapse .kategori-row .kstats .ks .num {
+            display: block;
+            font-weight: 800;
+            font-size: 0.6rem;
+            color: var(--text-primary);
+        }
+        .customer-card .body-collapse .kategori-row .kstats .ks .num.text-success { color: #2b8c5e; }
+        .customer-card .body-collapse .kategori-row .kstats .ks .num.text-danger { color: #dc3545; }
+        .customer-card .body-collapse .kategori-row .kstats .btn-detail {
+            background: var(--bg-input);
+            border: none;
+            border-radius: 8px;
+            padding: 2px 10px;
+            font-size: 0.45rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+        }
+        .customer-card .body-collapse .kategori-row .kstats .btn-detail:active { transform: scale(0.92); }
+
+        /* WOS Badge Mini */
+        .wos-badge-mini {
+            display: inline-block;
+            padding: 1px 8px;
+            font-size: 0.5rem;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 6px;
+            min-width: 28px;
+            text-align: center;
+        }
+        .wos-badge-mini.bg-success { background: #2b8c5e; }
+        .wos-badge-mini.bg-danger { background: #dc3545; }
+        .wos-badge-mini.bg-warning { background: #e6a020; color: #1a1a1a; }
+        .wos-badge-mini.bg-secondary { background: var(--text-muted); }
+
+        /* ============================================================
+           BOTTOM NAVIGATION
+           ============================================================ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-nav-bottom);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 0 env(safe-area-inset-bottom, 8px);
+            z-index: 200;
+            box-shadow: var(--shadow-nav);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.45rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 12px;
+            transition: all 0.15s ease;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .bottom-nav .nav-item i {
+            font-size: 1.2rem;
+            transition: transform 0.15s ease;
+        }
+        .bottom-nav .nav-item:active i { transform: scale(0.85); }
+        .bottom-nav .nav-item.active {
+            color: #2b8c5e;
+        }
+        .bottom-nav .nav-item.active i { transform: scale(1.05); }
+        .bottom-nav .nav-item .badge-dot {
+            position: absolute;
+            top: 2px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: #dc3545;
+            border-radius: 50%;
+            border: 2px solid var(--bg-nav-bottom);
+        }
+
+        /* ============================================================
+           FLOATING ACTION BUTTON - REFRESH
+           ============================================================ */
+        .fab-refresh {
+            position: fixed;
+            bottom: 80px;
+            right: 16px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #2b8c5e;
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 20px rgba(43, 140, 94, 0.35);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 150;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .fab-refresh:active { transform: scale(0.88); }
+        .fab-refresh.loading { transform: rotate(360deg); transition: transform 0.6s ease; }
+        .fab-refresh .spinner {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        .fab-refresh.loading .icon { display: none; }
+        .fab-refresh.loading .spinner { display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ============================================================
+           SKELETON LOADING
+           ============================================================ */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-skeleton) 4%, var(--bg-skeleton-shine) 25%, var(--bg-skeleton) 36%);
+            background-size: 1200px 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 8px;
+        }
+        @keyframes shimmer {
+            0% { background-position: -600px 0; }
+            100% { background-position: 600px 0; }
+        }
+        .skeleton-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 14px 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+        .skeleton-card .skeleton-line { height: 12px; border-radius: 6px; margin-bottom: 6px; }
+        .skeleton-card .skeleton-line.short { width: 60px; }
+        .skeleton-card .skeleton-line.medium { width: 120px; }
+        .skeleton-card .skeleton-line.long { width: 180px; }
+        .skeleton-card .skeleton-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .skeleton-card .skeleton-row .skeleton-box {
+            height: 32px;
+            width: 48px;
+            border-radius: 8px;
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-content {
+            border-radius: 24px;
+            border: none;
+            background: var(--bg-card-solid) !important;
+            transition: background 0.3s ease;
+        }
+        .modal-header-custom {
+            background: var(--bg-input) !important;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-header-custom h5 {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-primary) !important;
+            margin: 0;
+        }
+        .modal-body-custom {
+            padding: 14px;
+            background: transparent !important;
+        }
+        .modal-body-custom .imei-card {
+            background: var(--bg-card) !important;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .modal-body-custom .imei-card .imei-header {
+            padding: 8px 12px;
+            background: var(--bg-input) !important;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+        }
+        .modal-body-custom .imei-card .imei-header .imei-name {
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: var(--text-primary) !important;
+            flex: 1;
+        }
+        .modal-body-custom .imei-card .imei-header .badge {
+            font-size: 0.45rem;
+            font-weight: 700;
+            padding: 2px 8px;
+        }
+        .modal-body-custom .imei-table-wrap table {
+            font-size: 0.55rem;
+            margin-bottom: 0;
+        }
+        .modal-body-custom .imei-table-wrap table thead th {
+            background: #2d3a4a !important;
+            color: #e8edf4 !important;
+            font-size: 0.45rem;
+            text-transform: uppercase;
+            padding: 5px 8px;
+            border: none;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        .modal-body-custom .imei-table-wrap table tbody td {
+            padding: 5px 8px;
+            font-size: 0.55rem;
+            border-color: var(--border-color);
+            color: var(--text-secondary) !important;
+            background: transparent !important;
+            font-weight: 600;
+        }
+        .modal-body-custom .imei-table-wrap table tbody td .imei-code {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-primary) !important;
+            cursor: pointer;
+            user-select: all !important;
+            -webkit-user-select: all !important;
+        }
+        .modal-body-custom .imei-table-wrap table tbody td .badge-aging-soft {
+            font-size: 0.45rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            font-weight: 700;
+        }
+        .badge-aging-soft.aging-sold { background: #d4edda; color: #155724; }
+        .badge-aging-soft.aging-na { background: var(--bg-input); color: var(--text-muted); }
+        .badge-aging-soft.aging-normal { background: #d4edda; color: #155724; }
+        .badge-aging-soft.aging-slow { background: #fff3cd; color: #856404; }
+        .badge-aging-soft.aging-critical { background: #ffe5cc; color: #a64d00; }
+        .badge-aging-soft.aging-dead { background: #f8d7da; color: #721c24; }
+
+        [data-theme="dark"] .modal-content { background: var(--bg-card-solid) !important; }
+        [data-theme="dark"] .modal-header-custom { background: var(--bg-input) !important; }
+        [data-theme="dark"] .modal-body-custom .imei-card { background: var(--bg-card) !important; }
+        [data-theme="dark"] .modal-body-custom .imei-card .imei-header { background: var(--bg-input) !important; }
+        [data-theme="dark"] .modal-body-custom .imei-table-wrap table tbody td { color: #c8d2e0 !important; }
+        [data-theme="dark"] .modal-body-custom .imei-table-wrap table tbody td .imei-code { color: #e8edf4 !important; }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 480px) {
+            .navbar-app .brand .title { font-size: 0.75rem; }
+            .navbar-app .brand .icon { width: 30px; height: 30px; font-size: 0.85rem; }
+            .kpi-sticky-wrapper .kpi-mini { padding: 6px 10px; min-width: 64px; }
+            .kpi-sticky-wrapper .kpi-mini .value { font-size: 0.8rem; }
+            .customer-card .main { padding: 10px 12px; }
+            .customer-card .main .left .name { font-size: 0.75rem; }
+            .customer-card .main .stats .stat .num { font-size: 0.7rem; }
+            .customer-card .main .stats { gap: 6px; }
+            .bottom-nav .nav-item { font-size: 0.4rem; padding: 2px 8px; }
+            .bottom-nav .nav-item i { font-size: 1rem; }
+            .fab-refresh { width: 44px; height: 44px; font-size: 1rem; bottom: 72px; right: 12px; }
+            .search-bar { padding: 8px 12px; }
+            .search-bar input { font-size: 0.7rem; }
+            .main-content { padding: 0 8px 8px; }
+            .chip { font-size: 0.5rem; padding: 3px 10px; }
+            .worst-item .name { font-size: 0.5rem; }
+            .modal-dialog { margin: 8px; }
+        }
+        @media (max-width: 380px) {
+            .kpi-sticky-wrapper .kpi-mini { padding: 4px 8px; min-width: 54px; }
+            .kpi-sticky-wrapper .kpi-mini .value { font-size: 0.7rem; }
+            .kpi-sticky-wrapper .kpi-mini .label { font-size: 0.4rem; }
+            .customer-card .main .left .name { font-size: 0.65rem; }
+            .customer-card .main .stats .stat .num { font-size: 0.6rem; }
+        }
+        @media (min-width: 601px) {
+            .main-content { max-width: 640px; }
+            .kpi-sticky-wrapper .kpi-mini { min-width: 100px; }
+            .kpi-sticky-wrapper .kpi-mini .value { font-size: 1.1rem; }
+        }
+        @media (max-height: 500px) and (orientation: landscape) {
+            .kpi-sticky-wrapper { top: 48px; padding: 4px 8px; }
+            .kpi-sticky-wrapper .kpi-mini { padding: 4px 8px; min-width: 56px; }
+            .kpi-sticky-wrapper .kpi-mini .value { font-size: 0.7rem; }
+            .customer-card .main { padding: 6px 10px; }
+            .customer-card .main .left .name { font-size: 0.65rem; }
+            .customer-card .body-collapse .inner { padding: 2px 10px 6px; }
+            .bottom-nav { padding: 2px 0; }
+            .bottom-nav .nav-item { padding: 2px 6px; }
+            .bottom-nav .nav-item i { font-size: 0.9rem; }
+            .fab-refresh { width: 36px; height: 36px; font-size: 0.8rem; bottom: 56px; right: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen">
+        <div class="loader-wrapper">
+            <div class="loader-icon">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="20" width="10" height="30" rx="2" class="fill-primary">
+                        <animate attributeName="height" values="30;40;30" dur="0.8s" repeatCount="indefinite"/>
+                    </rect>
+                    <rect x="25" y="12" width="10" height="38" rx="2" class="fill-secondary">
+                        <animate attributeName="height" values="38;48;38" dur="0.8s" repeatCount="indefinite" begin="0.15s"/>
+                    </rect>
+                    <rect x="40" y="18" width="10" height="32" rx="2" class="fill-primary">
+                        <animate attributeName="height" values="32;42;32" dur="0.8s" repeatCount="indefinite" begin="0.3s"/>
+                    </rect>
+                </svg>
+            </div>
+            <div class="loader-title">Apple Coverage</div>
+            <div class="loader-subtitle">Mobile Channel Inventory Monitoring</div>
+            <div class="loader-progress">
+                <div class="loader-progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar-app">
+        <a class="brand" href="#">
+            <div class="icon"><i class="fab fa-apple"></i></div>
+            <div>
+                <span class="title">Coverage</span>
+                <span class="subtitle"><i class="fas fa-circle" style="color:#2b8c5e;font-size:0.25rem;"></i> Mobile</span>
+            </div>
+        </a>
+        <div class="navbar-actions">
+            <span class="sync-badge"><i class="far fa-clock"></i> <span id="syncTime">-</span></span>
+            <button class="btn-icon" onclick="toggleDarkMode()" title="Mode Malam">
+                <i class="fas fa-moon" id="darkIcon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- STICKY KPI -->
+    <div class="kpi-sticky-wrapper">
+        <div class="kpi-scroll">
+            <div class="kpi-mini">
+                <div class="label"><i class="fas fa-chart-line me-1"></i>Sell Thru</div>
+                <div class="value" id="kpiSellThru">0</div>
+            </div>
+            <div class="kpi-mini">
+                <div class="label"><i class="fas fa-store-alt me-1"></i>Sell Out</div>
+                <div class="value text-success" id="kpiSellOut">0</div>
+            </div>
+            <div class="kpi-mini">
+                <div class="label"><i class="fas fa-boxes me-1"></i>Stock CI</div>
+                <div class="value" id="kpiStockCI">0</div>
+            </div>
+            <div class="kpi-mini">
+                <div class="label"><i class="fas fa-clock me-1"></i>Avg WOS</div>
+                <div class="value" id="kpiAvgWOS">0</div>
+            </div>
+            <div class="kpi-mini" style="min-width:60px;">
+                <div class="label"><i class="fas fa-tag me-1"></i>Item</div>
+                <div class="value" id="kpiItemCount">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <!-- SEARCH BAR -->
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Cari Customer..." oninput="handleSearch()">
+            <button class="clear-btn" id="clearBtn" onclick="clearSearch()"><i class="fas fa-times-circle"></i></button>
+        </div>
+
+        <!-- QUICK FILTER CHIPS -->
+        <div class="chips-wrapper" id="chipsContainer">
+            <span class="chip active" data-depo="" onclick="filterChip(this, '')">All</span>
+        </div>
+
+        <!-- WORST WOS CARD -->
+        <div class="worst-wos-card" id="worstWosCard">
+            <div class="header">
+                <span class="title"><i class="fas fa-triangle-exclamation"></i> Top 5 Worst WOS</span>
+                <span class="badge-count" id="worstCount">0</span>
+            </div>
+            <div class="worst-wos-list" id="worstWosList"></div>
+        </div>
+
+        <!-- CUSTOMER CARDS -->
+        <div id="customerCardsContainer"></div>
+
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="summary" onclick="switchTab('summary')">
+            <i class="fas fa-chart-simple"></i>
+            <span>Summary</span>
+        </button>
+        <button class="nav-item" data-tab="wos" onclick="switchTab('wos')">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>WOS</span>
+            <span class="badge-dot" id="wosBadge" style="display:none;"></span>
+        </button>
+        <button class="nav-item" data-tab="more" onclick="switchTab('more')">
+            <i class="fas fa-ellipsis-h"></i>
+            <span>More</span>
+        </button>
+    </div>
+
+    <!-- FLOATING ACTION BUTTON - REFRESH -->
+    <button class="fab-refresh" id="fabRefresh" onclick="fetchData()">
+        <span class="icon"><i class="fas fa-sync"></i></span>
+        <span class="spinner"></span>
+    </button>
+
+    <!-- MODAL DETAIL -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:520px;margin:10px;">
+            <div class="modal-content">
+                <div class="modal-header-custom d-flex align-items-center justify-content-between">
+                    <h5 id="modalTitle"><i class="fas fa-circle-info me-2"></i>Detail SKU</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body-custom" id="modalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LOKASI SKU -->
+    <div class="modal fade" id="skuLocationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:520px;margin:10px;">
+            <div class="modal-content">
+                <div class="modal-header-custom d-flex align-items-center justify-content-between">
+                    <h5 id="skuLocationTitle"><i class="fas fa-map-pin me-2"></i>Lokasi SKU</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body-custom" id="skuLocationBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+    </script>
+    <script>
+        // ============================================================
+        // PROTEKSI
+        // ============================================================
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'PrintScreen' || e.keyCode === 44 || e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault(); e.stopPropagation(); return false;
+            }
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P')) {
+                e.preventDefault(); return false;
+            }
+            if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J')) {
+                e.preventDefault(); return false;
+            }
+        });
+        document.addEventListener('copy', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('cut', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('paste', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; });
+
+        // ============================================================
+        // VARIABLES
+        // ============================================================
+        var rawData = [];
+        var filteredData = [];
+        var searchQuery = '';
+        var selectedChip = '';
+        var myModal = new bootstrap.Modal(document.getElementById('detailModal'));
+        var locationModal = new bootstrap.Modal(document.getElementById('skuLocationModal'));
+        var isDarkMode = false;
+        var isDataLoaded = false;
+
+        // ============================================================
+        // LOADING
+        // ============================================================
+        function updateProgress(percent) {
+            var progressBar = document.getElementById('progressBar');
+            if (progressBar) progressBar.style.width = Math.min(percent, 100) + '%';
+        }
+
+        function hideLoadingScreen() {
+            var loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) loadingScreen.classList.add('hidden');
+        }
+
+        // ============================================================
+        // DARK MODE - Auto detect system
+        // ============================================================
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+            var icon = document.getElementById('darkIcon');
+            icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+            localStorage.setItem('darkMode', isDarkMode ? 'true' : 'false');
+        }
+
+        function detectSystemTheme() {
+            var saved = localStorage.getItem('darkMode');
+            if (saved !== null) {
+                isDarkMode = saved === 'true';
+            } else {
+                isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+            document.getElementById('darkIcon').className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // ============================================================
+        // PULL TO REFRESH
+        // ============================================================
+        var pullStartY = 0;
+        var isPulling = false;
+
+        document.addEventListener('touchstart', function(e) {
+            if (window.scrollY === 0) {
+                pullStartY = e.touches[0].clientY;
+                isPulling = true;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function(e) {
+            if (isPulling && window.scrollY === 0) {
+                var deltaY = e.touches[0].clientY - pullStartY;
+                if (deltaY > 60) {
+                    isPulling = false;
+                    fetchData();
+                }
+            }
+        }, { passive: true });
+
+        // ============================================================
+        // BOTTOM NAVIGATION
+        // ============================================================
+        function switchTab(tab) {
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(function(el) {
+                el.classList.toggle('active', el.dataset.tab === tab);
+            });
+            // Scroll ke bagian tertentu
+            if (tab === 'dashboard') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (tab === 'summary') {
+                document.getElementById('customerCardsContainer').scrollIntoView({ behavior: 'smooth' });
+            } else if (tab === 'wos') {
+                document.getElementById('worstWosCard').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // ============================================================
+        // SEARCH
+        // ============================================================
+        function handleSearch() {
+            var input = document.getElementById('searchInput');
+            searchQuery = input.value.toLowerCase().trim();
+            document.getElementById('clearBtn').classList.toggle('show', searchQuery.length > 0);
+            applyAllFilters();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            document.getElementById('clearBtn').classList.remove('show');
+            applyAllFilters();
+        }
+
+        // ============================================================
+        // CHIPS FILTER
+        // ============================================================
+        function filterChip(el, depo) {
+            document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+            el.classList.add('active');
+            selectedChip = depo;
+            applyAllFilters();
+        }
+
+        function setupChips(depos) {
+            var container = document.getElementById('chipsContainer');
+            container.innerHTML = '<span class="chip active" data-depo="" onclick="filterChip(this, \'\')">All</span>';
+            var uniqueDepos = [];
+            depos.forEach(function(d) {
+                if (d && uniqueDepos.indexOf(d) === -1) uniqueDepos.push(d);
+            });
+            uniqueDepos.sort();
+            uniqueDepos.forEach(function(d) {
+                container.innerHTML += `<span class="chip" data-depo="${d}" onclick="filterChip(this, '${d}')">${d}</span>`;
+            });
+        }
+
+        // ============================================================
+        // APPLY ALL FILTERS
+        // ============================================================
+        function applyAllFilters() {
+            var selectedDepo = document.getElementById('filterDepo') ? document.getElementById('filterDepo').value : '';
+            var selectedCust = document.getElementById('filterCustomer') ? document.getElementById('filterCustomer').value : '';
+            var selectedKat = document.getElementById('filterKategori') ? document.getElementById('filterKategori').value : '';
+            var selectedBarang = document.getElementById('filterBarang') ? document.getElementById('filterBarang').value : '';
+
+            // Gunakan chip filter jika ada
+            var chipDepo = selectedChip || '';
+
+            filteredData = [];
+            rawData.forEach(function(row) {
+                var matchDepo = !chipDepo || row.depo === chipDepo;
+                var matchSearch = !searchQuery || row.customer.toLowerCase().includes(searchQuery);
+                if (matchDepo && matchSearch) {
+                    filteredData.push(row);
+                }
+            });
+
+            renderCustomerCards(filteredData);
+            updateKPIFromData(filteredData);
+            updateWorstWos(filteredData);
+            document.getElementById('kpiItemCount').innerText = filteredData.length;
+        }
+
+        // ============================================================
+        // MAIN
+        // ============================================================
+        window.addEventListener('DOMContentLoaded', function() {
+            detectSystemTheme();
+            updateProgress(10);
+            setTimeout(function() { updateProgress(30); }, 300);
+            setTimeout(function() { updateProgress(50); }, 600);
+            setTimeout(function() { updateProgress(70); }, 1000);
+            setTimeout(function() { updateProgress(85); }, 1400);
+            fetchData();
+        });
+
+        function fetchData() {
+            var fab = document.getElementById('fabRefresh');
+            fab.classList.add('loading');
+
+            google.script.run
+                .withSuccessHandler(function(response) {
+                    updateProgress(95);
+                    fab.classList.remove('loading');
+                    if (response && response.success) {
+                        rawData = response.rows || [];
+                        document.getElementById('syncTime').innerText = response.lastSync || '-';
+
+                        // Setup chips
+                        var depos = [];
+                        rawData.forEach(function(r) { if (r.depo && depos.indexOf(r.depo) === -1) depos.push(r.depo); });
+                        setupChips(depos);
+
+                        // KPI
+                        var kpi = response.kpi || {};
+                        if (!kpi.avgWOS || kpi.avgWOS === 0) {
+                            var totalWOS = 0,
+                                countWOS = 0;
+                            rawData.forEach(function(row) {
+                                if (row.wos && row.wos > 0) { totalWOS += parseFloat(row.wos);
+                                    countWOS++; }
+                                if (row.barang && Array.isArray(row.barang)) {
+                                    row.barang.forEach(function(b) {
+                                        if (b.wos && b.wos > 0) { totalWOS += parseFloat(b.wos);
+                                            countWOS++; }
+                                    });
+                                }
+                            });
+                            kpi.avgWOS = countWOS > 0 ? (totalWOS / countWOS).toFixed(2) : 0;
+                        }
+
+                        // Set filtered data
+                        filteredData = rawData.slice();
+                        updateKPI(kpi);
+                        renderCustomerCards(filteredData);
+                        updateWorstWos(filteredData);
+                        document.getElementById('kpiItemCount').innerText = filteredData.length;
+
+                        updateProgress(100);
+                        setTimeout(function() { hideLoadingScreen(); }, 300);
+                        isDataLoaded = true;
+                    } else {
+                        updateProgress(100);
+                        hideLoadingScreen();
+                        alert("Gagal load data: " + (response ? response.error : 'Unknown Error'));
+                    }
+                })
+                .withFailureHandler(function(err) {
+                    fab.classList.remove('loading');
+                    updateProgress(100);
+                    hideLoadingScreen();
+                    alert("Koneksi Error: " + err.message);
+                })
+                .loadDashboard();
+        }
+
+        // ============================================================
+        // UPDATE KPI
+        // ============================================================
+        function updateKPI(kpi) {
+            document.getElementById('kpiSellThru').innerText = (kpi.sellThru || 0).toLocaleString('id-ID');
+            document.getElementById('kpiSellOut').innerText = (kpi.sellOut || 0).toLocaleString('id-ID');
+            document.getElementById('kpiStockCI').innerText = (kpi.stockCI || 0).toLocaleString('id-ID');
+            document.getElementById('kpiAvgWOS').innerText = (kpi.avgWOS || 0);
+        }
+
+        function updateKPIFromData(rows) {
+            var st = 0,
+                so = 0,
+                ci = 0,
+                totalWOS = 0,
+                countWOS = 0;
+            rows.forEach(function(row) {
+                st += row.sellThru || 0;
+                so += row.sellOut || 0;
+                ci += row.stockCI || 0;
+                if (row.wos && row.wos > 0) { totalWOS += parseFloat(row.wos);
+                    countWOS++; }
+                if (row.barang && Array.isArray(row.barang)) {
+                    row.barang.forEach(function(b) {
+                        if (b.wos && b.wos > 0) { totalWOS += parseFloat(b.wos);
+                            countWOS++; }
+                    });
+                }
+            });
+            document.getElementById('kpiSellThru').innerText = st.toLocaleString('id-ID');
+            document.getElementById('kpiSellOut').innerText = so.toLocaleString('id-ID');
+            document.getElementById('kpiStockCI').innerText = ci.toLocaleString('id-ID');
+            var avgWOS = countWOS > 0 ? (totalWOS / countWOS).toFixed(2) : 0;
+            document.getElementById('kpiAvgWOS').innerText = avgWOS;
+        }
+
+        // ============================================================
+        // WOS BADGE
+        // ============================================================
+        function getWosBadge(wosValue, stockValue) {
+            var val = parseFloat(wosValue);
+            var stock = parseInt(stockValue) || 0;
+            if (stock > 0 && (val === 0 || isNaN(val))) return '<span class="wos-badge-mini bg-danger">99+</span>';
+            if (isNaN(val)) return '<span class="wos-badge-mini bg-secondary">N/A</span>';
+            if (val < 4) return '<span class="wos-badge-mini bg-success">' + val + '</span>';
+            else if (val >= 4 && val <= 5) return '<span class="wos-badge-mini bg-warning">' + val + '</span>';
+            else return '<span class="wos-badge-mini bg-danger">' + val + '</span>';
+        }
+
+        function getStockClass(stockVal) {
+            return parseInt(stockVal) === 0 ? 'text-danger' : '';
+        }
+
+        // ============================================================
+        // UPDATE WORST WOS
+        // ============================================================
+        function updateWorstWos(rows) {
+            var list = document.getElementById('worstWosList');
+            var countEl = document.getElementById('worstCount');
+
+            var skuMap = {};
+            rows.forEach(function(row) {
+                if (row.barang && Array.isArray(row.barang)) {
+                    row.barang.forEach(function(b) {
+                        if (b.nama) {
+                            var wosVal = parseFloat(b.wos || 0);
+                            var stockVal = parseInt(b.stockCI || 0);
+                            if (stockVal > 0 && !isNaN(wosVal) && wosVal > 0) {
+                                if (!skuMap[b.nama] || wosVal > skuMap[b.nama]) {
+                                    skuMap[b.nama] = wosVal;
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+
+            var skuList = [];
+            for (var key in skuMap) { skuList.push({ nama: key, wos: skuMap[key] }); }
+            skuList.sort(function(a, b) { return b.wos - a.wos; });
+            var top5 = skuList.slice(0, 5);
+
+            countEl.innerText = skuList.length + ' SKU';
+
+            if (top5.length === 0) {
+                list.innerHTML = '<div class="worst-empty">Tidak ada data SKU dengan stok > 0</div>';
+                return;
+            }
+
+            var html = '';
+            top5.forEach(function(sku, idx) {
+                html += `
+                    <div class="worst-item" onclick="showSkuLocation('${sku.nama}')">
+                        <div class="left">
+                            <span class="rank">#${idx+1}</span>
+                            <span class="name">${sku.nama}</span>
+                        </div>
+                        <span class="wos-value">${sku.wos.toFixed(1)}w</span>
+                        <span class="arrow"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+
+            // Update badge di bottom nav
+            var badge = document.getElementById('wosBadge');
+            if (top5.length > 0) {
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // ============================================================
+        // SHOW SKU LOCATION
+        // ============================================================
+        function showSkuLocation(skuName) {
+            var locations = [];
+            rawData.forEach(function(row) {
+                if (row.barang && Array.isArray(row.barang)) {
+                    row.barang.forEach(function(b) {
+                        if (b.nama === skuName) {
+                            var wosVal = parseFloat(b.wos || 0);
+                            var stockVal = parseInt(b.stockCI || 0);
+                            if (stockVal > 0 && !isNaN(wosVal) && wosVal > 0) {
+                                locations.push({
+                                    depo: row.depo,
+                                    customer: row.customer,
+                                    wos: wosVal,
+                                    stockCI: stockVal
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+            locations.sort(function(a, b) { return b.wos - a.wos; });
+
+            document.getElementById('skuLocationTitle').innerHTML =
+                `<i class="fas fa-map-pin me-2"></i>Lokasi SKU: <strong>${skuName}</strong> <span style="font-size:0.5rem;font-weight:400;color:var(--text-muted);margin-left:6px;">(${locations.length} lokasi)</span>`;
+
+            var bodyHtml = '';
+            if (locations.length === 0) {
+                bodyHtml =
+                    `<div class="text-center text-muted py-4" style="font-size:0.7rem;">SKU tidak ditemukan</div>`;
+            } else {
+                bodyHtml = `
+                    <div style="margin-bottom:6px;font-size:0.5rem;color:var(--text-muted);padding:0 4px;">
+                        <i class="fas fa-info-circle"></i> Customer dengan stok SKU ini
+                    </div>
+                    <div style="background:var(--bg-card);border-radius:12px;overflow:hidden;border:1px solid var(--border-color);">
+                        <div style="display:grid;grid-template-columns:1fr 1fr 0.6fr 0.6fr;padding:5px 10px;background:var(--bg-input);font-size:0.45rem;font-weight:700;color:var(--text-muted);border-bottom:1px solid var(--border-color);">
+                            <span>Depo</span>
+                            <span>Customer</span>
+                            <span class="text-center">CI</span>
+                            <span class="text-center">WOS</span>
+                        </div>
+                `;
+                locations.forEach(function(loc) {
+                    bodyHtml += `
+                        <div style="display:grid;grid-template-columns:1fr 1fr 0.6fr 0.6fr;padding:5px 10px;border-bottom:1px solid var(--border-color);font-size:0.55rem;color:var(--text-primary);">
+                            <span style="font-weight:600;">${loc.depo}</span>
+                            <span>${loc.customer}</span>
+                            <span class="text-center" style="font-weight:600;color:#e6a020;">${loc.stockCI}</span>
+                            <span class="text-center" style="background:rgba(220,53,69,0.08);padding:1px 8px;border-radius:8px;font-weight:700;color:#dc3545;font-size:0.5rem;">${loc.wos.toFixed(1)}w</span>
+                        </div>
+                    `;
+                });
+                bodyHtml += `</div>`;
+            }
+            document.getElementById('skuLocationBody').innerHTML = bodyHtml;
+            locationModal.show();
+        }
+
+        // ============================================================
+        // RENDER CUSTOMER CARDS
+        // ============================================================
+        function renderCustomerCards(rows) {
+            var container = document.getElementById('customerCardsContainer');
+            container.innerHTML = '';
+
+            if (rows.length === 0) {
+                container.innerHTML = `
+                    <div style="background:var(--bg-card);border-radius:var(--radius-card);padding:30px 20px;text-align:center;border:1px solid var(--border-color);">
+                        <i class="fas fa-inbox" style="font-size:1.8rem;color:var(--text-muted);opacity:0.3;"></i>
+                        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;">Data tidak ditemukan</p>
+                    </div>
+                `;
+                return;
+            }
+
+            var grouped = {};
+            rows.forEach(function(r) {
+                var key = r.depo + "|" + r.customer;
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        depo: r.depo,
+                        customer: r.customer,
+                        sellThru: 0,
+                        sellOut: 0,
+                        stockCI: 0,
+                        avgSellOutWeekly: 0,
+                        kategoriList: []
+                    };
+                }
+                grouped[key].sellThru += r.sellThru || 0;
+                grouped[key].sellOut += r.sellOut || 0;
+                grouped[key].stockCI += r.stockCI || 0;
+                grouped[key].avgSellOutWeekly += r.avgSellOutWeekly || 0;
+                grouped[key].kategoriList.push({
+                    kategori: r.kategori,
+                    sellThru: r.sellThru || 0,
+                    sellOut: r.sellOut || 0,
+                    stockCI: r.stockCI || 0,
+                    wos: r.wos || 0,
+                    originalIndex: r.originalIndex !== undefined ? r.originalIndex : rawData.indexOf(r),
+                    isExcluded: r.isExcluded || false
+                });
+            });
+
+            var cardHtml = '';
+            var cardIndex = 0;
+            for (var key in grouped) {
+                var g = grouped[key];
+                cardIndex++;
+                var collapseId = "cc" + cardIndex;
+
+                var customerWos = g.avgSellOutWeekly > 0 ?
+                    parseFloat((g.stockCI / g.avgSellOutWeekly).toFixed(2)) :
+                    (g.stockCI > 0 ? 99.9 : 0);
+                var wosBadge = getWosBadge(customerWos, g.stockCI);
+                var stockClass = getStockClass(g.stockCI);
+
+                cardHtml += `
+                    <div class="customer-card" id="card_${collapseId}">
+                        <div class="main" onclick="toggleCustomerCard('${collapseId}')">
+                            <div class="left">
+                                <div class="depo"><i class="fas fa-map-marker-alt" style="font-size:0.35rem;margin-right:3px;"></i>${g.depo}</div>
+                                <div class="name">${g.customer}</div>
+                            </div>
+                            <div class="stats">
+                                <div class="stat">
+                                    <span class="num">${g.sellThru}</span>
+                                    <span class="lbl">ST</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="num text-success">${g.sellOut}</span>
+                                    <span class="lbl">SO</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="num ${stockClass}">${g.stockCI}</span>
+                                    <span class="lbl">CI</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="num">${wosBadge}</span>
+                                    <span class="lbl">WOS</span>
+                                </div>
+                            </div>
+                            <div class="chevron" id="chevron_${collapseId}">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="body-collapse" id="body_${collapseId}">
+                            <div class="inner">
+                `;
+
+                g.kategoriList.forEach(function(kat) {
+                    var katWosBadge = getWosBadge(kat.wos, kat.stockCI);
+                    var katStockClass = getStockClass(kat.stockCI);
+                    var excludedBadge = kat.isExcluded ? '<span class="badge-excluded">Excluded</span>' : '';
+
+                    cardHtml += `
+                        <div class="kategori-row" onclick="event.stopPropagation();showBarangDetail(${kat.originalIndex})">
+                            <div class="kname">
+                                <i class="fas fa-tag" style="font-size:0.4rem;opacity:0.5;"></i>
+                                ${kat.kategori} ${excludedBadge}
+                            </div>
+                            <div class="kstats">
+                                <span class="ks"><span class="num">${kat.sellThru}</span>ST</span>
+                                <span class="ks"><span class="num text-success">${kat.sellOut}</span>SO</span>
+                                <span class="ks"><span class="num ${katStockClass}">${kat.stockCI}</span>CI</span>
+                                <span class="ks">${katWosBadge}</span>
+                                <button class="btn-detail" onclick="event.stopPropagation();showBarangDetail(${kat.originalIndex})">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                cardHtml += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = cardHtml;
+        }
+
+        function toggleCustomerCard(collapseId) {
+            var body = document.getElementById('body_' + collapseId);
+            var chevron = document.getElementById('chevron_' + collapseId);
+            if (!body) return;
+            var isOpen = body.classList.contains('open');
+
+            if (isOpen) {
+                body.classList.remove('open');
+                if (chevron) chevron.classList.remove('open');
+            } else {
+                body.classList.add('open');
+                if (chevron) chevron.classList.add('open');
+            }
+        }
+
+        // ============================================================
+        // SHOW BARANG DETAIL
+        // ============================================================
+        function showBarangDetail(rowIndex) {
+            var row = rawData[rowIndex];
+            if (!row) {
+                for (var i = 0; i < rawData.length; i++) {
+                    if (rawData[i].originalIndex === rowIndex) { row = rawData[i]; break; }
+                }
+                if (!row) { alert('Data tidak ditemukan!'); return; }
+            }
+            document.getElementById('modalTitle').innerHTML =
+                `<i class="fas fa-circle-info me-2"></i>${row.depo || '-'} - ${row.customer || '-'} (${row.kategori || '-'})`;
+
+            var body = '';
+            var barangList = row.barang || [];
+            if (barangList.length === 0) {
+                body = '<div class="text-muted p-3" style="font-size:0.6rem;">Tidak ada detail SKU.</div>';
+            } else {
+                barangList.forEach(function(b) {
+                    var valWos = parseFloat(b.wos);
+                    var stockVal = parseInt(b.stockCI) || 0;
+                    var displayWos = b.wos;
+                    var wosClass = 'bg-dark';
+                    if (stockVal > 0 && (valWos === 0 || isNaN(valWos))) {
+                        displayWos = '99+';
+                        wosClass = 'bg-danger';
+                    }
+
+                    body += `
+                        <div class="imei-card">
+                            <div class="imei-header">
+                                <span class="imei-name">${b.nama}</span>
+                                <div class="imei-badges">
+                                    <span class="badge bg-primary">ST: ${b.sellThru}</span>
+                                    <span class="badge bg-success">SO: ${b.sellOut}</span>
+                                    <span class="badge bg-warning text-dark">CI: ${b.stockCI}</span>
+                                    <span class="badge ${wosClass}">WOS: ${displayWos}</span>
+                                </div>
+                            </div>
+                            <div class="imei-table-wrap">
+                                ${renderImeiTable(b.details)}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('modalBody').innerHTML = body;
+            myModal.show();
+        }
+
+        function renderImeiTable(details) {
+            if (!details || details.length === 0) {
+                return '<div class="text-muted p-2" style="font-size:0.55rem;">Tidak ada detail IMEI.</div>';
+            }
+            var html = `
+                <table class="table table-sm mb-0">
+                    <thead><tr>
+                        <th width="24">#</th>
+                        <th>IMEI</th>
+                        <th class="text-center" width="80">ST</th>
+                        <th class="text-center" width="70">Status</th>
+                        <th class="text-center" width="80">Aging</th>
+                    </tr></thead>
+                    <tbody>
+            `;
+            details.forEach(function(item, i) {
+                var statusBadge = '';
+                var st = String(item.status || '').toUpperCase().trim();
+                if (st === 'AKTIF') statusBadge = '<span class="badge bg-success" style="font-size:0.4rem;">AKTIF</span>';
+                else if (st === 'BELUM AKTIF') statusBadge =
+                    '<span class="badge bg-warning text-dark" style="font-size:0.4rem;">BELUM</span>';
+                else statusBadge = '<span class="badge bg-secondary" style="font-size:0.4rem;">-</span>';
+
+                var agingHtml = getAgingBadge(item.tanggal, item.status);
+
+                var tanggalST = '-';
+                if (item.tanggalST) tanggalST = formatTanggalST(item.tanggalST);
+                else if (item.tanggal_st) tanggalST = formatTanggalST(item.tanggal_st);
+                else if (item.tanggal_sellthru) tanggalST = formatTanggalST(item.tanggal_sellthru);
+                else if (item.sellThruDate) tanggalST = formatTanggalST(item.sellThruDate);
+                else if (item.tanggal) tanggalST = formatTanggalST(item.tanggal);
+
+                html += `
+                    <tr>
+                        <td class="text-muted text-center" style="font-size:0.45rem;">${i+1}</td>
+                        <td><span class="imei-code" title="Klik untuk select">${item.imei || '-'}</span></td>
+                        <td class="text-center" style="font-size:0.5rem;font-weight:600;">${tanggalST}</td>
+                        <td class="text-center">${statusBadge}</td>
+                        <td class="text-center">${agingHtml}</td>
+                    </tr>
+                `;
+            });
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function getAgingBadge(dateStr, status) {
+            var currentStatus = String(status || '-').toUpperCase().trim();
+            if (currentStatus === 'AKTIF') {
+                return `<span class="badge-aging-soft aging-sold">✔️ Terjual</span>`;
+            }
+            var itemDate = parseDateString(dateStr);
+            if (!itemDate) return `<span class="badge-aging-soft aging-na">N/A</span>`;
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            itemDate.setHours(0, 0, 0, 0);
+            var days = Math.floor((today - itemDate) / (1000 * 60 * 60 * 24));
+            if (days < 0) days = 0;
+
+            if (days <= 30) return `<span class="badge-aging-soft aging-normal">🟢 ${days} Hari</span>`;
+            else if (days <= 60) return `<span class="badge-aging-soft aging-slow">🟡 ${days} Hari</span>`;
+            else if (days <= 90) return `<span class="badge-aging-soft aging-critical">🟠 ${days} Hari</span>`;
+            else return `<span class="badge-aging-soft aging-dead">🔴 ${days} Hari</span>`;
+        }
+
+        function parseDateString(dateStr) {
+            if (!dateStr || typeof dateStr !== 'string') return null;
+            var months = { jan: 0, feb: 1, mar: 2, apr: 3, mei: 4, may: 4, jun: 5, jul: 6, agu: 7, aug: 7, sep: 8, okt: 9,
+                oct: 9, nov: 10, des: 11, dec: 11 };
+            var parts = dateStr.trim().split(/\s+/);
+            if (parts.length < 3) return null;
+            var day = parseInt(parts[0], 10);
+            var monthStr = parts[1].toLowerCase().substring(0, 3);
+            var year = parseInt(parts[2], 10);
+            var month = months[monthStr];
+            if (isNaN(day) || month === undefined || isNaN(year)) return null;
+            return new Date(year, month, day);
+        }
+
+        function formatTanggalST(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                var parts = dateStr.split('-');
+                if (parts.length === 3) {
+                    var day = parts[0].padStart(2, '0');
+                    var month = parts[1].padStart(2, '0');
+                    var year = parts[2];
+                    if (!isNaN(day) && !isNaN(month) && !isNaN(year) && year.length === 4) {
+                        return `${day}-${month}-${year}`;
+                    }
+                }
+                return dateStr;
+            } catch (e) { return dateStr || '-'; }
+        }
+
+        // ============================================================
+        // SKELETON LOADING
+        // ============================================================
+        function showSkeleton() {
+            var container = document.getElementById('customerCardsContainer');
+            var html = '';
+            for (var i = 0; i < 4; i++) {
+                html += `
+                    <div class="skeleton-card">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line long"></div>
+                        <div class="skeleton-row">
+                            <div class="skeleton-box"></div>
+                            <div class="skeleton-box"></div>
+                            <div class="skeleton-box"></div>
+                            <div class="skeleton-box"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+
+            // Skeleton untuk worst WOS
+            var worstList = document.getElementById('worstWosList');
+            var worstHtml = '';
+            for (var i = 0; i < 3; i++) {
+                worstHtml += `
+                    <div style="display:flex;align-items:center;gap:8px;padding:4px 8px;">
+                        <div class="skeleton" style="height:10px;width:20px;"></div>
+                        <div class="skeleton" style="height:10px;flex:1;"></div>
+                        <div class="skeleton" style="height:10px;width:30px;"></div>
+                    </div>
+                `;
+            }
+            worstList.innerHTML = worstHtml;
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        showSkeleton();
+        detectSystemTheme();
+    </script>
+</body>
+</html>
