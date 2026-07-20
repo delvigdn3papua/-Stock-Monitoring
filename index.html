@@ -1,12 +1,587 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <base target="_top">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apple Coverage Dashboard</title>
-  <?!= include('Dashboard'); ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Apple Coverage Monitoring</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ============================================================
+           GLOBAL STYLE
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ============================================================
+           LOADING CARD
+           ============================================================ */
+        .loading-container {
+            max-width: 420px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 48px 36px 40px 36px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.10);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #007aff, #00c6ff, #007aff);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Logo */
+        .logo {
+            font-size: 56px;
+            color: #007aff;
+            margin-bottom: 12px;
+        }
+
+        .app-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .app-sub {
+            font-size: 13px;
+            color: #8293a6;
+            font-weight: 500;
+            margin-bottom: 28px;
+        }
+
+        /* Spinner */
+        .spinner-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid #e9ecef;
+            border-top-color: #007aff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        /* Device Info */
+        .device-info {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 16px;
+            padding: 12px 0;
+            border-top: 1px solid #eef2f6;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .device-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .device-item i {
+            font-size: 14px;
+            color: #8293a6;
+        }
+
+        .device-item .badge-device {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-device.desktop {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .badge-device.mobile {
+            background: #fce8e6;
+            color: #d93025;
+        }
+
+        .badge-device.tablet {
+            background: #e6f4ea;
+            color: #1e8e3e;
+        }
+
+        /* Redirect Info */
+        .redirect-info {
+            font-size: 12px;
+            color: #8293a6;
+            margin-top: 8px;
+        }
+
+        .redirect-info i {
+            margin-right: 4px;
+        }
+
+        .redirect-info a {
+            color: #007aff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .redirect-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* Manual Override Buttons */
+        .manual-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-manual {
+            padding: 8px 18px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-manual:hover {
+            border-color: #007aff;
+            background: #e8f0fe;
+            color: #007aff;
+        }
+
+        .btn-manual.primary {
+            background: #007aff;
+            border-color: #007aff;
+            color: #fff;
+        }
+
+        .btn-manual.primary:hover {
+            background: #0066d6;
+            border-color: #0066d6;
+        }
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #0f172a 0%, #1a2332 100%);
+            }
+            .loading-container {
+                background: #1e293b;
+                box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+            }
+            .app-name {
+                color: #f8fafc;
+            }
+            .app-sub {
+                color: #94a3b8;
+            }
+            .spinner-text {
+                color: #cbd5e1;
+            }
+            .device-info {
+                border-color: #334155;
+            }
+            .device-item {
+                color: #cbd5e1;
+            }
+            .device-item i {
+                color: #94a3b8;
+            }
+            .redirect-info {
+                color: #94a3b8;
+            }
+            .btn-manual {
+                background: #1e293b;
+                border-color: #334155;
+                color: #cbd5e1;
+            }
+            .btn-manual:hover {
+                border-color: #007aff;
+                background: #1a2a3a;
+                color: #60a5fa;
+            }
+            .btn-manual.primary {
+                background: #007aff;
+                border-color: #007aff;
+                color: #fff;
+            }
+            .btn-manual.primary:hover {
+                background: #0066d6;
+                border-color: #0066d6;
+            }
+            .badge-device.desktop {
+                background: #1a2a3a;
+                color: #60a5fa;
+            }
+            .badge-device.mobile {
+                background: #3a1a1a;
+                color: #f87171;
+            }
+            .badge-device.tablet {
+                background: #1a3a2a;
+                color: #34a853;
+            }
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 480px) {
+            .loading-container {
+                padding: 32px 20px 28px 20px;
+                border-radius: 16px;
+            }
+            .logo {
+                font-size: 44px;
+            }
+            .app-name {
+                font-size: 18px;
+            }
+            .device-info {
+                flex-direction: column;
+                gap: 8px;
+                padding: 10px 0;
+            }
+            .device-item {
+                justify-content: center;
+            }
+            .manual-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn-manual {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
+
+    <div class="loading-container" id="loadingContainer">
+        <!-- Logo -->
+        <div class="logo">
+            <i class="fa-brands fa-apple"></i>
+        </div>
+        <div class="app-name">Apple Coverage Monitoring</div>
+        <div class="app-sub">Mendeteksi perangkat Anda...</div>
+
+        <!-- Spinner -->
+        <div class="spinner-wrapper">
+            <div class="spinner"></div>
+            <span class="spinner-text" id="statusText">Memeriksa perangkat...</span>
+        </div>
+
+        <!-- Device Info -->
+        <div class="device-info">
+            <div class="device-item">
+                <i class="fa-solid fa-desktop"></i>
+                <span>Desktop</span>
+                <span class="badge-device desktop" id="desktopBadge">✓</span>
+            </div>
+            <div class="device-item">
+                <i class="fa-solid fa-tablet-screen-button"></i>
+                <span>Tablet</span>
+                <span class="badge-device tablet" id="tabletBadge">○</span>
+            </div>
+            <div class="device-item">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+                <span>Mobile</span>
+                <span class="badge-device mobile" id="mobileBadge">○</span>
+            </div>
+        </div>
+
+        <!-- Redirect Info -->
+        <div class="redirect-info" id="redirectInfo">
+            <i class="fa-regular fa-arrow-right"></i>
+            Mengarahkan ke <span id="targetPage">Dashboard</span>...
+        </div>
+
+        <!-- Manual Override -->
+        <div class="manual-buttons">
+            <a href="Dashboard.html" class="btn-manual primary" id="btnDesktop">
+                <i class="fa-solid fa-desktop"></i> Desktop View
+            </a>
+            <a href="Mobile.html" class="btn-manual" id="btnMobile">
+                <i class="fa-solid fa-mobile-screen-button"></i> Mobile View
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MAIN SCRIPT - DETEKSI PERANGKAT
+         ============================================================ -->
+    <script>
+        // ============================================================
+        // 1. DETEKSI PERANGKAT
+        // ============================================================
+        function detectDevice() {
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+
+            // Deteksi Mobile (Android, iPhone, iPod, BlackBerry, Opera Mini, IEMobile)
+            var isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop|Mobile|webOS/i.test(ua);
+
+            // Deteksi Tablet (iPad, Android Tablet, Kindle, etc)
+            var isTablet = /iPad|Android(?!.*Mobile)|Kindle|Silk/i.test(ua);
+
+            // Deteksi jika lebar layar kecil (fallback)
+            var isSmallScreen = window.innerWidth < 768;
+
+            // Jika iPad dengan lebar kecil, anggap tablet
+            if (isTablet && isSmallScreen) {
+                isTablet = true;
+                isMobile = false;
+            }
+
+            // Jika HP dengan lebar besar, tetap mobile
+            if (isMobile && !isTablet && window.innerWidth >= 768) {
+                isMobile = true;
+            }
+
+            // Prioritaskan userAgent untuk akurasi
+            var deviceType = 'desktop';
+            if (isTablet) {
+                deviceType = 'tablet';
+            } else if (isMobile) {
+                deviceType = 'mobile';
+            } else if (isSmallScreen) {
+                // Fallback: jika lebar layar kecil tapi userAgent tidak terdeteksi
+                deviceType = 'mobile';
+            }
+
+            return {
+                type: deviceType,
+                isMobile: deviceType === 'mobile' || deviceType === 'tablet',
+                isDesktop: deviceType === 'desktop',
+                isTablet: deviceType === 'tablet',
+                userAgent: ua,
+                screenWidth: window.innerWidth
+            };
+        }
+
+        // ============================================================
+        // 2. UPDATE UI
+        // ============================================================
+        function updateUI(device) {
+            var desktopBadge = document.getElementById('desktopBadge');
+            var tabletBadge = document.getElementById('tabletBadge');
+            var mobileBadge = document.getElementById('mobileBadge');
+            var statusText = document.getElementById('statusText');
+            var targetPage = document.getElementById('targetPage');
+            var redirectInfo = document.getElementById('redirectInfo');
+
+            // Reset semua badge
+            desktopBadge.textContent = '○';
+            tabletBadge.textContent = '○';
+            mobileBadge.textContent = '○';
+
+            // Update badge sesuai device
+            if (device.type === 'desktop') {
+                desktopBadge.textContent = '✓';
+                statusText.textContent = 'Desktop terdeteksi ✓';
+                targetPage.textContent = 'Dashboard (Desktop)';
+            } else if (device.type === 'tablet') {
+                tabletBadge.textContent = '✓';
+                statusText.textContent = 'Tablet terdeteksi ✓';
+                targetPage.textContent = 'Dashboard (Tablet)';
+            } else {
+                mobileBadge.textContent = '✓';
+                statusText.textContent = 'Mobile terdeteksi ✓';
+                targetPage.textContent = 'Mobile View';
+            }
+
+            // Tampilkan info device
+            console.log('📱 Device detected:', device);
+        }
+
+        // ============================================================
+        // 3. REDIRECT
+        // ============================================================
+        function redirectToAppropriatePage(device) {
+            var targetUrl = '';
+            var delay = 1500; // ms
+
+            if (device.type === 'desktop' || device.type === 'tablet') {
+                // Desktop & Tablet → Dashboard
+                targetUrl = 'Dashboard.html';
+            } else {
+                // Mobile → Mobile.html
+                targetUrl = 'Mobile.html';
+            }
+
+            // Update status
+            var statusText = document.getElementById('statusText');
+            var redirectInfo = document.getElementById('redirectInfo');
+
+            statusText.textContent = 'Mengarahkan ke ' + targetUrl + '...';
+            redirectInfo.innerHTML = '<i class="fa-regular fa-arrow-right"></i> Mengarahkan ke <strong>' + targetUrl + '</strong>...';
+
+            // Redirect setelah delay
+            setTimeout(function() {
+                window.location.href = targetUrl;
+            }, delay);
+        }
+
+        // ============================================================
+        // 4. CEK APAKAH SUDAH DI HALAMAN YANG BENAR
+        // ============================================================
+        function isOnCorrectPage(device) {
+            var currentPath = window.location.pathname;
+            var currentFile = currentPath.split('/').pop() || 'index.html';
+
+            if (device.type === 'desktop' || device.type === 'tablet') {
+                // Jika di Mobile.html tapi seharusnya di Dashboard
+                if (currentFile === 'Mobile.html') {
+                    return false;
+                }
+                // Jika di index.html, perlu redirect
+                if (currentFile === 'index.html' || currentFile === '') {
+                    return false;
+                }
+            } else {
+                // Mobile: jika di Dashboard.html atau index.html, redirect ke Mobile.html
+                if (currentFile === 'Dashboard.html' || currentFile === 'index.html' || currentFile === '') {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // ============================================================
+        // 5. MAIN EXECUTION
+        // ============================================================
+        (function main() {
+            // Deteksi perangkat
+            var device = detectDevice();
+            console.log('🔍 Device detected:', device);
+
+            // Update UI
+            updateUI(device);
+
+            // Cek apakah sudah di halaman yang benar
+            if (isOnCorrectPage(device)) {
+                // Sudah di halaman yang benar, tidak perlu redirect
+                var statusText = document.getElementById('statusText');
+                statusText.textContent = 'Sudah di halaman yang benar ✓';
+                var redirectInfo = document.getElementById('redirectInfo');
+                redirectInfo.innerHTML = '<i class="fa-regular fa-circle-check" style="color: #28a745;"></i> Anda sudah berada di halaman yang tepat.';
+                return;
+            }
+
+            // Redirect setelah delay
+            redirectToAppropriatePage(device);
+        })();
+
+        // ============================================================
+        // 6. HANDLE RESIZE (Deteksi ulang jika layar berubah)
+        // ============================================================
+        var resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                // Cek ulang perangkat
+                var device = detectDevice();
+
+                // Cek apakah perlu redirect ulang (misal: user resize dari desktop ke mobile)
+                var currentPath = window.location.pathname;
+                var currentFile = currentPath.split('/').pop() || 'index.html';
+
+                var shouldRedirect = false;
+                if ((device.type === 'desktop' || device.type === 'tablet') && currentFile === 'Mobile.html') {
+                    shouldRedirect = true;
+                } else if (device.type === 'mobile' && (currentFile === 'Dashboard.html' || currentFile === 'index.html')) {
+                    shouldRedirect = true;
+                }
+
+                if (shouldRedirect) {
+                    console.log('🔄 Resize detected, redirecting...');
+                    redirectToAppropriatePage(device);
+                }
+            }, 500);
+        });
+
+        // ============================================================
+        // 7. HANDLE ORIENTATION CHANGE (Mobile)
+        // ============================================================
+        window.addEventListener('orientationchange', function() {
+            setTimeout(function() {
+                var device = detectDevice();
+                var currentPath = window.location.pathname;
+                var currentFile = currentPath.split('/').pop() || 'index.html';
+
+                // Jika saat ini di halaman yang salah untuk perangkat
+                if (device.type === 'mobile' && currentFile === 'Dashboard.html') {
+                    redirectToAppropriatePage(device);
+                } else if ((device.type === 'desktop' || device.type === 'tablet') && currentFile === 'Mobile.html') {
+                    redirectToAppropriatePage(device);
+                }
+            }, 600);
+        });
+    </script>
+
 </body>
 </html>
