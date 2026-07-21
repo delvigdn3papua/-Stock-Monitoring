@@ -2,24 +2,19 @@
  * =========================================================
  * APPLE COVERAGE DASHBOARD - REST API LAYER
  * 
- * Production Final v1.0.0
+ * Production Final v1.0.2
  * Business Rule Locked
  * 
  * Endpoints:
- * - ?action=dashboard      → JSON dashboard data
- * - ?action=v1/dashboard   → JSON dashboard data (versioned)
- * - ?action=health         → JSON health check
- * - ?action=version        → JSON version info
- * - ?v=1&action=dashboard  → JSON dashboard data (versioned)
- * - (no param)             → HTML API Landing page
+ * - ?action=dashboard        → JSON agregasi (tanpa details)
+ * - ?action=detail           → JSON detail IMEI (lazy loading)
+ * - ?action=health           → JSON health check
+ * - ?action=version          → JSON version info
+ * - (no param)               → HTML API Landing page
  * 
- * ARCHITECTURE:
- * GitHub Pages → fetch(API.gs) → Code.gs → Spreadsheet
- * 
- * SECURITY:
- * - error.stack TIDAK dikirim ke frontend
- * - cache-clear endpoint TIDAK tersedia di production
- * - version info hanya dari backend (source of truth)
+ * OPTIMIZATION:
+ * - Dashboard payload dikurangi (lazy loading details)
+ * - Detail endpoint untuk mengambil IMEI secara on-demand
  * =========================================================
  *******************************************************/
 
@@ -41,19 +36,19 @@ function doGet(e) {
         var action = (e && e.parameter && e.parameter.action) ? e.parameter.action.toLowerCase() : '';
         var version = (e && e.parameter && e.parameter.v) ? e.parameter.v : '';
 
-        // Versioned endpoint support
-        // ?v=1&action=dashboard
         if (version && action === 'dashboard') {
             action = 'v' + version + '/dashboard';
         }
 
         switch (action) {
             case 'dashboard':
-                return outputJson(loadDashboard());
+                return outputJson(loadDashboardOptimized());
 
             case 'v1/dashboard':
-                // Version 1 - same as current
-                return outputJson(loadDashboard());
+                return outputJson(loadDashboardOptimized());
+
+            case 'detail':
+                return outputJson(getDetailData(e.parameter));
 
             case 'version':
                 return outputJson({
@@ -70,7 +65,6 @@ function doGet(e) {
                 return outputJson(getHealthStatus());
 
             default:
-                // API Landing Page (HTML)
                 return getApiLandingPage();
         }
     } catch (error) {
@@ -78,12 +72,216 @@ function doGet(e) {
         if (CONFIG.DEBUG) {
             debugLog('[doGet] Stack: ' + error.stack);
         }
-        // ⚠️ SECURITY: Stack trace TIDAK dikirim ke frontend
         return outputJson({
             success: false,
             error: '[doGet] ' + error.toString()
         });
     }
+}
+
+// ============================================================
+// LOAD DASHBOARD OPTIMIZED - PANGGIL CODE.GS
+// ============================================================
+
+/**
+ * ==========================================================
+ * LOAD DASHBOARD OPTIMIZED
+ * Business Rule v1.0
+ * Do Not Modify Without Version Increment
+ * ==========================================================
+ * Memanggil loadDashboard() dari Code.gs dan menghapus details
+ * untuk mengurangi payload.
+ * @return {Object} Response object dengan data dashboard (tanpa details)
+ */
+function loadDashboardOptimized() {
+    debugLog("[loadDashboardOptimized] START");
+
+    try {
+        // Cek cache
+        var cached = CACHE.get(CACHE_KEY);
+        if (cached) {
+            try {
+                var parsed = JSON.parse(cached);
+                debugLog("[loadDashboardOptimized] ✅ Cache HIT");
+                if (parsed.rows) {
+                    parsed.rows = removeDetailsFromRows(parsed.rows);
+                }
+                return parsed;
+            } catch (e) {
+                debugLog("[loadDashboardOptimized] ⚠️ Cache parse error");
+                if (CONFIG.DEBUG) {
+                    debugLog("[loadDashboardOptimized] Cache error: " + e.toString());
+                }
+            }
+        }
+
+        // Panggil loadDashboard() dari Code.gs (business logic tetap sama)
+        var result = loadDashboard();
+
+        // Hapus details dari response
+        if (result && result.success && result.rows) {
+            result.rows = removeDetailsFromRows(result.rows);
+            
+            try {
+                var jsonString = JSON.stringify(result);
+                CACHE.put(CACHE_KEY, jsonString, CONFIG.CACHE_TTL);
+                debugLog("[loadDashboardOptimized] ✅ Cache SAVE for " + CONFIG.CACHE_TTL + "s");
+            } catch (e) {
+                debugLog("[loadDashboardOptimized] ⚠️ Cache save error: " + e.toString());
+                if (CONFIG.DEBUG) {
+                    debugLog("[loadDashboardOptimized] Cache save stack: " + e.stack);
+                }
+            }
+        }
+
+        return result;
+
+    } catch (error) {
+        debugLog("[loadDashboardOptimized] ERROR: " + error.toString());
+        if (CONFIG.DEBUG) {
+            debugLog("[loadDashboardOptimized] Stack: " + error.stack);
+        }
+        return {
+            success: false,
+            error: "[loadDashboardOptimized] " + error.toString()
+        };
+    }
+}
+
+// ============================================================
+// DETAIL ENDPOINT - LAZY LOADING IMEI
+// ============================================================
+
+/**
+ * ==========================================================
+ * GET DETAIL DATA
+ * Business Rule v1.0
+ * Do Not Modify Without Version Increment
+ * ==========================================================
+ * Ambil detail IMEI untuk customer + sku tertentu
+ * @param {Object} params - Parameter dari request
+ * @return {Object} Detail IMEI
+ */
+function getDetailData(params) {
+    debugLog("[getDetailData] START");
+
+    try {
+        var customer = params && params.customer ? decodeURIComponent(params.customer) : '';
+        var depo = params && params.depo ? decodeURIComponent(params.depo) : '';
+        var sku = params && params.sku ? decodeURIComponent(params.sku) : '';
+        var kategori = params && params.kategori ? decodeURIComponent(params.kategori) : '';
+
+        if (!customer || !depo || !sku) {
+            return {
+                success: false,
+                error: 'Missing required parameters: customer, depo, sku'
+            };
+        }
+
+        debugLog("[getDetailData] Customer: " + customer + ", Depo: " + depo + ", SKU: " + sku);
+
+        var ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+        var sh = ss.getSheetByName(CONFIG.SHEET_NAME);
+
+        if (!sh) {
+            return { success: false, error: "Sheet tidak ditemukan" };
+        }
+
+        var lastRow = sh.getLastRow();
+        if (lastRow <= 1) {
+            return { success: false, error: "Tidak ada data" };
+        }
+
+        var data = sh.getRange(2, 1, lastRow - 1, 12).getValues();
+        var details = [];
+
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        for (var i = 0; i < data.length; i++) {
+            var row = data[i];
+            var rowDepo = String(row[COL.DEPO] || '').trim();
+            var rowCustomer = String(row[COL.CUSTOMER] || '').trim();
+            var rowSku = String(row[COL.BARANG] || '').trim();
+            var rowKategori = String(row[COL.KATEGORI] || '').trim();
+
+            if (rowDepo === depo && rowCustomer === customer && rowSku === sku) {
+                if (kategori && rowKategori !== kategori) continue;
+
+                var serial = String(row[COL.SERIAL] || '').trim();
+                var coverageStr = String(row[COL.COVERAGE] || '').trim();
+                var sellThruDate = parseDate(row[COL.TANGGAL]);
+                var isValidCoverage = isCoverageValid(coverageStr);
+                var coverageDate = isValidCoverage ? parseDate(coverageStr) : null;
+
+                var isL4W = false;
+                if (isValidCoverage && coverageDate) {
+                    var diff = (today.getTime() - coverageDate.getTime()) / (1000 * 60 * 60 * 24);
+                    if (diff >= 0 && diff <= 27) {
+                        isL4W = true;
+                    }
+                }
+
+                details.push({
+                    imei: serial || '-',
+                    tanggalSellThru: formatDate(sellThruDate),
+                    coverage: coverageStr || '-',
+                    isValidCoverage: isValidCoverage,
+                    isL4W: isL4W,
+                    status: isValidCoverage ? 'Terjual' : 'Stock'
+                });
+            }
+        }
+
+        debugLog("[getDetailData] Found " + details.length + " IMEI details");
+
+        return {
+            success: true,
+            customer: customer,
+            depo: depo,
+            sku: sku,
+            kategori: kategori || '-',
+            details: details,
+            total: details.length
+        };
+
+    } catch (error) {
+        debugLog("[getDetailData] ERROR: " + error.toString());
+        if (CONFIG.DEBUG) {
+            debugLog("[getDetailData] Stack: " + error.stack);
+        }
+        return {
+            success: false,
+            error: "[getDetailData] " + error.toString()
+        };
+    }
+}
+
+// ============================================================
+// HELPER: REMOVE DETAILS FROM ROWS
+// ============================================================
+
+/**
+ * Remove details dari rows untuk memastikan cache bersih
+ * @param {Array} rows - Data rows
+ * @return {Array} Rows tanpa details
+ */
+function removeDetailsFromRows(rows) {
+    if (!rows || !Array.isArray(rows)) return rows;
+
+    for (var i = 0; i < rows.length; i++) {
+        if (rows[i].barang && Array.isArray(rows[i].barang)) {
+            for (var j = 0; j < rows[i].barang.length; j++) {
+                if (rows[i].barang[j].details) {
+                    delete rows[i].barang[j].details;
+                }
+                if (rows[i].barang[j].imeiCount === undefined) {
+                    rows[i].barang[j].imeiCount = 0;
+                }
+            }
+        }
+    }
+    return rows;
 }
 
 // ============================================================
@@ -105,11 +303,9 @@ function getHealthStatus() {
     var rowsCount = 0;
 
     try {
-        // Check cache
         var cached = CACHE.get(CACHE_KEY);
         cacheStatus = cached ? 'HIT' : 'MISS';
 
-        // Check spreadsheet
         var ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
         var sh = ss.getSheetByName(CONFIG.SHEET_NAME);
         if (sh) {
@@ -139,7 +335,6 @@ function getHealthStatus() {
         if (CONFIG.DEBUG) {
             debugLog('[getHealthStatus] Stack: ' + error.stack);
         }
-        // ⚠️ SECURITY: Stack trace TIDAK dikirim ke frontend
         return {
             success: false,
             status: 'ERROR',
@@ -351,7 +546,12 @@ function getApiLandingPage() {
             <div class="endpoint">
                 <span class="path">?action=dashboard</span>
                 <span class="method get">GET</span>
-                <span style="font-size:10px;color:#6a7f9a;">→ JSON</span>
+                <span style="font-size:10px;color:#6a7f9a;">→ JSON (tanpa details)</span>
+            </div>
+            <div class="endpoint">
+                <span class="path">?action=detail&customer=X&depo=Y&sku=Z</span>
+                <span class="method get">GET</span>
+                <span style="font-size:10px;color:#6a7f9a;">→ JSON (IMEI details)</span>
             </div>
             <div class="endpoint">
                 <span class="path">?action=health</span>
@@ -408,7 +608,6 @@ function outputJson(data) {
         if (CONFIG.DEBUG) {
             debugLog('[outputJson] Stack: ' + error.stack);
         }
-        // ⚠️ SECURITY: Stack trace TIDAK dikirim ke frontend
         return ContentService
             .createTextOutput(JSON.stringify({
                 success: false,
@@ -419,7 +618,7 @@ function outputJson(data) {
 }
 
 // ============================================================
-// CACHE CLEAR - DEVELOPMENT ONLY (TIDAK TEREXPOSED VIA API)
+// CACHE CLEAR - DEVELOPMENT ONLY
 // ============================================================
 
 /**
@@ -427,12 +626,6 @@ function outputJson(data) {
  * CLEAR CACHE - DEVELOPMENT ONLY
  * Business Rule v1.0
  * Do Not Modify Without Version Increment
- * ==========================================================
- * Fungsi ini HANYA bisa dipanggil dari dalam script (internal),
- * TIDAK terexpose melalui API endpoint.
- * 
- * Untuk menghapus cache, jalankan dari editor Apps Script:
- * clearCache()
  * ==========================================================
  */
 function clearCache() {
