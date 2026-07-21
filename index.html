@@ -56,6 +56,28 @@
             animation: shimmer 2s infinite linear;
         }
 
+        @media (prefers-reduced-motion: reduce) {
+            .loading-container::before {
+                animation: none;
+                background: linear-gradient(90deg, #007aff, #00c6ff, #007aff);
+            }
+            .spinner {
+                animation: none;
+                border-top-color: #007aff;
+                border-right-color: #007aff;
+                border-bottom-color: #007aff;
+                border-left-color: #007aff;
+                border: 3px solid #007aff;
+                opacity: 0.5;
+            }
+            @keyframes shimmer {
+                0%, 100% { background-position: 0 0; }
+            }
+            @keyframes spin {
+                to { transform: rotate(0deg); }
+            }
+        }
+
         @keyframes shimmer {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
@@ -199,7 +221,7 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -221,6 +243,27 @@
         .btn-manual.primary:hover {
             background: #0066d6;
             border-color: #0066d6;
+        }
+
+        /* Error State */
+        .error-message {
+            display: none;
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .error-message i {
+            margin-right: 6px;
         }
 
         /* Dark Mode */
@@ -284,6 +327,11 @@
                 background: #1a3a2a;
                 color: #34a853;
             }
+            .error-message {
+                background: #3a1a1a;
+                border-color: #7f1d1d;
+                color: #f87171;
+            }
         }
 
         /* ============================================================
@@ -321,52 +369,58 @@
 </head>
 <body>
 
-    <div class="loading-container" id="loadingContainer">
+    <div class="loading-container" id="loadingContainer" role="main" aria-label="Loading and device detection">
         <!-- Logo -->
-        <div class="logo">
+        <div class="logo" aria-hidden="true">
             <i class="fa-brands fa-apple"></i>
         </div>
         <div class="app-name">Apple Coverage Monitoring</div>
         <div class="app-sub">Mendeteksi perangkat Anda...</div>
 
         <!-- Spinner -->
-        <div class="spinner-wrapper">
-            <div class="spinner"></div>
+        <div class="spinner-wrapper" role="status" aria-live="polite">
+            <div class="spinner" aria-hidden="true"></div>
             <span class="spinner-text" id="statusText">Memeriksa perangkat...</span>
         </div>
 
         <!-- Device Info -->
-        <div class="device-info">
+        <div class="device-info" role="group" aria-label="Device detection status">
             <div class="device-item">
-                <i class="fa-solid fa-desktop"></i>
+                <i class="fa-solid fa-desktop" aria-hidden="true"></i>
                 <span>Desktop</span>
                 <span class="badge-device desktop" id="desktopBadge">✓</span>
             </div>
             <div class="device-item">
-                <i class="fa-solid fa-tablet-screen-button"></i>
+                <i class="fa-solid fa-tablet-screen-button" aria-hidden="true"></i>
                 <span>Tablet</span>
                 <span class="badge-device tablet" id="tabletBadge">○</span>
             </div>
             <div class="device-item">
-                <i class="fa-solid fa-mobile-screen-button"></i>
+                <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i>
                 <span>Mobile</span>
                 <span class="badge-device mobile" id="mobileBadge">○</span>
             </div>
         </div>
 
         <!-- Redirect Info -->
-        <div class="redirect-info" id="redirectInfo">
-            <i class="fa-regular fa-arrow-right"></i>
+        <div class="redirect-info" id="redirectInfo" aria-live="polite">
+            <i class="fa-regular fa-arrow-right" aria-hidden="true"></i>
             Mengarahkan ke <span id="targetPage">Dashboard</span>...
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage" role="alert">
+            <i class="fa-regular fa-circle-exclamation" aria-hidden="true"></i>
+            Redirect gagal. Silakan klik tombol di bawah.
         </div>
 
         <!-- Manual Override -->
         <div class="manual-buttons">
-            <a href="Dashboard.html" class="btn-manual primary" id="btnDesktop">
-                <i class="fa-solid fa-desktop"></i> Desktop View
+            <a href="Dashboard.html" class="btn-manual primary" id="btnDesktop" role="button" aria-label="Buka versi Desktop Dashboard" title="Buka Dashboard untuk Desktop">
+                <i class="fa-solid fa-desktop" aria-hidden="true"></i> Desktop View
             </a>
-            <a href="Mobile.html" class="btn-manual" id="btnMobile">
-                <i class="fa-solid fa-mobile-screen-button"></i> Mobile View
+            <a href="mobile.html" class="btn-manual" id="btnMobile" role="button" aria-label="Buka versi Mobile" title="Buka Mobile View">
+                <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Mobile View
             </a>
         </div>
     </div>
@@ -376,39 +430,44 @@
          ============================================================ -->
     <script>
         // ============================================================
+        // DOM CACHE - OPTIMASI
+        // ============================================================
+        var elements = {
+            desktopBadge: document.getElementById('desktopBadge'),
+            tabletBadge: document.getElementById('tabletBadge'),
+            mobileBadge: document.getElementById('mobileBadge'),
+            statusText: document.getElementById('statusText'),
+            targetPage: document.getElementById('targetPage'),
+            redirectInfo: document.getElementById('redirectInfo'),
+            errorMessage: document.getElementById('errorMessage'),
+            loadingContainer: document.getElementById('loadingContainer')
+        };
+
+        // ============================================================
         // 1. DETEKSI PERANGKAT
         // ============================================================
         function detectDevice() {
-            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            var ua = navigator.userAgent || navigator.vendor || window.opera || '';
 
-            // Deteksi Mobile (Android, iPhone, iPod, BlackBerry, Opera Mini, IEMobile)
             var isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop|Mobile|webOS/i.test(ua);
-
-            // Deteksi Tablet (iPad, Android Tablet, Kindle, etc)
             var isTablet = /iPad|Android(?!.*Mobile)|Kindle|Silk/i.test(ua);
-
-            // Deteksi jika lebar layar kecil (fallback)
             var isSmallScreen = window.innerWidth < 768;
 
-            // Jika iPad dengan lebar kecil, anggap tablet
             if (isTablet && isSmallScreen) {
                 isTablet = true;
                 isMobile = false;
             }
 
-            // Jika HP dengan lebar besar, tetap mobile
             if (isMobile && !isTablet && window.innerWidth >= 768) {
                 isMobile = true;
             }
 
-            // Prioritaskan userAgent untuk akurasi
             var deviceType = 'desktop';
             if (isTablet) {
                 deviceType = 'tablet';
             } else if (isMobile) {
                 deviceType = 'mobile';
             } else if (isSmallScreen) {
-                // Fallback: jika lebar layar kecil tapi userAgent tidak terdeteksi
                 deviceType = 'mobile';
             }
 
@@ -417,7 +476,6 @@
                 isMobile: deviceType === 'mobile' || deviceType === 'tablet',
                 isDesktop: deviceType === 'desktop',
                 isTablet: deviceType === 'tablet',
-                userAgent: ua,
                 screenWidth: window.innerWidth
             };
         }
@@ -426,19 +484,16 @@
         // 2. UPDATE UI
         // ============================================================
         function updateUI(device) {
-            var desktopBadge = document.getElementById('desktopBadge');
-            var tabletBadge = document.getElementById('tabletBadge');
-            var mobileBadge = document.getElementById('mobileBadge');
-            var statusText = document.getElementById('statusText');
-            var targetPage = document.getElementById('targetPage');
-            var redirectInfo = document.getElementById('redirectInfo');
+            var desktopBadge = elements.desktopBadge;
+            var tabletBadge = elements.tabletBadge;
+            var mobileBadge = elements.mobileBadge;
+            var statusText = elements.statusText;
+            var targetPage = elements.targetPage;
 
-            // Reset semua badge
             desktopBadge.textContent = '○';
             tabletBadge.textContent = '○';
             mobileBadge.textContent = '○';
 
-            // Update badge sesuai device
             if (device.type === 'desktop') {
                 desktopBadge.textContent = '✓';
                 statusText.textContent = 'Desktop terdeteksi ✓';
@@ -452,57 +507,64 @@
                 statusText.textContent = 'Mobile terdeteksi ✓';
                 targetPage.textContent = 'Mobile View';
             }
-
-            // Tampilkan info device
-            console.log('📱 Device detected:', device);
         }
 
         // ============================================================
-        // 3. REDIRECT
+        // 3. SHOW ERROR
+        // ============================================================
+        function showError() {
+            var errorMessage = elements.errorMessage;
+            var statusText = elements.statusText;
+            var redirectInfo = elements.redirectInfo;
+
+            errorMessage.classList.add('show');
+            statusText.textContent = '⏳ Redirect gagal';
+            redirectInfo.innerHTML = '<i class="fa-regular fa-circle-exclamation" aria-hidden="true"></i> Gunakan tombol di bawah untuk memilih tampilan.';
+        }
+
+        // ============================================================
+        // 4. REDIRECT DENGAN REPLACE (HISTORY OPTIMIZATION)
         // ============================================================
         function redirectToAppropriatePage(device) {
             var targetUrl = '';
-            var delay = 1500; // ms
+            var delay = 600;
 
             if (device.type === 'desktop' || device.type === 'tablet') {
-                // Desktop & Tablet → Dashboard
                 targetUrl = 'Dashboard.html';
             } else {
-                // Mobile → Mobile.html
                 targetUrl = 'mobile.html';
             }
 
-            // Update status
-            var statusText = document.getElementById('statusText');
-            var redirectInfo = document.getElementById('redirectInfo');
+            var statusText = elements.statusText;
+            var redirectInfo = elements.redirectInfo;
 
             statusText.textContent = 'Mengarahkan ke ' + targetUrl + '...';
-            redirectInfo.innerHTML = '<i class="fa-regular fa-arrow-right"></i> Mengarahkan ke <strong>' + targetUrl + '</strong>...';
+            redirectInfo.innerHTML = '<i class="fa-regular fa-arrow-right" aria-hidden="true"></i> Mengarahkan ke <strong>' + targetUrl + '</strong>...';
 
-            // Redirect setelah delay
             setTimeout(function() {
-                window.location.href = targetUrl;
+                try {
+                    window.location.replace(targetUrl);
+                } catch (e) {
+                    showError();
+                }
             }, delay);
         }
 
         // ============================================================
-        // 4. CEK APAKAH SUDAH DI HALAMAN YANG BENAR
+        // 5. CEK APAKAH SUDAH DI HALAMAN YANG BENAR
         // ============================================================
         function isOnCorrectPage(device) {
             var currentPath = window.location.pathname;
             var currentFile = currentPath.split('/').pop() || 'index.html';
 
             if (device.type === 'desktop' || device.type === 'tablet') {
-                // Jika di Mobile.html tapi seharusnya di Dashboard
-                if (currentFile === 'Mobile.html') {
+                if (currentFile === 'mobile.html') {
                     return false;
                 }
-                // Jika di index.html, perlu redirect
                 if (currentFile === 'index.html' || currentFile === '') {
                     return false;
                 }
             } else {
-                // Mobile: jika di Dashboard.html atau index.html, redirect ke Mobile.html
                 if (currentFile === 'Dashboard.html' || currentFile === 'index.html' || currentFile === '') {
                     return false;
                 }
@@ -512,75 +574,86 @@
         }
 
         // ============================================================
-        // 5. MAIN EXECUTION
+        // 6. MAIN EXECUTION
         // ============================================================
         (function main() {
-            // Deteksi perangkat
-            var device = detectDevice();
-            console.log('🔍 Device detected:', device);
+            try {
+                var device = detectDevice();
+                updateUI(device);
 
-            // Update UI
-            updateUI(device);
+                if (isOnCorrectPage(device)) {
+                    var statusText = elements.statusText;
+                    var redirectInfo = elements.redirectInfo;
+                    statusText.textContent = 'Sudah di halaman yang benar ✓';
+                    redirectInfo.innerHTML = '<i class="fa-regular fa-circle-check" style="color: #28a745;" aria-hidden="true"></i> Anda sudah berada di halaman yang tepat.';
+                    return;
+                }
 
-            // Cek apakah sudah di halaman yang benar
-            if (isOnCorrectPage(device)) {
-                // Sudah di halaman yang benar, tidak perlu redirect
-                var statusText = document.getElementById('statusText');
-                statusText.textContent = 'Sudah di halaman yang benar ✓';
-                var redirectInfo = document.getElementById('redirectInfo');
-                redirectInfo.innerHTML = '<i class="fa-regular fa-circle-check" style="color: #28a745;"></i> Anda sudah berada di halaman yang tepat.';
-                return;
+                redirectToAppropriatePage(device);
+            } catch (e) {
+                showError();
             }
-
-            // Redirect setelah delay
-            redirectToAppropriatePage(device);
         })();
 
         // ============================================================
-        // 6. HANDLE RESIZE (Deteksi ulang jika layar berubah)
+        // 7. HANDLE RESIZE (Deteksi ulang jika layar berubah)
         // ============================================================
         var resizeTimeout;
         window.addEventListener('resize', function() {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(function() {
-                // Cek ulang perangkat
-                var device = detectDevice();
+                try {
+                    var device = detectDevice();
+                    var currentPath = window.location.pathname;
+                    var currentFile = currentPath.split('/').pop() || 'index.html';
 
-                // Cek apakah perlu redirect ulang (misal: user resize dari desktop ke mobile)
-                var currentPath = window.location.pathname;
-                var currentFile = currentPath.split('/').pop() || 'index.html';
+                    var shouldRedirect = false;
+                    if ((device.type === 'desktop' || device.type === 'tablet') && currentFile === 'mobile.html') {
+                        shouldRedirect = true;
+                    } else if (device.type === 'mobile' && (currentFile === 'Dashboard.html' || currentFile === 'index.html')) {
+                        shouldRedirect = true;
+                    }
 
-                var shouldRedirect = false;
-                if ((device.type === 'desktop' || device.type === 'tablet') && currentFile === 'Mobile.html') {
-                    shouldRedirect = true;
-                } else if (device.type === 'mobile' && (currentFile === 'Dashboard.html' || currentFile === 'index.html')) {
-                    shouldRedirect = true;
-                }
-
-                if (shouldRedirect) {
-                    console.log('🔄 Resize detected, redirecting...');
-                    redirectToAppropriatePage(device);
+                    if (shouldRedirect) {
+                        redirectToAppropriatePage(device);
+                    }
+                } catch (e) {
+                    showError();
                 }
             }, 500);
         });
 
         // ============================================================
-        // 7. HANDLE ORIENTATION CHANGE (Mobile)
+        // 8. HANDLE ORIENTATION CHANGE (Mobile)
         // ============================================================
         window.addEventListener('orientationchange', function() {
             setTimeout(function() {
-                var device = detectDevice();
-                var currentPath = window.location.pathname;
-                var currentFile = currentPath.split('/').pop() || 'index.html';
+                try {
+                    var device = detectDevice();
+                    var currentPath = window.location.pathname;
+                    var currentFile = currentPath.split('/').pop() || 'index.html';
 
-                // Jika saat ini di halaman yang salah untuk perangkat
-                if (device.type === 'mobile' && currentFile === 'Dashboard.html') {
-                    redirectToAppropriatePage(device);
-                } else if ((device.type === 'desktop' || device.type === 'tablet') && currentFile === 'Mobile.html') {
-                    redirectToAppropriatePage(device);
+                    if (device.type === 'mobile' && currentFile === 'Dashboard.html') {
+                        redirectToAppropriatePage(device);
+                    } else if ((device.type === 'desktop' || device.type === 'tablet') && currentFile === 'mobile.html') {
+                        redirectToAppropriatePage(device);
+                    }
+                } catch (e) {
+                    showError();
                 }
             }, 600);
         });
+
+        // ============================================================
+        // 9. FALLBACK - Jika redirect gagal, user bisa klik manual
+        // ============================================================
+        setTimeout(function() {
+            var currentPath = window.location.pathname;
+            var currentFile = currentPath.split('/').pop() || 'index.html';
+            if (currentFile === 'index.html' || currentFile === '') {
+                showError();
+            }
+        }, 5000);
     </script>
 
 </body>
