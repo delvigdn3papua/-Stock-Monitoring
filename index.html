@@ -388,7 +388,7 @@
             <div class="device-item">
                 <i class="fa-solid fa-desktop" aria-hidden="true"></i>
                 <span>Desktop</span>
-                <span class="badge-device desktop" id="desktopBadge">✓</span>
+                <span class="badge-device desktop" id="desktopBadge">○</span>
             </div>
             <div class="device-item">
                 <i class="fa-solid fa-tablet-screen-button" aria-hidden="true"></i>
@@ -426,7 +426,7 @@
     </div>
 
     <!-- ============================================================
-         MAIN SCRIPT - DETEKSI PERANGKAT
+         MAIN SCRIPT - DETEKSI PERANGKAT (USER AGENT PRIORITY)
          ============================================================ -->
     <script>
         // ============================================================
@@ -444,38 +444,54 @@
         };
 
         // ============================================================
-        // 1. DETEKSI PERANGKAT
+        // 1. DETEKSI PERANGKAT - USER AGENT PRIORITY
         // ============================================================
         function detectDevice() {
             var ua = navigator.userAgent || navigator.vendor || window.opera || '';
 
+            // ✅ PRIORITAS: Deteksi berdasarkan User Agent
+            // Mobile: Android, iPhone, iPod, BlackBerry, Opera Mini, IEMobile, WPDesktop, Mobile, webOS
             var isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop|Mobile|webOS/i.test(ua);
-            var isTablet = /iPad|Android(?!.*Mobile)|Kindle|Silk/i.test(ua);
-            var isSmallScreen = window.innerWidth < 768;
 
-            if (isTablet && isSmallScreen) {
-                isTablet = true;
+            // Tablet: iPad, Android Tablet (Android tanpa Mobile), Kindle, Silk
+            var isTablet = /iPad|Android(?!.*Mobile)|Kindle|Silk/i.test(ua);
+
+            // Jika iPad dengan userAgent iPad → tablet
+            if (isTablet) {
                 isMobile = false;
             }
 
-            if (isMobile && !isTablet && window.innerWidth >= 768) {
+            // Jika userAgent mengandung "Mobile" → mobile
+            if (/Mobile/i.test(ua)) {
                 isMobile = true;
+                isTablet = false;
             }
 
+            // ✅ FALLBACK: Jika userAgent tidak terdeteksi sama sekali, gunakan lebar layar
+            var isSmallScreen = window.innerWidth < 768;
             var deviceType = 'desktop';
+
             if (isTablet) {
                 deviceType = 'tablet';
             } else if (isMobile) {
                 deviceType = 'mobile';
             } else if (isSmallScreen) {
+                // Fallback: userAgent tidak mendeteksi apa pun, tapi layar kecil
+                // Anggap sebagai mobile
                 deviceType = 'mobile';
             }
 
+            // Log untuk debugging (hanya jika diperlukan)
+            // console.log('[Device Detection] UserAgent:', ua);
+            // console.log('[Device Detection] Type:', deviceType);
+            // console.log('[Device Detection] Width:', window.innerWidth);
+
             return {
                 type: deviceType,
-                isMobile: deviceType === 'mobile' || deviceType === 'tablet',
+                isMobile: deviceType === 'mobile',
                 isDesktop: deviceType === 'desktop',
                 isTablet: deviceType === 'tablet',
+                userAgent: ua,
                 screenWidth: window.innerWidth
             };
         }
@@ -529,6 +545,8 @@
             var targetUrl = '';
             var delay = 600;
 
+            // ✅ Desktop dan Tablet → Dashboard.html
+            // ✅ Mobile → mobile.html
             if (device.type === 'desktop' || device.type === 'tablet') {
                 targetUrl = 'Dashboard.html';
             } else {
@@ -558,19 +576,23 @@
             var currentFile = currentPath.split('/').pop() || 'index.html';
 
             if (device.type === 'desktop' || device.type === 'tablet') {
+                // Desktop/Tablet → HARUS di Dashboard.html
                 if (currentFile === 'mobile.html') {
                     return false;
                 }
                 if (currentFile === 'index.html' || currentFile === '') {
                     return false;
                 }
+                // Sudah di Dashboard.html → benar
+                return true;
             } else {
+                // Mobile → HARUS di mobile.html
                 if (currentFile === 'Dashboard.html' || currentFile === 'index.html' || currentFile === '') {
                     return false;
                 }
+                // Sudah di mobile.html → benar
+                return true;
             }
-
-            return true;
         }
 
         // ============================================================
@@ -581,6 +603,7 @@
                 var device = detectDevice();
                 updateUI(device);
 
+                // Cek apakah sudah di halaman yang benar
                 if (isOnCorrectPage(device)) {
                     var statusText = elements.statusText;
                     var redirectInfo = elements.redirectInfo;
@@ -598,6 +621,8 @@
         // ============================================================
         // 7. HANDLE RESIZE (Deteksi ulang jika layar berubah)
         // ============================================================
+        // ⚠️ Perhatikan: User Agent TIDAK berubah saat resize.
+        // Resize hanya untuk fallback jika userAgent tidak terdeteksi.
         var resizeTimeout;
         window.addEventListener('resize', function() {
             clearTimeout(resizeTimeout);
@@ -608,6 +633,9 @@
                     var currentFile = currentPath.split('/').pop() || 'index.html';
 
                     var shouldRedirect = false;
+                    // Jika device berubah (misal: tablet → desktop karena resize)
+                    // Tapi karena userAgent tidak berubah, seharusnya tidak ada redirect
+                    // kecuali fallback width yang berubah
                     if ((device.type === 'desktop' || device.type === 'tablet') && currentFile === 'mobile.html') {
                         shouldRedirect = true;
                     } else if (device.type === 'mobile' && (currentFile === 'Dashboard.html' || currentFile === 'index.html')) {
@@ -626,6 +654,8 @@
         // ============================================================
         // 8. HANDLE ORIENTATION CHANGE (Mobile)
         // ============================================================
+        // ⚠️ Orientation change TIDAK mengubah userAgent
+        // Hanya untuk fallback jika perlu
         window.addEventListener('orientationchange', function() {
             setTimeout(function() {
                 try {
