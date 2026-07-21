@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CONFIG - Production v1.0.1 -->
+    <!-- CONFIG - Production v1.0.2 -->
     <script src="config.js"></script>
     
     <style>
@@ -2832,60 +2832,126 @@
         }
 
         // ============================================================
-        // SHOW SKU DETAIL
+        // SHOW SKU DETAIL - DENGAN LAZY LOADING
         // ============================================================
+
         function showSkuDetail(skuName, index, customer, depo) {
             var modalTitle = document.getElementById('modalTitle');
             var modalBody = document.getElementById('modalBody');
             if (!modalTitle || !modalBody) return;
 
+            // Cari data dari rawData (tanpa details)
             var record = null;
+            var skuData = null;
+            
             for (var i = 0; i < rawData.length; i++) {
                 var row = rawData[i];
                 if (row.customer === customer && row.depo === depo) {
                     record = row;
+                    if (row.barang && row.barang[index]) {
+                        skuData = row.barang[index];
+                    }
                     break;
                 }
             }
 
-            if (!record || !record.barang || !record.barang[index]) {
+            if (!record || !skuData) {
                 modalTitle.innerHTML = '<i class="fas fa-circle-info me-2"></i>' + safeText(skuName);
                 modalBody.innerHTML = '<div style="padding:12px;text-align:center;color:var(--text-muted);">Data tidak ditemukan</div>';
                 myModal.show();
                 return;
             }
 
-            var barang = record.barang[index];
             modalTitle.innerHTML = '<i class="fas fa-circle-info me-2"></i>' + safeText(skuName);
 
+            // Tampilkan skeleton loading
+            modalBody.innerHTML = `
+                <div style="text-align:center;padding:20px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div style="margin-top:10px;color:var(--text-muted);font-size:0.7rem;">Memuat detail IMEI...</div>
+                </div>
+            `;
+
+            myModal.show();
+
+            // ✅ LAZY LOADING: Fetch detail dari endpoint terpisah
+            var url = APP_CONFIG.WEB_APP_URL + '?action=detail' +
+                '&customer=' + encodeURIComponent(customer) +
+                '&depo=' + encodeURIComponent(depo) +
+                '&sku=' + encodeURIComponent(skuName) +
+                '&kategori=' + encodeURIComponent(record.kategori || '');
+
+            if (APP_CONFIG.DEBUG) {
+                debugLog('Fetching detail for:', customer, depo, skuName);
+            }
+
+            ApiHelper._fetchWithTimeout(url, 10000)
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (!data || !data.success) {
+                        throw new Error(data.error || 'Gagal mengambil detail');
+                    }
+
+                    renderSkuDetailModal(modalTitle, modalBody, skuName, skuData, data);
+                })
+                .catch(function(error) {
+                    if (APP_CONFIG.DEBUG) {
+                        debugError('Detail fetch error:', error);
+                    }
+                    modalBody.innerHTML = `
+                        <div style="padding:20px;text-align:center;color:var(--danger);font-size:0.8rem;">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Gagal memuat detail: ${error.message}
+                            <br><br>
+                            <button class="btn btn-sm btn-outline-primary" onclick="showSkuDetail('${escapeJsString(skuName)}', ${index}, '${escapeJsString(customer)}', '${escapeJsString(depo)}')">
+                                <i class="fas fa-redo me-1"></i> Coba Lagi
+                            </button>
+                        </div>
+                    `;
+                });
+        }
+
+        // ============================================================
+        // RENDER SKU DETAIL MODAL
+        // ============================================================
+
+        function renderSkuDetailModal(modalTitle, modalBody, skuName, skuData, detailData) {
             var html = '';
+            
             html += `
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:0.6rem;">
                     <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
                         <div style="color:var(--text-muted);font-weight:600;">Qty</div>
-                        <div style="font-weight:700;font-size:0.8rem;">${barang.qty || 0}</div>
-                    </div>
-                    <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
-                        <div style="color:var(--text-muted);font-weight:600;">Sell Thru</div>
-                        <div style="font-weight:700;font-size:0.8rem;">${barang.sellThruQty || 0}</div>
+                        <div style="font-weight:700;font-size:0.8rem;">${skuData.sellThru || 0}</div>
                     </div>
                     <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
                         <div style="color:var(--text-muted);font-weight:600;">Sell Out</div>
-                        <div style="font-weight:700;font-size:0.8rem;color:var(--success);">${barang.sellOutQty || 0}</div>
+                        <div style="font-weight:700;font-size:0.8rem;color:var(--success);">${skuData.sellOut || 0}</div>
                     </div>
                     <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
                         <div style="color:var(--text-muted);font-weight:600;">Stock CI</div>
-                        <div style="font-weight:700;font-size:0.8rem;">${barang.stockCI || 0}</div>
+                        <div style="font-weight:700;font-size:0.8rem;">${skuData.stockCI || 0}</div>
+                    </div>
+                    <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
+                        <div style="color:var(--text-muted);font-weight:600;">WOS</div>
+                        <div style="font-weight:700;font-size:0.8rem;">${skuData.wos || 0}</div>
                     </div>
                 </div>
             `;
 
-            if (barang.details && Array.isArray(barang.details) && barang.details.length > 0) {
+            if (detailData.details && detailData.details.length > 0) {
                 html += `
                     <div class="imei-card">
                         <div class="imei-header">
                             <span class="imei-name"><i class="fas fa-sim-card me-2"></i>IMEI Details</span>
-                            <span class="badge bg-secondary">${barang.details.length}</span>
+                            <span class="badge bg-secondary">${detailData.details.length}</span>
                         </div>
                         <div class="imei-table-wrap" style="overflow-x:auto;">
                             <table class="table table-sm table-hover">
@@ -2900,19 +2966,16 @@
                                 <tbody>
                 `;
 
-                for (var j = 0; j < barang.details.length; j++) {
-                    var detail = barang.details[j];
-                    var imei = detail.imei || detail.serial || '-';
-                    var tanggal = detail.tanggalSellThru || '-';
-                    var isValid = detail.isValidCoverage !== false;
-                    var statusLabel = isValid ? 'Terjual' : 'Stock';
-                    var statusClass = isValid ? 'aging-normal' : 'aging-dead';
+                for (var j = 0; j < detailData.details.length; j++) {
+                    var detail = detailData.details[j];
+                    var statusClass = detail.status === 'Stock' ? 'aging-dead' : 'aging-normal';
+                    var statusLabel = detail.status || 'Terjual';
 
                     html += `
                         <tr>
                             <td>${j + 1}</td>
-                            <td><span class="imei-code" onclick="copyIMEI('${escapeJsString(imei)}')">${safeText(imei)}</span></td>
-                            <td>${safeText(tanggal)}</td>
+                            <td><span class="imei-code" onclick="copyIMEI('${escapeJsString(detail.imei)}')">${safeText(detail.imei)}</span></td>
+                            <td>${safeText(detail.tanggalSellThru)}</td>
                             <td><span class="badge-aging-soft ${statusClass}">${statusLabel}</span></td>
                         </tr>
                     `;
@@ -2933,7 +2996,6 @@
             }
 
             modalBody.innerHTML = html;
-            myModal.show();
         }
 
         // ============================================================
