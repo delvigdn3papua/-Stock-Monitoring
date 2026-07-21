@@ -20,7 +20,7 @@ const APP_CONFIG = Object.freeze({
     DEBUG: false,
     
     // ⚠️ GANTI DENGAN URL WEB APP ANDA
-    WEB_APP_URL: "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec",
+    WEB_APP_URL: "https://script.google.com/macros/s/AKfycbzGnCtAadudtfkPpGVYZTsorXEO1-Wi7-7cByoq5ijylBt3IfpcXwvlL3WQ15Btbdhp/exec",
     
     // API Endpoints
     ENDPOINTS: {
