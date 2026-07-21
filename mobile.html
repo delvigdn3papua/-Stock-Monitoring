@@ -11,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- CONFIG - Production v1.0.1 -->
+    <script src="config.js"></script>
+    
     <style>
         /* ============================================================
            CSS VARIABLES - DESIGN SYSTEM
@@ -1492,6 +1495,26 @@
     </script>
     <script>
         // ============================================================
+        // KONFIGURASI - Dari APP_CONFIG
+        // ============================================================
+        var AUTO_REFRESH_INTERVAL = APP_CONFIG.AUTO_REFRESH_INTERVAL;
+
+        // ============================================================
+        // DEBUG LOGGING
+        // ============================================================
+        function debugLog(message) {
+            if (APP_CONFIG.DEBUG) {
+                console.log('[Mobile] ' + message);
+            }
+        }
+
+        function debugError(message) {
+            if (APP_CONFIG.DEBUG) {
+                console.error('[Mobile] ' + message);
+            }
+        }
+
+        // ============================================================
         // PROTEKSI
         // ============================================================
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
@@ -1528,7 +1551,6 @@
         var isDataLoaded = false;
         var isRefreshing = false;
         var autoRefreshTimeout = null;
-        var AUTO_REFRESH_INTERVAL = 60000;
 
         var imeiIndex = {};
         var duplicateMap = {};
@@ -2070,10 +2092,10 @@
             }
 
             if (skippedOld > 0) {
-                console.warn('⚠️ ' + skippedOld + ' record(s) di-skip dari oldData karena tidak memiliki Business Key');
+                debugLog('⚠️ ' + skippedOld + ' record(s) di-skip dari oldData karena tidak memiliki Business Key');
             }
             if (skippedNew > 0) {
-                console.warn('⚠️ ' + skippedNew + ' record(s) di-skip dari newData karena tidak memiliki Business Key');
+                debugLog('⚠️ ' + skippedNew + ' record(s) di-skip dari newData karena tidak memiliki Business Key');
             }
 
             var result = {
@@ -2305,7 +2327,7 @@
             for (var key in map) {
                 if (map.hasOwnProperty(key)) {
                     if (map[key].length < 2) {
-                        console.warn("   ⚠️ WARNING: " + key + " hanya memiliki", map[key].length,
+                        debugLog("   ⚠️ WARNING: " + key + " hanya memiliki", map[key].length,
                             "record (minimal 2 diperlukan)");
                     }
                 }
@@ -3120,7 +3142,7 @@
         }
 
         // ============================================================
-        // FETCH DATA - MAIN
+        // FETCH DATA - Menggunakan ApiHelper
         // ============================================================
         function fetchData() {
             if (isRefreshing) return;
@@ -3130,127 +3152,36 @@
             if (fab) fab.classList.add('loading');
 
             showToast('Mengambil data terbaru...', 'info', 2000);
+            debugLog('Fetching data...');
 
-            setTimeout(function() {
-                var sampleData = generateSampleData();
-                processData(sampleData);
-                var now = getCurrentTime();
-                document.getElementById('syncTime').innerText = now;
-                showToast('Data berhasil diperbarui • ' + sampleData.length + ' record', 'success', 2000);
-                isRefreshing = false;
-                if (fab) fab.classList.remove('loading');
-                scheduleAutoRefresh();
-            }, 1500);
-        }
-
-        // ============================================================
-        // GENERATE SAMPLE DATA - FOR DEMONSTRATION
-        // ============================================================
-        function generateSampleData() {
-            var customers = [
-                'Apple Premium Reseller',
-                'iBox Indonesia',
-                'Erajaya Digital',
-                'Toko Apple Online',
-                'Digimap',
-                'Apple Store Jakarta',
-                'iStore Bali',
-                'Mac Center Surabaya'
-            ];
-
-            var depoList = ['D1', 'D2', 'D3', 'D4', 'D5'];
-            var skuNames = [
-                'iPhone 15 Pro Max',
-                'iPhone 15 Pro',
-                'iPhone 15',
-                'iPhone 14 Pro Max',
-                'iPhone 14',
-                'iPad Pro M4',
-                'iPad Air M2',
-                'MacBook Pro M3',
-                'MacBook Air M3',
-                'Apple Watch Ultra 2',
-                'Apple Watch Series 10',
-                'AirPods Pro 2',
-                'AirPods 4'
-            ];
-
-            var data = [];
-            var imeiCounter = 0;
-
-            for (var i = 0; i < customers.length; i++) {
-                var customer = customers[i];
-                var depo = depoList[i % depoList.length];
-                var numBarang = Math.floor(Math.random() * 4) + 2;
-
-                var barangList = [];
-                var totalSellThru = 0;
-                var totalSellOut = 0;
-                var totalStockCI = 0;
-                var totalWOS = 0;
-                var wosCount = 0;
-
-                var shuffledSku = skuNames.slice().sort(function() { return Math.random() - 0.5; });
-
-                for (var j = 0; j < Math.min(numBarang, shuffledSku.length); j++) {
-                    var skuName = shuffledSku[j];
-                    var qty = Math.floor(Math.random() * 20) + 5;
-                    var sellThruQty = Math.floor(Math.random() * qty);
-                    var sellOutQty = Math.floor(Math.random() * (qty - sellThruQty));
-                    var stockCI = qty - sellThruQty - sellOutQty;
-                    var wos = parseFloat((Math.random() * 12 + 1).toFixed(1));
-
-                    totalSellThru += sellThruQty;
-                    totalSellOut += sellOutQty;
-                    totalStockCI += stockCI;
-                    totalWOS += wos;
-                    wosCount++;
-
-                    var details = [];
-                    for (var k = 0; k < qty; k++) {
-                        imeiCounter++;
-                        var imei = '35' + String(imeiCounter).padStart(13, '0');
-                        var isSold = k < sellThruQty + sellOutQty;
-                        var isValidCoverage = isSold ? Math.random() > 0.2 : false;
-                        var tanggal = isSold ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
-                            'id-ID') : '-';
-
-                        details.push({
-                            imei: imei,
-                            serial: imei,
-                            tanggalSellThru: tanggal,
-                            coverage: isValidCoverage ? 'Active' : '-',
-                            isValidCoverage: isValidCoverage
-                        });
+            ApiHelper.fetchDashboard()
+                .then(function(data) {
+                    if (!data || !data.success) {
+                        throw new Error(data.error || 'Data tidak valid');
+                    }
+                    if (!data.rows || !Array.isArray(data.rows)) {
+                        throw new Error('Data rows tidak valid');
                     }
 
-                    barangList.push({
-                        nama: skuName,
-                        qty: qty,
-                        sellThruQty: sellThruQty,
-                        sellOutQty: sellOutQty,
-                        stockCI: stockCI,
-                        wos: wos,
-                        details: details
-                    });
-                }
+                    debugLog('Data received: ' + data.rows.length + ' rows');
+                    processData(data);
 
-                var avgWOS = wosCount > 0 ? (totalWOS / wosCount) : 0;
+                    var now = getCurrentTime();
+                    document.getElementById('syncTime').innerText = now;
 
-                data.push({
-                    customer: customer,
-                    depo: depo,
-                    sellThru: totalSellThru,
-                    sellOut: totalSellOut,
-                    stockCI: totalStockCI,
-                    wos: parseFloat(avgWOS.toFixed(1)),
-                    kategori: 'Electronics',
-                    namaBarang: barangList.length > 0 ? barangList[0].nama : '-',
-                    barang: barangList
+                    showToast('Data berhasil diperbarui • ' + data.rows.length + ' record', 'success', 2000);
+                    isRefreshing = false;
+                    if (fab) fab.classList.remove('loading');
+
+                    scheduleAutoRefresh();
+                })
+                .catch(function(error) {
+                    debugError('Fetch error: ' + error.message);
+                    showToast('Gagal mengambil data: ' + error.message, 'error', 3000);
+                    isRefreshing = false;
+                    if (fab) fab.classList.remove('loading');
+                    scheduleAutoRefresh();
                 });
-            }
-
-            return data;
         }
 
         // ============================================================
@@ -3258,11 +3189,11 @@
         // ============================================================
         function processData(data) {
             var previousRawData = rawData;
-            rawData = data;
+            rawData = data.rows;
 
-            imeiIndex = buildIMEIIndex(data);
+            imeiIndex = buildIMEIIndex(data.rows);
 
-            var dupResult = buildDuplicateMap(data);
+            var dupResult = buildDuplicateMap(data.rows);
             duplicateMap = dupResult.map;
             duplicateImeiList = dupResult.list;
 
@@ -3270,7 +3201,7 @@
             hideLoadingScreen();
 
             var depos = [];
-            data.forEach(function(row) {
+            data.rows.forEach(function(row) {
                 if (row.depo && depos.indexOf(row.depo) === -1) {
                     depos.push(row.depo);
                 }
@@ -3282,7 +3213,7 @@
             showDuplicateAlertMobile();
 
             if (previousRawData && previousRawData.length > 0) {
-                var changeResult = detectChanges(previousRawData, data);
+                var changeResult = detectChanges(previousRawData, data.rows);
                 if (changeResult.updatedRecords.length > 0 || changeResult.newRecords.length > 0 || changeResult
                     .deletedRecords.length > 0) {
                     var changeHistory = buildChangeHistory(changeResult);
@@ -3290,7 +3221,7 @@
                 }
             }
 
-            updateWosBadge(data);
+            updateWosBadge(data.rows);
 
             isDataLoaded = true;
         }
@@ -3351,9 +3282,9 @@
 
             window.addEventListener('online', handleNetworkStatus);
             window.addEventListener('offline', handleNetworkStatus);
-
             document.addEventListener('visibilitychange', handleVisibilityChange);
 
+            debugLog('Mobile initialized, version: ' + APP_CONFIG.FALLBACK_VERSION);
             fetchData();
 
             var progress = 0;
