@@ -13,7 +13,7 @@
     
     <style>
         /* ============================================================
-           CSS VARIABLES
+           CSS VARIABLES - DESIGN SYSTEM
            ============================================================ */
         :root {
             --bg-body: #f0f4fa;
@@ -24,6 +24,7 @@
             --bg-input: #f2f6fb;
             --bg-skeleton: #e8edf4;
             --bg-skeleton-shine: #dce3ed;
+            --bg-secondary: rgba(240, 244, 250, 0.5);
             --text-primary: #0a1a2b;
             --text-secondary: #2c4b6f;
             --text-muted: #5e6f86;
@@ -34,7 +35,18 @@
             --radius-card: 20px;
             --radius-btn: 14px;
             --transition-fast: 0.15s ease;
-            --transition-smooth: 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            --transition-normal: 0.25s ease;
+            --transition-slow: 0.35s ease;
+            --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+            
+            --danger: #DC2626;
+            --danger-bg: rgba(220, 38, 38, 0.08);
+            --success: #16A34A;
+            --success-bg: rgba(22, 163, 74, 0.08);
+            --warning: #EA580C;
+            --warning-bg: rgba(234, 88, 12, 0.08);
+            --primary: #2563EB;
+            --primary-bg: rgba(37, 99, 235, 0.08);
         }
 
         /* Dark Mode */
@@ -47,6 +59,7 @@
             --bg-input: #1a2330;
             --bg-skeleton: #1e2a3a;
             --bg-skeleton-shine: #2a3a4a;
+            --bg-secondary: rgba(20, 27, 36, 0.5);
             --text-primary: #e8edf4;
             --text-secondary: #a0b8d0;
             --text-muted: #6a7f9a;
@@ -54,6 +67,14 @@
             --border-color: rgba(48, 60, 80, 0.4);
             --shadow-card: 0 2px 16px rgba(0,0,0,0.3);
             --shadow-nav: 0 -2px 20px rgba(0,0,0,0.4);
+            --danger: #EF4444;
+            --danger-bg: rgba(239, 68, 68, 0.12);
+            --success: #22C55E;
+            --success-bg: rgba(34, 197, 94, 0.12);
+            --warning: #F97316;
+            --warning-bg: rgba(249, 115, 22, 0.12);
+            --primary: #3B82F6;
+            --primary-bg: rgba(59, 130, 246, 0.12);
         }
 
         /* ============================================================
@@ -75,11 +96,10 @@
             padding-bottom: 80px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color var(--transition-slow), color var(--transition-slow);
             overflow-x: hidden;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 3px; height: 3px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 10px; }
@@ -96,7 +116,7 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
+            transition: opacity var(--transition-slow), visibility var(--transition-slow);
         }
         #loadingScreen.hidden {
             opacity: 0;
@@ -144,7 +164,7 @@
             width: 0%;
             background: linear-gradient(90deg, #ff6b35, #ff8c5a);
             border-radius: 4px;
-            transition: width 0.3s ease;
+            transition: width var(--transition-normal);
         }
 
         /* ============================================================
@@ -163,7 +183,7 @@
             align-items: center;
             justify-content: space-between;
             min-height: 56px;
-            transition: background 0.3s ease, border-color 0.3s ease;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
         }
         .navbar-app .brand {
             display: flex;
@@ -210,6 +230,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            transition: background-color var(--transition-fast), color var(--transition-fast);
         }
         .navbar-actions .btn-icon {
             background: transparent;
@@ -223,7 +244,7 @@
             color: var(--text-muted);
             font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
         }
         .navbar-actions .btn-icon:active { transform: scale(0.88); }
         .navbar-actions .btn-icon:hover { background: var(--bg-input); }
@@ -237,7 +258,7 @@
             z-index: 90;
             background: var(--bg-body);
             padding: 8px 12px 8px;
-            transition: background 0.3s ease;
+            transition: background-color var(--transition-slow);
         }
         .kpi-sticky-wrapper .kpi-scroll {
             display: flex;
@@ -258,7 +279,7 @@
             min-width: 80px;
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow-card);
-            transition: background 0.3s ease, border-color 0.3s ease;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
         }
         .kpi-sticky-wrapper .kpi-mini .label {
             font-size: 0.45rem;
@@ -273,9 +294,9 @@
             color: var(--text-primary);
             line-height: 1.2;
         }
-        .kpi-sticky-wrapper .kpi-mini .value.text-success { color: #2b8c5e; }
-        .kpi-sticky-wrapper .kpi-mini .value.text-danger { color: #dc3545; }
-        .kpi-sticky-wrapper .kpi-mini .value.text-warning { color: #e6a020; }
+        .kpi-sticky-wrapper .kpi-mini .value.text-success { color: var(--success); }
+        .kpi-sticky-wrapper .kpi-mini .value.text-danger { color: var(--danger); }
+        .kpi-sticky-wrapper .kpi-mini .value.text-warning { color: var(--warning); }
 
         /* ============================================================
            MAIN CONTENT
@@ -284,6 +305,54 @@
             max-width: 560px;
             margin: 0 auto;
             padding: 0 12px 12px;
+        }
+
+        /* ============================================================
+           DUPLICATE ALERT - MOBILE
+           ============================================================ */
+        .duplicate-alert-mobile {
+            background: var(--danger-bg);
+            border: 1px solid var(--danger);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            animation: slideDownAlert var(--transition-fast) var(--ease-standard);
+            -webkit-tap-highlight-color: transparent;
+            transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+        }
+        .duplicate-alert-mobile:active {
+            transform: scale(0.97);
+            background: rgba(220, 38, 38, 0.12);
+        }
+        @keyframes slideDownAlert {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .duplicate-alert-mobile .icon {
+            color: var(--danger);
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .duplicate-alert-mobile .content {
+            flex: 1;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--danger);
+        }
+        .duplicate-alert-mobile .content .desc {
+            font-weight: 400;
+            opacity: 0.7;
+            display: block;
+            font-size: 0.55rem;
+        }
+        .duplicate-alert-mobile .arrow {
+            color: var(--danger);
+            font-size: 0.6rem;
+            opacity: 0.5;
         }
 
         /* ============================================================
@@ -301,7 +370,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            transition: background 0.3s ease, border-color 0.3s ease;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
         }
         .search-bar i {
             color: var(--text-muted);
@@ -355,7 +424,7 @@
             border: 1px solid transparent;
             white-space: nowrap;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
             flex-shrink: 0;
         }
         .chip:active { transform: scale(0.94); }
@@ -379,7 +448,7 @@
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow-card);
             margin-bottom: 12px;
-            transition: background 0.3s ease, border-color 0.3s ease;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
         }
         .worst-wos-card .header {
             display: flex;
@@ -390,7 +459,7 @@
         .worst-wos-card .header .title {
             font-weight: 700;
             font-size: 0.7rem;
-            color: #dc3545;
+            color: var(--danger);
             display: flex;
             align-items: center;
             gap: 6px;
@@ -418,7 +487,7 @@
             border-radius: 10px;
             background: rgba(220, 53, 69, 0.04);
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
             border: 1px solid transparent;
         }
         .worst-item:active { transform: scale(0.97); background: rgba(220, 53, 69, 0.1); }
@@ -432,7 +501,7 @@
         .worst-item .rank {
             font-weight: 700;
             font-size: 0.5rem;
-            color: #dc3545;
+            color: var(--danger);
             min-width: 20px;
         }
         .worst-item .name {
@@ -446,7 +515,7 @@
         .worst-item .wos-value {
             font-weight: 700;
             font-size: 0.5rem;
-            color: #dc3545;
+            color: var(--danger);
             background: rgba(220, 53, 69, 0.08);
             padding: 1px 10px;
             border-radius: 12px;
@@ -480,7 +549,7 @@
             box-shadow: var(--shadow-card);
             margin-bottom: 10px;
             overflow: hidden;
-            transition: all 0.2s ease;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
         }
         .customer-card:active { transform: scale(0.99); }
         .customer-card .main {
@@ -524,8 +593,8 @@
             display: block;
             line-height: 1.1;
         }
-        .customer-card .main .stats .stat .num.text-success { color: #2b8c5e; }
-        .customer-card .main .stats .stat .num.text-danger { color: #dc3545; }
+        .customer-card .main .stats .stat .num.text-success { color: var(--success); }
+        .customer-card .main .stats .stat .num.text-danger { color: var(--danger); }
         .customer-card .main .stats .stat .lbl {
             font-size: 0.4rem;
             font-weight: 600;
@@ -540,21 +609,21 @@
             justify-content: center;
             border-radius: 50%;
             background: var(--bg-input);
-            transition: all 0.3s ease;
+            transition: background-color var(--transition-normal), transform var(--transition-normal);
             flex-shrink: 0;
             margin-left: 4px;
         }
         .customer-card .main .chevron i {
             font-size: 0.55rem;
             color: var(--text-muted);
-            transition: transform 0.3s ease;
+            transition: transform var(--transition-normal);
         }
         .customer-card .main .chevron.open i { transform: rotate(180deg); }
 
         .customer-card .body-collapse {
             overflow: hidden;
             max-height: 0;
-            transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+            transition: max-height var(--transition-slow) var(--ease-standard), opacity var(--transition-normal);
             opacity: 0;
         }
         .customer-card .body-collapse.open {
@@ -572,7 +641,7 @@
             padding: 7px 4px;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: background-color var(--transition-fast), transform var(--transition-fast);
             -webkit-tap-highlight-color: transparent;
         }
         .customer-card .body-collapse .kategori-row:active { transform: scale(0.98); }
@@ -611,8 +680,8 @@
             font-size: 0.6rem;
             color: var(--text-primary);
         }
-        .customer-card .body-collapse .kategori-row .kstats .ks .num.text-success { color: #2b8c5e; }
-        .customer-card .body-collapse .kategori-row .kstats .ks .num.text-danger { color: #dc3545; }
+        .customer-card .body-collapse .kategori-row .kstats .ks .num.text-success { color: var(--success); }
+        .customer-card .body-collapse .kategori-row .kstats .ks .num.text-danger { color: var(--danger); }
         .customer-card .body-collapse .kategori-row .kstats .btn-detail {
             background: var(--bg-input);
             border: none;
@@ -621,7 +690,7 @@
             font-size: 0.45rem;
             font-weight: 700;
             color: var(--text-secondary);
-            transition: all 0.15s ease;
+            transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
         }
         .customer-card .body-collapse .kategori-row .kstats .btn-detail:active { transform: scale(0.92); }
 
@@ -636,10 +705,60 @@
             min-width: 28px;
             text-align: center;
         }
-        .wos-badge-mini.bg-success { background: #2b8c5e; }
-        .wos-badge-mini.bg-danger { background: #dc3545; }
-        .wos-badge-mini.bg-warning { background: #e6a020; color: #1a1a1a; }
+        .wos-badge-mini.bg-success { background: var(--success); }
+        .wos-badge-mini.bg-danger { background: var(--danger); }
+        .wos-badge-mini.bg-warning { background: var(--warning); color: #1a1a1a; }
         .wos-badge-mini.bg-secondary { background: var(--text-muted); }
+
+        /* ============================================================
+           OOS & LOW STOCK BADGE - MOBILE
+           ============================================================ */
+        .badge-oos-mobile {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 1px 10px 1px 8px;
+            border-radius: 20px;
+            font-size: 0.45rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+        .badge-oos-mobile i { font-size: 0.4rem; }
+
+        .badge-low-stock-mobile {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--warning-bg);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+            padding: 1px 10px 1px 8px;
+            border-radius: 20px;
+            font-size: 0.45rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+        .badge-low-stock-mobile i { font-size: 0.4rem; }
+
+        [data-theme="dark"] .badge-oos-mobile {
+            background: #3a1a1a;
+            color: #f87171;
+            border-color: #7f1d1d;
+        }
+        [data-theme="dark"] .badge-low-stock-mobile {
+            background: #3a2a1a;
+            color: #fbbf24;
+            border-color: #78350f;
+        }
 
         /* ============================================================
            BOTTOM NAVIGATION
@@ -659,7 +778,7 @@
             padding: 6px 0 env(safe-area-inset-bottom, 8px);
             z-index: 200;
             box-shadow: var(--shadow-nav);
-            transition: background 0.3s ease, border-color 0.3s ease;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
         }
         .bottom-nav .nav-item {
             display: flex;
@@ -673,13 +792,13 @@
             font-weight: 600;
             cursor: pointer;
             padding: 4px 12px;
-            transition: all 0.15s ease;
+            transition: color var(--transition-fast);
             position: relative;
             -webkit-tap-highlight-color: transparent;
         }
         .bottom-nav .nav-item i {
             font-size: 1.2rem;
-            transition: transform 0.15s ease;
+            transition: transform var(--transition-fast);
         }
         .bottom-nav .nav-item:active i { transform: scale(0.85); }
         .bottom-nav .nav-item.active {
@@ -692,7 +811,7 @@
             right: 6px;
             width: 8px;
             height: 8px;
-            background: #dc3545;
+            background: var(--danger);
             border-radius: 50%;
             border: 2px solid var(--bg-nav-bottom);
         }
@@ -717,11 +836,13 @@
             justify-content: center;
             cursor: pointer;
             z-index: 150;
-            transition: all 0.2s ease;
+            transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
             -webkit-tap-highlight-color: transparent;
         }
         .fab-refresh:active { transform: scale(0.88); }
-        .fab-refresh.loading { transform: rotate(360deg); transition: transform 0.6s ease; }
+        .fab-refresh.loading {
+            transition: transform var(--transition-slow);
+        }
         .fab-refresh .spinner {
             display: none;
             width: 22px;
@@ -777,12 +898,13 @@
             border-radius: 24px;
             border: none;
             background: var(--bg-card-solid) !important;
-            transition: background 0.3s ease;
+            transition: background-color var(--transition-slow);
         }
         .modal-header-custom {
             background: var(--bg-input) !important;
             padding: 14px 18px;
             border-bottom: 1px solid var(--border-color);
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
         }
         .modal-header-custom h5 {
             font-weight: 700;
@@ -800,6 +922,7 @@
             border: 1px solid var(--border-color);
             margin-bottom: 10px;
             overflow: hidden;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
         }
         .modal-body-custom .imei-card .imei-header {
             padding: 8px 12px;
@@ -809,12 +932,17 @@
             flex-wrap: wrap;
             align-items: center;
             gap: 4px;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
         }
         .modal-body-custom .imei-card .imei-header .imei-name {
             font-weight: 700;
             font-size: 0.7rem;
             color: var(--text-primary) !important;
             flex: 1;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
         }
         .modal-body-custom .imei-card .imei-header .badge {
             font-size: 0.45rem;
@@ -859,12 +987,12 @@
             display: inline-block;
             font-weight: 700;
         }
-        .badge-aging-soft.aging-sold { background: #d4edda; color: #155724; }
+        .badge-aging-soft.aging-sold { background: var(--success-bg); color: var(--success); }
         .badge-aging-soft.aging-na { background: var(--bg-input); color: var(--text-muted); }
-        .badge-aging-soft.aging-normal { background: #d4edda; color: #155724; }
-        .badge-aging-soft.aging-slow { background: #fff3cd; color: #856404; }
-        .badge-aging-soft.aging-critical { background: #ffe5cc; color: #a64d00; }
-        .badge-aging-soft.aging-dead { background: #f8d7da; color: #721c24; }
+        .badge-aging-soft.aging-normal { background: var(--success-bg); color: var(--success); }
+        .badge-aging-soft.aging-slow { background: var(--warning-bg); color: var(--warning); }
+        .badge-aging-soft.aging-critical { background: var(--warning-bg); color: var(--warning); }
+        .badge-aging-soft.aging-dead { background: var(--danger-bg); color: var(--danger); }
 
         [data-theme="dark"] .modal-content { background: var(--bg-card-solid) !important; }
         [data-theme="dark"] .modal-header-custom { background: var(--bg-input) !important; }
@@ -872,6 +1000,256 @@
         [data-theme="dark"] .modal-body-custom .imei-card .imei-header { background: var(--bg-input) !important; }
         [data-theme="dark"] .modal-body-custom .imei-table-wrap table tbody td { color: #c8d2e0 !important; }
         [data-theme="dark"] .modal-body-custom .imei-table-wrap table tbody td .imei-code { color: #e8edf4 !important; }
+
+        /* ============================================================
+           BOTTOM SHEET - DUPLICATE DETAIL
+           ============================================================ */
+        .duplicate-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card-solid);
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            max-height: 70vh;
+            transform: translateY(100%);
+            transition: transform var(--transition-slow) var(--ease-standard), opacity var(--transition-normal);
+            opacity: 0;
+            overflow: hidden;
+            border-top: 1px solid var(--border-color);
+        }
+        .duplicate-sheet.open {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .duplicate-sheet.dragging {
+            transition: none !important;
+        }
+        .duplicate-sheet.resetting {
+            transition: transform var(--transition-normal) var(--ease-standard), opacity var(--transition-normal) !important;
+        }
+        .duplicate-sheet .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+        .duplicate-sheet .sheet-header .title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .duplicate-sheet .sheet-header .title i {
+            color: var(--danger);
+            font-size: 0.9rem;
+        }
+        .duplicate-sheet .sheet-header .close-btn {
+            background: var(--bg-input);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color var(--transition-fast), transform var(--transition-fast);
+        }
+        .duplicate-sheet .sheet-header .close-btn:active { transform: scale(0.88); }
+        .duplicate-sheet .sheet-body {
+            padding: 12px 16px 20px;
+            max-height: calc(70vh - 60px);
+            overflow-y: auto;
+            background: var(--bg-card);
+        }
+        .duplicate-sheet .dup-item-sheet {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .duplicate-sheet .dup-item-sheet .dup-imei {
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: var(--danger);
+            font-family: 'SF Mono', monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-imei .badge-count {
+            background: var(--danger-bg);
+            color: var(--danger);
+            font-size: 0.5rem;
+            font-weight: 700;
+            padding: 1px 10px;
+            border-radius: 12px;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-locations {
+            margin-top: 6px;
+            padding-left: 4px;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 0.8fr 0.8fr;
+            gap: 4px;
+            padding: 3px 0;
+            font-size: 0.5rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location:last-child {
+            border-bottom: none;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location .header-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.45rem;
+            text-transform: uppercase;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location .status-badge {
+            font-size: 0.4rem;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location .status-badge.stock {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location .status-badge.sold {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        .duplicate-sheet .dup-empty {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+        .duplicate-sheet .dup-empty i {
+            font-size: 1.8rem;
+            opacity: 0.3;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .duplicate-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 9998;
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+            pointer-events: none;
+        }
+        .duplicate-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        [data-theme="dark"] .duplicate-sheet {
+            background: var(--bg-card-solid);
+            border-top-color: var(--border-color);
+        }
+        [data-theme="dark"] .duplicate-sheet .dup-item-sheet {
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        [data-theme="dark"] .duplicate-sheet .dup-item-sheet .dup-location {
+            border-bottom-color: rgba(255,255,255,0.03);
+        }
+
+        /* ============================================================
+           TOAST SNACKBAR - SINGLE ELEMENT
+           ============================================================ */
+        #appToast {
+            position: fixed;
+            bottom: 90px;
+            left: 16px;
+            right: 16px;
+            background: var(--bg-card-solid);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            font-size: 12px;
+            font-weight: 500;
+            z-index: 10000;
+            border: 1px solid var(--border-color);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--transition-normal), transform var(--transition-normal);
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+        }
+        #appToast.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        #appToast.hiding {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        #appToast .toast-icon { flex-shrink: 0; font-size: 1rem; }
+        #appToast .toast-icon.success { color: var(--success); }
+        #appToast .toast-icon.error { color: var(--danger); }
+        #appToast .toast-icon.warning { color: var(--warning); }
+        #appToast .toast-icon.info { color: var(--primary); }
+        #appToast .toast-content { flex: 1; }
+        #appToast .toast-title {
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+        }
+        #appToast .toast-message {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            margin-top: 1px;
+        }
+        #appToast .toast-close {
+            background: var(--bg-input);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            cursor: pointer;
+            pointer-events: auto;
+            flex-shrink: 0;
+            transition: background-color var(--transition-fast), transform var(--transition-fast);
+        }
+        #appToast .toast-close:active { transform: scale(0.85); }
+
+        [data-theme="dark"] #appToast {
+            background: var(--bg-card-solid);
+            border-color: var(--border-color);
+        }
+        [data-theme="dark"] #appToast .toast-close {
+            background: var(--bg-secondary);
+        }
 
         /* ============================================================
            RESPONSIVE
@@ -894,6 +1272,13 @@
             .chip { font-size: 0.5rem; padding: 3px 10px; }
             .worst-item .name { font-size: 0.5rem; }
             .modal-dialog { margin: 8px; }
+            .duplicate-sheet { max-height: 75vh; }
+            .duplicate-sheet .sheet-body { max-height: calc(75vh - 60px); padding: 10px 12px 16px; }
+            .duplicate-sheet .dup-item-sheet .dup-location {
+                grid-template-columns: 0.8fr 1fr 0.7fr 0.7fr;
+                font-size: 0.45rem;
+                gap: 2px;
+            }
         }
         @media (max-width: 380px) {
             .kpi-sticky-wrapper .kpi-mini { padding: 4px 8px; min-width: 54px; }
@@ -958,7 +1343,7 @@
         </a>
         <div class="navbar-actions">
             <span class="sync-badge"><i class="far fa-clock"></i> <span id="syncTime">-</span></span>
-            <button class="btn-icon" onclick="toggleDarkMode()" title="Mode Malam">
+            <button class="btn-icon" onclick="toggleDarkMode()" title="Mode Malam" aria-label="Toggle Dark Mode">
                 <i class="fas fa-moon" id="darkIcon"></i>
             </button>
         </div>
@@ -993,11 +1378,14 @@
     <!-- MAIN CONTENT -->
     <div class="main-content">
 
+        <!-- DUPLICATE ALERT CONTAINER -->
+        <div id="duplicateAlertContainer"></div>
+
         <!-- SEARCH BAR -->
         <div class="search-bar">
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" placeholder="Cari Customer..." oninput="handleSearch()">
-            <button class="clear-btn" id="clearBtn" onclick="clearSearch()"><i class="fas fa-times-circle"></i></button>
+            <button class="clear-btn" id="clearBtn" onclick="clearSearch()" aria-label="Clear Search"><i class="fas fa-times-circle"></i></button>
         </div>
 
         <!-- QUICK FILTER CHIPS -->
@@ -1021,27 +1409,27 @@
 
     <!-- BOTTOM NAVIGATION -->
     <div class="bottom-nav">
-        <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+        <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')" aria-label="Dashboard">
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
         </button>
-        <button class="nav-item" data-tab="summary" onclick="switchTab('summary')">
+        <button class="nav-item" data-tab="summary" onclick="switchTab('summary')" aria-label="Summary">
             <i class="fas fa-chart-simple"></i>
             <span>Summary</span>
         </button>
-        <button class="nav-item" data-tab="wos" onclick="switchTab('wos')">
+        <button class="nav-item" data-tab="wos" onclick="switchTab('wos')" aria-label="WOS">
             <i class="fas fa-triangle-exclamation"></i>
             <span>WOS</span>
             <span class="badge-dot" id="wosBadge" style="display:none;"></span>
         </button>
-        <button class="nav-item" data-tab="more" onclick="switchTab('more')">
+        <button class="nav-item" data-tab="more" onclick="switchTab('more')" aria-label="More">
             <i class="fas fa-ellipsis-h"></i>
             <span>More</span>
         </button>
     </div>
 
     <!-- FLOATING ACTION BUTTON - REFRESH -->
-    <button class="fab-refresh" id="fabRefresh" onclick="fetchData()">
+    <button class="fab-refresh" id="fabRefresh" onclick="fetchData()" aria-label="Refresh Data">
         <span class="icon"><i class="fas fa-sync"></i></span>
         <span class="spinner"></span>
     </button>
@@ -1072,6 +1460,34 @@
         </div>
     </div>
 
+    <!-- BOTTOM SHEET - DUPLICATE DETAIL -->
+    <div class="duplicate-overlay" id="duplicateOverlay" onclick="closeDuplicateSheet()"></div>
+    <div class="duplicate-sheet" id="duplicateSheet">
+        <div class="sheet-header">
+            <div class="title">
+                <i class="fa-regular fa-triangle-exclamation"></i>
+                Duplicate IMEI
+                <span id="dupSheetCount" style="font-size:0.6rem;font-weight:400;color:var(--text-muted);"></span>
+            </div>
+            <button class="close-btn" onclick="closeDuplicateSheet()" aria-label="Close">
+                <i class="fa-regular fa-xmark"></i>
+            </button>
+        </div>
+        <div class="sheet-body" id="dupSheetBody"></div>
+    </div>
+
+    <!-- SINGLE TOAST ELEMENT -->
+    <div id="appToast">
+        <span class="toast-icon info"><i class="fa-regular fa-circle-info"></i></span>
+        <div class="toast-content">
+            <div class="toast-title">Informasi</div>
+            <div class="toast-message"></div>
+        </div>
+        <button class="toast-close" onclick="hideToast()" aria-label="Close Toast">
+            <i class="fa-regular fa-xmark"></i>
+        </button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
     </script>
     <script>
@@ -1081,13 +1497,17 @@
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
         document.addEventListener('keydown', function(e) {
             if (e.key === 'PrintScreen' || e.keyCode === 44 || e.key === 'F12' || e.keyCode === 123) {
-                e.preventDefault(); e.stopPropagation(); return false;
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
             }
             if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P')) {
-                e.preventDefault(); return false;
+                e.preventDefault();
+                return false;
             }
             if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J')) {
-                e.preventDefault(); return false;
+                e.preventDefault();
+                return false;
             }
         });
         document.addEventListener('copy', function(e) { e.preventDefault(); return false; });
@@ -1100,12 +1520,137 @@
         // ============================================================
         var rawData = [];
         var filteredData = [];
+        var previousData = null;
         var searchQuery = '';
         var selectedChip = '';
         var myModal = new bootstrap.Modal(document.getElementById('detailModal'));
-        var locationModal = new bootstrap.Modal(document.getElementById('skuLocationModal'));
         var isDarkMode = false;
         var isDataLoaded = false;
+        var isRefreshing = false;
+        var autoRefreshTimeout = null;
+        var AUTO_REFRESH_INTERVAL = 60000;
+
+        var imeiIndex = {};
+        var duplicateMap = {};
+        var duplicateImeiList = [];
+        var UI_CONFIG = { LOW_STOCK_THRESHOLD: 2 };
+
+        // ============================================================
+        // SECURITY HELPERS
+        // ============================================================
+        function escapeHtml(text) {
+            if (!text) return '';
+            var map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        function escapeJsString(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/\\/g, '\\\\')
+                .replace(/"/g, '\\"')
+                .replace(/'/g, "\\'")
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
+        }
+
+        function safeAttr(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function safeText(value) {
+            if (value === undefined || value === null) return '-';
+            return escapeHtml(String(value));
+        }
+
+        // ============================================================
+        // TOAST SNACKBAR - SINGLE ELEMENT
+        // ============================================================
+        var toastTimeout = null;
+        var toastElement = null;
+
+        function getToastElement() {
+            if (!toastElement) {
+                toastElement = document.getElementById('appToast');
+            }
+            return toastElement;
+        }
+
+        function showToast(message, type, duration) {
+            type = type || 'info';
+            duration = duration || 3000;
+
+            var toast = getToastElement();
+            if (!toast) return;
+
+            var icons = {
+                success: 'fa-regular fa-circle-check',
+                error: 'fa-regular fa-circle-xmark',
+                warning: 'fa-regular fa-triangle-exclamation',
+                info: 'fa-regular fa-circle-info'
+            };
+
+            var titles = {
+                success: 'Sukses',
+                error: 'Error',
+                warning: 'Peringatan',
+                info: 'Informasi'
+            };
+
+            if (toastTimeout) {
+                clearTimeout(toastTimeout);
+                toastTimeout = null;
+            }
+
+            toast.classList.remove('show', 'hiding');
+
+            var icon = toast.querySelector('.toast-icon');
+            var title = toast.querySelector('.toast-title');
+            var msg = toast.querySelector('.toast-message');
+
+            if (icon) {
+                icon.className = 'toast-icon ' + type;
+                icon.innerHTML = '<i class="' + (icons[type] || icons.info) + '"></i>';
+            }
+            if (title) title.textContent = titles[type] || 'Info';
+            if (msg) msg.textContent = message;
+
+            void toast.offsetWidth;
+
+            toast.classList.add('show');
+
+            toastTimeout = setTimeout(function() {
+                toast.classList.remove('show');
+                toast.classList.add('hiding');
+                setTimeout(function() {
+                    toast.classList.remove('hiding');
+                }, 300);
+            }, duration);
+        }
+
+        function hideToast() {
+            var toast = getToastElement();
+            if (!toast) return;
+            if (toastTimeout) {
+                clearTimeout(toastTimeout);
+                toastTimeout = null;
+            }
+            toast.classList.remove('show');
+            toast.classList.add('hiding');
+            setTimeout(function() {
+                toast.classList.remove('hiding');
+            }, 300);
+        }
 
         // ============================================================
         // LOADING
@@ -1121,7 +1666,7 @@
         }
 
         // ============================================================
-        // DARK MODE - Auto detect system
+        // DARK MODE
         // ============================================================
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
@@ -1172,7 +1717,6 @@
             document.querySelectorAll('.bottom-nav .nav-item').forEach(function(el) {
                 el.classList.toggle('active', el.dataset.tab === tab);
             });
-            // Scroll ke bagian tertentu
             if (tab === 'dashboard') {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (tab === 'summary') {
@@ -1218,7 +1762,9 @@
             });
             uniqueDepos.sort();
             uniqueDepos.forEach(function(d) {
-                container.innerHTML += `<span class="chip" data-depo="${d}" onclick="filterChip(this, '${d}')">${d}</span>`;
+                var escaped = escapeJsString(d);
+                container.innerHTML +=
+                    `<span class="chip" data-depo="${escaped}" onclick="filterChip(this, '${escaped}')">${safeAttr(d)}</span>`;
             });
         }
 
@@ -1226,12 +1772,6 @@
         // APPLY ALL FILTERS
         // ============================================================
         function applyAllFilters() {
-            var selectedDepo = document.getElementById('filterDepo') ? document.getElementById('filterDepo').value : '';
-            var selectedCust = document.getElementById('filterCustomer') ? document.getElementById('filterCustomer').value : '';
-            var selectedKat = document.getElementById('filterKategori') ? document.getElementById('filterKategori').value : '';
-            var selectedBarang = document.getElementById('filterBarang') ? document.getElementById('filterBarang').value : '';
-
-            // Gunakan chip filter jika ada
             var chipDepo = selectedChip || '';
 
             filteredData = [];
@@ -1250,581 +1790,1584 @@
         }
 
         // ============================================================
-        // MAIN
+        // BUSINESS KEY - STABLE IDENTIFIER
         // ============================================================
-        window.addEventListener('DOMContentLoaded', function() {
-            detectSystemTheme();
-            updateProgress(10);
-            setTimeout(function() { updateProgress(30); }, 300);
-            setTimeout(function() { updateProgress(50); }, 600);
-            setTimeout(function() { updateProgress(70); }, 1000);
-            setTimeout(function() { updateProgress(85); }, 1400);
-            fetchData();
-        });
+        function generateBusinessKey(record) {
+            if (!record) return '';
 
-        function fetchData() {
-            var fab = document.getElementById('fabRefresh');
-            fab.classList.add('loading');
+            var imei = extractIMEI(record);
+            if (imei) {
+                return 'IMEI|' + imei.toString().trim().toUpperCase();
+            }
 
-            google.script.run
-                .withSuccessHandler(function(response) {
-                    updateProgress(95);
-                    fab.classList.remove('loading');
-                    if (response && response.success) {
-                        rawData = response.rows || [];
-                        document.getElementById('syncTime').innerText = response.lastSync || '-';
-
-                        // Setup chips
-                        var depos = [];
-                        rawData.forEach(function(r) { if (r.depo && depos.indexOf(r.depo) === -1) depos.push(r.depo); });
-                        setupChips(depos);
-
-                        // KPI
-                        var kpi = response.kpi || {};
-                        if (!kpi.avgWOS || kpi.avgWOS === 0) {
-                            var totalWOS = 0,
-                                countWOS = 0;
-                            rawData.forEach(function(row) {
-                                if (row.wos && row.wos > 0) { totalWOS += parseFloat(row.wos);
-                                    countWOS++; }
-                                if (row.barang && Array.isArray(row.barang)) {
-                                    row.barang.forEach(function(b) {
-                                        if (b.wos && b.wos > 0) { totalWOS += parseFloat(b.wos);
-                                            countWOS++; }
-                                    });
-                                }
-                            });
-                            kpi.avgWOS = countWOS > 0 ? (totalWOS / countWOS).toFixed(2) : 0;
-                        }
-
-                        // Set filtered data
-                        filteredData = rawData.slice();
-                        updateKPI(kpi);
-                        renderCustomerCards(filteredData);
-                        updateWorstWos(filteredData);
-                        document.getElementById('kpiItemCount').innerText = filteredData.length;
-
-                        updateProgress(100);
-                        setTimeout(function() { hideLoadingScreen(); }, 300);
-                        isDataLoaded = true;
-                    } else {
-                        updateProgress(100);
-                        hideLoadingScreen();
-                        alert("Gagal load data: " + (response ? response.error : 'Unknown Error'));
-                    }
-                })
-                .withFailureHandler(function(err) {
-                    fab.classList.remove('loading');
-                    updateProgress(100);
-                    hideLoadingScreen();
-                    alert("Koneksi Error: " + err.message);
-                })
-                .loadDashboard();
-        }
-
-        // ============================================================
-        // UPDATE KPI
-        // ============================================================
-        function updateKPI(kpi) {
-            document.getElementById('kpiSellThru').innerText = (kpi.sellThru || 0).toLocaleString('id-ID');
-            document.getElementById('kpiSellOut').innerText = (kpi.sellOut || 0).toLocaleString('id-ID');
-            document.getElementById('kpiStockCI').innerText = (kpi.stockCI || 0).toLocaleString('id-ID');
-            document.getElementById('kpiAvgWOS').innerText = (kpi.avgWOS || 0);
-        }
-
-        function updateKPIFromData(rows) {
-            var st = 0,
-                so = 0,
-                ci = 0,
-                totalWOS = 0,
-                countWOS = 0;
-            rows.forEach(function(row) {
-                st += row.sellThru || 0;
-                so += row.sellOut || 0;
-                ci += row.stockCI || 0;
-                if (row.wos && row.wos > 0) { totalWOS += parseFloat(row.wos);
-                    countWOS++; }
-                if (row.barang && Array.isArray(row.barang)) {
-                    row.barang.forEach(function(b) {
-                        if (b.wos && b.wos > 0) { totalWOS += parseFloat(b.wos);
-                            countWOS++; }
-                    });
-                }
-            });
-            document.getElementById('kpiSellThru').innerText = st.toLocaleString('id-ID');
-            document.getElementById('kpiSellOut').innerText = so.toLocaleString('id-ID');
-            document.getElementById('kpiStockCI').innerText = ci.toLocaleString('id-ID');
-            var avgWOS = countWOS > 0 ? (totalWOS / countWOS).toFixed(2) : 0;
-            document.getElementById('kpiAvgWOS').innerText = avgWOS;
-        }
-
-        // ============================================================
-        // WOS BADGE
-        // ============================================================
-        function getWosBadge(wosValue, stockValue) {
-            var val = parseFloat(wosValue);
-            var stock = parseInt(stockValue) || 0;
-            if (stock > 0 && (val === 0 || isNaN(val))) return '<span class="wos-badge-mini bg-danger">99+</span>';
-            if (isNaN(val)) return '<span class="wos-badge-mini bg-secondary">N/A</span>';
-            if (val < 4) return '<span class="wos-badge-mini bg-success">' + val + '</span>';
-            else if (val >= 4 && val <= 5) return '<span class="wos-badge-mini bg-warning">' + val + '</span>';
-            else return '<span class="wos-badge-mini bg-danger">' + val + '</span>';
-        }
-
-        function getStockClass(stockVal) {
-            return parseInt(stockVal) === 0 ? 'text-danger' : '';
-        }
-
-        // ============================================================
-        // UPDATE WORST WOS
-        // ============================================================
-        function updateWorstWos(rows) {
-            var list = document.getElementById('worstWosList');
-            var countEl = document.getElementById('worstCount');
-
-            var skuMap = {};
-            rows.forEach(function(row) {
-                if (row.barang && Array.isArray(row.barang)) {
-                    row.barang.forEach(function(b) {
-                        if (b.nama) {
-                            var wosVal = parseFloat(b.wos || 0);
-                            var stockVal = parseInt(b.stockCI || 0);
-                            if (stockVal > 0 && !isNaN(wosVal) && wosVal > 0) {
-                                if (!skuMap[b.nama] || wosVal > skuMap[b.nama]) {
-                                    skuMap[b.nama] = wosVal;
+            if (record.barang && Array.isArray(record.barang)) {
+                for (var i = 0; i < record.barang.length; i++) {
+                    var barang = record.barang[i];
+                    if (barang && barang.details && Array.isArray(barang.details)) {
+                        for (var j = 0; j < barang.details.length; j++) {
+                            var detail = barang.details[j];
+                            if (detail) {
+                                var detailImei = detail.imei || detail.serial || '';
+                                if (detailImei) {
+                                    return 'IMEI|' + detailImei.toString().trim().toUpperCase();
                                 }
                             }
                         }
-                    });
+                    }
                 }
-            });
-
-            var skuList = [];
-            for (var key in skuMap) { skuList.push({ nama: key, wos: skuMap[key] }); }
-            skuList.sort(function(a, b) { return b.wos - a.wos; });
-            var top5 = skuList.slice(0, 5);
-
-            countEl.innerText = skuList.length + ' SKU';
-
-            if (top5.length === 0) {
-                list.innerHTML = '<div class="worst-empty">Tidak ada data SKU dengan stok > 0</div>';
-                return;
             }
 
-            var html = '';
-            top5.forEach(function(sku, idx) {
-                html += `
-                    <div class="worst-item" onclick="showSkuLocation('${sku.nama}')">
-                        <div class="left">
-                            <span class="rank">#${idx+1}</span>
-                            <span class="name">${sku.nama}</span>
-                        </div>
-                        <span class="wos-value">${sku.wos.toFixed(1)}w</span>
-                        <span class="arrow"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                `;
-            });
-            list.innerHTML = html;
-
-            // Update badge di bottom nav
-            var badge = document.getElementById('wosBadge');
-            if (top5.length > 0) {
-                badge.style.display = 'block';
-            } else {
-                badge.style.display = 'none';
+            if (record._id && record._id.toString().trim() !== '') {
+                return 'ID|' + record._id.toString().trim();
             }
+            if (record.recordId && record.recordId.toString().trim() !== '') {
+                return 'ID|' + record.recordId.toString().trim();
+            }
+            if (record.id && record.id.toString().trim() !== '') {
+                return 'ID|' + record.id.toString().trim();
+            }
+
+            var depo = record.depo || '';
+            var customer = record.customer || '';
+            var sku = getSKUName(record) || '';
+
+            var parts = [
+                depo.toString().trim().toUpperCase(),
+                customer.toString().trim().toUpperCase(),
+                sku.toString().trim().toUpperCase()
+            ];
+            parts = parts.filter(function(p) { return p !== ''; });
+
+            if (parts.length >= 2) {
+                return 'COMBO|' + parts.join('|');
+            }
+
+            return '';
+        }
+
+        function extractIMEI(record) {
+            if (!record) return '';
+            if (record.imei) return record.imei;
+            if (record.serial) return record.serial;
+            if (record.barang && Array.isArray(record.barang)) {
+                for (var i = 0; i < record.barang.length; i++) {
+                    var barang = record.barang[i];
+                    if (barang && barang.details && Array.isArray(barang.details)) {
+                        for (var j = 0; j < barang.details.length; j++) {
+                            var detail = barang.details[j];
+                            if (detail) {
+                                var imei = detail.imei || detail.serial || '';
+                                if (imei) return imei;
+                            }
+                        }
+                    }
+                }
+            }
+            return '';
+        }
+
+        function getSKUName(record) {
+            if (!record) return '-';
+            if (record.namaBarang) return record.namaBarang;
+            if (record.sku) return record.sku;
+            if (record.barang && Array.isArray(record.barang) && record.barang.length > 0) {
+                return record.barang[0].nama || '-';
+            }
+            return '-';
+        }
+
+        function normalizeValue(value) {
+            if (value === undefined || value === null) return '';
+            if (typeof value === 'string') return value.trim();
+            if (typeof value === 'number') return value.toString();
+            if (typeof value === 'boolean') return value.toString();
+            if (value instanceof Date) return value.toISOString();
+            return String(value);
+        }
+
+        function getNestedValue(obj, key) {
+            if (!obj) return undefined;
+            if (key.indexOf('.') > -1) {
+                var parts = key.split('.');
+                var current = obj;
+                for (var i = 0; i < parts.length; i++) {
+                    if (current === undefined || current === null) return undefined;
+                    current = current[parts[i]];
+                }
+                return current;
+            }
+            return obj[key];
         }
 
         // ============================================================
-        // SHOW SKU LOCATION
+        // FIELD CLASSIFICATION
         // ============================================================
-        function showSkuLocation(skuName) {
-            var locations = [];
-            rawData.forEach(function(row) {
-                if (row.barang && Array.isArray(row.barang)) {
-                    row.barang.forEach(function(b) {
-                        if (b.nama === skuName) {
-                            var wosVal = parseFloat(b.wos || 0);
-                            var stockVal = parseInt(b.stockCI || 0);
-                            if (stockVal > 0 && !isNaN(wosVal) && wosVal > 0) {
-                                locations.push({
-                                    depo: row.depo,
-                                    customer: row.customer,
-                                    wos: wosVal,
-                                    stockCI: stockVal
+        var FIELD_CLASSIFICATION = {
+            critical: [
+                'Sell Thru', 'Sell Out', 'Stock C.I', 'Coverage Active', 'Average Weekly', 'WOS'
+            ],
+            master: [
+                'Customer', 'Depo', 'Nama Barang', 'SKU', 'Brand', 'Kategori', 'Sub Kategori'
+            ],
+            identity: [
+                'IMEI', 'Serial Number'
+            ]
+        };
+
+        // ============================================================
+        // COMPARE RECORDS
+        // ============================================================
+        function compareRecords(oldRecord, newRecord) {
+            var changes = [];
+
+            var criticalFields = [
+                { key: 'sellThru', label: 'Sell Thru' },
+                { key: 'sellOut', label: 'Sell Out' },
+                { key: 'stockCI', label: 'Stock C.I' },
+                { key: 'coverageActive', label: 'Coverage Active' },
+                { key: 'avgSellOutWeekly', label: 'Average Weekly' },
+                { key: 'wos', label: 'WOS' }
+            ];
+
+            var masterFields = [
+                { key: 'depo', label: 'Depo' },
+                { key: 'customer', label: 'Customer' },
+                { key: 'namaBarang', label: 'Nama Barang' },
+                { key: 'barang', label: 'SKU' },
+                { key: 'brand', label: 'Brand' },
+                { key: 'kategori', label: 'Kategori' },
+                { key: 'subKategori', label: 'Sub Kategori' }
+            ];
+
+            var identityFields = [
+                { key: 'imei', label: 'IMEI' },
+                { key: 'serial', label: 'Serial Number' }
+            ];
+
+            for (var i = 0; i < criticalFields.length; i++) {
+                var field = criticalFields[i];
+                var oldValue = getNestedValue(oldRecord, field.key);
+                var newValue = getNestedValue(newRecord, field.key);
+                if ((oldValue === undefined || oldValue === null || oldValue === '') &&
+                    (newValue === undefined || newValue === null || newValue === '')) {
+                    continue;
+                }
+                var oldNorm = normalizeValue(oldValue);
+                var newNorm = normalizeValue(newValue);
+                if (oldNorm !== newNorm) {
+                    changes.push({
+                        field: field.label,
+                        oldValue: oldNorm !== '' ? oldNorm : '(kosong)',
+                        newValue: newNorm !== '' ? newNorm : '(kosong)',
+                        category: 'critical'
+                    });
+                }
+            }
+
+            for (var i = 0; i < masterFields.length; i++) {
+                var field = masterFields[i];
+                var oldValue = getNestedValue(oldRecord, field.key);
+                var newValue = getNestedValue(newRecord, field.key);
+                if ((oldValue === undefined || oldValue === null || oldValue === '') &&
+                    (newValue === undefined || newValue === null || newValue === '')) {
+                    continue;
+                }
+                var oldNorm = normalizeValue(oldValue);
+                var newNorm = normalizeValue(newValue);
+                if (oldNorm !== newNorm) {
+                    changes.push({
+                        field: field.label,
+                        oldValue: oldNorm !== '' ? oldNorm : '(kosong)',
+                        newValue: newNorm !== '' ? newNorm : '(kosong)',
+                        category: 'master'
+                    });
+                }
+            }
+
+            for (var i = 0; i < identityFields.length; i++) {
+                var field = identityFields[i];
+                var oldValue = getNestedValue(oldRecord, field.key);
+                var newValue = getNestedValue(newRecord, field.key);
+                if ((oldValue === undefined || oldValue === null || oldValue === '') &&
+                    (newValue === undefined || newValue === null || newValue === '')) {
+                    continue;
+                }
+                var oldNorm = normalizeValue(oldValue);
+                var newNorm = normalizeValue(newValue);
+                if (oldNorm !== newNorm) {
+                    changes.push({
+                        field: field.label,
+                        oldValue: oldNorm !== '' ? oldNorm : '(kosong)',
+                        newValue: newNorm !== '' ? newNorm : '(kosong)',
+                        category: 'identity'
+                    });
+                }
+            }
+
+            if (newRecord.barang && oldRecord.barang) {
+                for (var j = 0; j < newRecord.barang.length; j++) {
+                    var newBarang = newRecord.barang[j];
+                    var oldBarang = oldRecord.barang[j] || {};
+                    if (newBarang.details && oldBarang.details) {
+                        for (var k = 0; k < newBarang.details.length; k++) {
+                            var newDetail = newBarang.details[k];
+                            var oldDetail = oldBarang.details[k] || {};
+                            if (newDetail.imei !== oldDetail.imei) {
+                                changes.push({
+                                    field: 'IMEI (' + (k + 1) + ')',
+                                    oldValue: oldDetail.imei || '(kosong)',
+                                    newValue: newDetail.imei || '(kosong)',
+                                    category: 'identity'
+                                });
+                            }
+                            if (newDetail.tanggalSellThru !== oldDetail.tanggalSellThru) {
+                                changes.push({
+                                    field: 'Sell Thru (' + (k + 1) + ')',
+                                    oldValue: oldDetail.tanggalSellThru || '(kosong)',
+                                    newValue: newDetail.tanggalSellThru || '(kosong)',
+                                    category: 'critical'
                                 });
                             }
                         }
+                    }
+                }
+            }
+
+            return changes;
+        }
+
+        // ============================================================
+        // CHANGE DETECTION
+        // ============================================================
+        function detectChanges(oldData, newData) {
+            var oldIndex = new Map();
+            var newIndex = new Map();
+            var oldKeys = new Set();
+            var newKeys = new Set();
+            var skippedOld = 0;
+            var skippedNew = 0;
+
+            for (var i = 0; i < oldData.length; i++) {
+                var record = oldData[i];
+                var key = generateBusinessKey(record);
+                if (key) {
+                    oldIndex.set(key, record);
+                    oldKeys.add(key);
+                } else {
+                    skippedOld++;
+                }
+            }
+
+            for (var i = 0; i < newData.length; i++) {
+                var record = newData[i];
+                var key = generateBusinessKey(record);
+                if (key) {
+                    newIndex.set(key, record);
+                    newKeys.add(key);
+                } else {
+                    skippedNew++;
+                }
+            }
+
+            if (skippedOld > 0) {
+                console.warn('⚠️ ' + skippedOld + ' record(s) di-skip dari oldData karena tidak memiliki Business Key');
+            }
+            if (skippedNew > 0) {
+                console.warn('⚠️ ' + skippedNew + ' record(s) di-skip dari newData karena tidak memiliki Business Key');
+            }
+
+            var result = {
+                newRecords: [],
+                updatedRecords: [],
+                deletedRecords: [],
+                existingRecords: [],
+                criticalUpdates: [],
+                masterUpdates: [],
+                identityUpdates: [],
+                skipped: {
+                    old: skippedOld,
+                    new: skippedNew
+                }
+            };
+
+            newKeys.forEach(function(key) {
+                var newRecord = newIndex.get(key);
+                if (oldIndex.has(key)) {
+                    var oldRecord = oldIndex.get(key);
+                    var changes = compareRecords(oldRecord, newRecord);
+                    if (changes.length > 0) {
+                        var criticalChanges = changes.filter(function(c) { return c.category === 'critical'; });
+                        var masterChanges = changes.filter(function(c) { return c.category === 'master'; });
+                        var identityChanges = changes.filter(function(c) { return c.category === 'identity'; });
+
+                        var updatedInfo = {
+                            businessKey: key,
+                            depo: newRecord.depo || '-',
+                            customer: newRecord.customer || '-',
+                            sku: getSKUName(newRecord),
+                            namaBarang: getSKUName(newRecord),
+                            imei: extractIMEI(newRecord),
+                            changes: changes,
+                            criticalChanges: criticalChanges,
+                            masterChanges: masterChanges,
+                            identityChanges: identityChanges,
+                            hasCriticalChange: criticalChanges.length > 0,
+                            hasMasterChange: masterChanges.length > 0,
+                            hasIdentityChange: identityChanges.length > 0
+                        };
+
+                        result.updatedRecords.push(updatedInfo);
+
+                        if (criticalChanges.length > 0) {
+                            result.criticalUpdates.push(updatedInfo);
+                        }
+                        if (masterChanges.length > 0) {
+                            result.masterUpdates.push(updatedInfo);
+                        }
+                        if (identityChanges.length > 0) {
+                            result.identityUpdates.push(updatedInfo);
+                        }
+                    } else {
+                        result.existingRecords.push({
+                            businessKey: key,
+                            depo: newRecord.depo || '-',
+                            customer: newRecord.customer || '-',
+                            sku: getSKUName(newRecord)
+                        });
+                    }
+                } else {
+                    result.newRecords.push({
+                        businessKey: key,
+                        depo: newRecord.depo || '-',
+                        customer: newRecord.customer || '-',
+                        sku: getSKUName(newRecord),
+                        namaBarang: getSKUName(newRecord),
+                        imei: extractIMEI(newRecord),
+                        data: newRecord
                     });
                 }
             });
-            locations.sort(function(a, b) { return b.wos - a.wos; });
 
-            document.getElementById('skuLocationTitle').innerHTML =
-                `<i class="fas fa-map-pin me-2"></i>Lokasi SKU: <strong>${skuName}</strong> <span style="font-size:0.5rem;font-weight:400;color:var(--text-muted);margin-left:6px;">(${locations.length} lokasi)</span>`;
+            oldKeys.forEach(function(key) {
+                if (!newIndex.has(key)) {
+                    var oldRecord = oldIndex.get(key);
+                    result.deletedRecords.push({
+                        businessKey: key,
+                        depo: oldRecord.depo || '-',
+                        customer: oldRecord.customer || '-',
+                        sku: getSKUName(oldRecord),
+                        namaBarang: getSKUName(oldRecord),
+                        imei: extractIMEI(oldRecord),
+                        data: oldRecord
+                    });
+                }
+            });
 
-            var bodyHtml = '';
-            if (locations.length === 0) {
-                bodyHtml =
-                    `<div class="text-center text-muted py-4" style="font-size:0.7rem;">SKU tidak ditemukan</div>`;
-            } else {
-                bodyHtml = `
-                    <div style="margin-bottom:6px;font-size:0.5rem;color:var(--text-muted);padding:0 4px;">
-                        <i class="fas fa-info-circle"></i> Customer dengan stok SKU ini
+            result.totalData = newData.length;
+
+            return result;
+        }
+
+        // ============================================================
+        // BUILD CHANGE HISTORY
+        // ============================================================
+        function buildChangeHistory(changeResult, lastSync) {
+            var criticalUpdates = changeResult.criticalUpdates ? changeResult.criticalUpdates.length : 0;
+            var masterUpdates = changeResult.masterUpdates ? changeResult.masterUpdates.length : 0;
+            var identityUpdates = changeResult.identityUpdates ? changeResult.identityUpdates.length : 0;
+
+            var timestamp = lastSync || getCurrentTime();
+
+            if (changeResult.newRecords) {
+                changeResult.newRecords.forEach(function(r) { r.timestamp = timestamp; });
+            }
+            if (changeResult.criticalUpdates) {
+                changeResult.criticalUpdates.forEach(function(r) { r.timestamp = timestamp; });
+            }
+            if (changeResult.identityUpdates) {
+                changeResult.identityUpdates.forEach(function(r) { r.timestamp = timestamp; });
+            }
+            if (changeResult.masterUpdates) {
+                changeResult.masterUpdates.forEach(function(r) { r.timestamp = timestamp; });
+            }
+            if (changeResult.deletedRecords) {
+                changeResult.deletedRecords.forEach(function(r) { r.timestamp = timestamp; });
+            }
+
+            return {
+                timestamp: timestamp,
+                summary: {
+                    newRecords: changeResult.newRecords ? changeResult.newRecords.length : 0,
+                    updatedRecords: changeResult.updatedRecords ? changeResult.updatedRecords.length : 0,
+                    deletedRecords: changeResult.deletedRecords ? changeResult.deletedRecords.length : 0,
+                    totalData: changeResult.totalData || 0,
+                    criticalUpdates: criticalUpdates,
+                    masterUpdates: masterUpdates,
+                    identityUpdates: identityUpdates
+                },
+                details: changeResult
+            };
+        }
+
+        // ============================================================
+        // GET CURRENT TIME
+        // ============================================================
+        function getCurrentTime() {
+            var now = new Date();
+            return now.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit',
+                minute: '2-digit' });
+        }
+
+        // ============================================================
+        // BUILD IMEI INDEX
+        // ============================================================
+        function buildIMEIIndex(data) {
+            var index = {};
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                return index;
+            }
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i];
+                if (!row || !row.barang || !Array.isArray(row.barang)) continue;
+                var depo = row.depo || '-';
+                var customer = row.customer || '-';
+                var kategori = row.kategori || '-';
+                for (var j = 0; j < row.barang.length; j++) {
+                    var barang = row.barang[j];
+                    if (!barang || !barang.details || !Array.isArray(barang.details)) continue;
+                    var namaBarang = barang.nama || '-';
+                    for (var k = 0; k < barang.details.length; k++) {
+                        var detail = barang.details[k];
+                        if (!detail) continue;
+                        var imei = detail.imei || detail.serial || '';
+                        if (!imei) continue;
+                        var normalizedImei = imei.toString().trim();
+                        if (!index[normalizedImei]) {
+                            index[normalizedImei] = [];
+                        }
+                        index[normalizedImei].push({
+                            depo: depo,
+                            customer: customer,
+                            kategori: kategori,
+                            namaBarang: namaBarang,
+                            imei: imei,
+                            tanggalSellThru: detail.tanggalSellThru || '-',
+                            coverageActive: detail.coverage || '-',
+                            isValidCoverage: detail.isValidCoverage,
+                            status: detail.isValidCoverage === false ? 'Stock' : 'Terjual'
+                        });
+                    }
+                }
+            }
+            return index;
+        }
+
+        // ============================================================
+        // BUILD DUPLICATE MAP
+        // ============================================================
+        function buildDuplicateMap(duplicateData) {
+            var map = {};
+            var uniqueList = [];
+            if (!duplicateData || !Array.isArray(duplicateData) || duplicateData.length === 0) {
+                return { map: map, list: uniqueList };
+            }
+            var uniqueImeiMap = {};
+            for (var i = 0; i < duplicateData.length; i++) {
+                var item = duplicateData[i];
+                if (!item) continue;
+                var imei = item.imei || item.serial || item.serialNumber || '';
+                if (!imei) continue;
+                var normalizedImei = imei.toString().trim();
+                if (!uniqueImeiMap[normalizedImei]) {
+                    uniqueImeiMap[normalizedImei] = true;
+                    uniqueList.push(normalizedImei);
+                }
+            }
+            for (var j = 0; j < uniqueList.length; j++) {
+                var imei = uniqueList[j];
+                var locations = imeiIndex[imei] || [];
+                if (locations.length > 0) {
+                    map[imei] = locations;
+                } else {
+                    map[imei] = [{
+                        depo: '-',
+                        customer: '-',
+                        kategori: '-',
+                        namaBarang: '-',
+                        imei: imei,
+                        tanggalSellThru: '-',
+                        coverageActive: '-',
+                        isValidCoverage: null,
+                        status: 'Unknown'
+                    }];
+                }
+            }
+            for (var key in map) {
+                if (map.hasOwnProperty(key)) {
+                    if (map[key].length < 2) {
+                        console.warn("   ⚠️ WARNING: " + key + " hanya memiliki", map[key].length,
+                            "record (minimal 2 diperlukan)");
+                    }
+                }
+            }
+            return { map: map, list: uniqueList };
+        }
+
+        // ============================================================
+        // GET VALID DUPLICATE COUNT - SINGLE SOURCE OF TRUTH
+        // ============================================================
+        function getValidDuplicateCount() {
+            if (!duplicateMap || typeof duplicateMap !== 'object') {
+                return 0;
+            }
+            return Object.keys(duplicateMap).length;
+        }
+
+        // ============================================================
+        // DUPLICATE ALERT - MOBILE
+        // ============================================================
+        function showDuplicateAlertMobile() {
+            var count = getValidDuplicateCount();
+            var container = document.getElementById('duplicateAlertContainer');
+            if (!container) return;
+
+            if (count === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            var sampleImei = duplicateImeiList.slice(0, 2);
+            var previewText = sampleImei.map(function(imei) { return safeText(imei); }).join(', ');
+            if (duplicateImeiList.length > 2) {
+                previewText += ' ...';
+            }
+
+            container.innerHTML = `
+                <div class="duplicate-alert-mobile" onclick="showDuplicateDetailMobile()">
+                    <span class="icon"><i class="fa-regular fa-triangle-exclamation"></i></span>
+                    <div class="content">
+                        ⚠️ Ditemukan ${count} IMEI Duplicate
+                        <span class="desc">Tap untuk lihat detail • ${previewText}</span>
                     </div>
-                    <div style="background:var(--bg-card);border-radius:12px;overflow:hidden;border:1px solid var(--border-color);">
-                        <div style="display:grid;grid-template-columns:1fr 1fr 0.6fr 0.6fr;padding:5px 10px;background:var(--bg-input);font-size:0.45rem;font-weight:700;color:var(--text-muted);border-bottom:1px solid var(--border-color);">
-                            <span>Depo</span>
-                            <span>Customer</span>
-                            <span class="text-center">CI</span>
-                            <span class="text-center">WOS</span>
-                        </div>
+                    <span class="arrow"><i class="fa-regular fa-chevron-right"></i></span>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // DUPLICATE BOTTOM SHEET
+        // ============================================================
+        function openDuplicateSheet() {
+            var sheet = document.getElementById('duplicateSheet');
+            var overlay = document.getElementById('duplicateOverlay');
+            var body = document.getElementById('dupSheetBody');
+            var count = document.getElementById('dupSheetCount');
+
+            if (!sheet || !overlay || !body) return;
+
+            var validCount = getValidDuplicateCount();
+            if (validCount === 0) {
+                body.innerHTML = `
+                    <div class="dup-empty">
+                        <i class="fa-regular fa-circle-check"></i>
+                        Tidak ada duplicate IMEI
+                    </div>
                 `;
-                locations.forEach(function(loc) {
-                    bodyHtml += `
-                        <div style="display:grid;grid-template-columns:1fr 1fr 0.6fr 0.6fr;padding:5px 10px;border-bottom:1px solid var(--border-color);font-size:0.55rem;color:var(--text-primary);">
-                            <span style="font-weight:600;">${loc.depo}</span>
-                            <span>${loc.customer}</span>
-                            <span class="text-center" style="font-weight:600;color:#e6a020;">${loc.stockCI}</span>
-                            <span class="text-center" style="background:rgba(220,53,69,0.08);padding:1px 8px;border-radius:8px;font-weight:700;color:#dc3545;font-size:0.5rem;">${loc.wos.toFixed(1)}w</span>
+                if (count) count.textContent = '(0)';
+            } else {
+                if (count) count.textContent = '(' + validCount + ')';
+                var html = '';
+                var totalRecords = 0;
+
+                for (var i = 0; i < duplicateImeiList.length; i++) {
+                    var imei = duplicateImeiList[i];
+                    var locations = duplicateMap[imei] || [];
+                    totalRecords += locations.length;
+
+                    html += `
+                        <div class="dup-item-sheet">
+                            <div class="dup-imei">
+                                <span>🔹 ${safeText(imei)}</span>
+                                <span class="badge-count">${locations.length} Data</span>
+                            </div>
+                            <div class="dup-locations">
+                                <div class="dup-location">
+                                    <span class="header-label">Depo</span>
+                                    <span class="header-label">Customer</span>
+                                    <span class="header-label">SellThru</span>
+                                    <span class="header-label">Status</span>
+                                </div>
+                    `;
+
+                    for (var j = 0; j < locations.length; j++) {
+                        var loc = locations[j];
+                        var statusClass = loc.status === 'Stock' ? 'stock' : 'sold';
+                        html += `
+                            <div class="dup-location">
+                                <span>${safeText(loc.depo)}</span>
+                                <span>${safeText(loc.customer)}</span>
+                                <span>${safeText(loc.tanggalSellThru)}</span>
+                                <span><span class="status-badge ${statusClass}">${safeText(loc.status)}</span></span>
+                            </div>
+                        `;
+                    }
+
+                    html += `
+                            </div>
                         </div>
                     `;
-                });
-                bodyHtml += `</div>`;
+                }
+
+                html += `
+                    <div style="font-size:0.5rem;color:var(--text-muted);padding:8px 4px 0;border-top:1px solid var(--border-color);margin-top:4px;">
+                        📊 Total ${totalRecords} record duplicate • Data tidak dihitung pada dashboard.
+                    </div>
+                `;
+
+                body.innerHTML = html;
             }
-            document.getElementById('skuLocationBody').innerHTML = bodyHtml;
-            locationModal.show();
+
+            body.scrollTop = 0;
+
+            sheet.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDuplicateSheet() {
+            var sheet = document.getElementById('duplicateSheet');
+            var overlay = document.getElementById('duplicateOverlay');
+            if (sheet) {
+                sheet.classList.remove('open', 'dragging', 'resetting');
+                sheet.style.transform = '';
+                sheet.style.opacity = '';
+            }
+            if (overlay) overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function showDuplicateDetailMobile() {
+            var count = getValidDuplicateCount();
+            if (count === 0) return;
+            openDuplicateSheet();
+        }
+
+        // ============================================================
+        // SWIPE TO CLOSE - BOTTOM SHEET
+        // ============================================================
+        var sheetTouchStartY = 0;
+        var sheetTouchCurrentY = 0;
+        var sheetIsDragging = false;
+        var sheetCurrentTransform = 0;
+
+        function initSwipeToClose() {
+            var sheet = document.getElementById('duplicateSheet');
+            var overlay = document.getElementById('duplicateOverlay');
+            var body = document.getElementById('dupSheetBody');
+            if (!sheet) return;
+
+            sheet.addEventListener('touchstart', function(e) {
+                if (body && body.scrollTop > 0) {
+                    return;
+                }
+                var touch = e.touches[0];
+                sheetTouchStartY = touch.clientY;
+                sheetTouchCurrentY = touch.clientY;
+                sheetIsDragging = true;
+                sheetCurrentTransform = 0;
+                sheet.classList.add('dragging');
+            }, { passive: true });
+
+            sheet.addEventListener('touchmove', function(e) {
+                if (!sheetIsDragging) return;
+                if (body && body.scrollTop > 0) {
+                    sheetIsDragging = false;
+                    sheet.classList.remove('dragging');
+                    sheet.style.transform = '';
+                    sheet.style.opacity = '';
+                    if (overlay) {
+                        overlay.style.opacity = '';
+                    }
+                    return;
+                }
+                var touch = e.touches[0];
+                sheetTouchCurrentY = touch.clientY;
+                var deltaY = sheetTouchCurrentY - sheetTouchStartY;
+
+                if (deltaY > 0) {
+                    sheetCurrentTransform = deltaY;
+                    var progress = Math.min(deltaY / 200, 1);
+                    sheet.style.transform = 'translateY(' + deltaY + 'px)';
+                    sheet.style.opacity = 1 - (progress * 0.5);
+                    if (overlay) {
+                        overlay.style.opacity = 1 - progress;
+                    }
+                }
+            }, { passive: true });
+
+            sheet.addEventListener('touchend', function() {
+                if (!sheetIsDragging) return;
+                sheetIsDragging = false;
+                sheet.classList.remove('dragging');
+                sheet.classList.add('resetting');
+
+                if (sheetCurrentTransform > 100) {
+                    closeDuplicateSheet();
+                } else {
+                    sheet.style.transform = '';
+                    sheet.style.opacity = '';
+                    if (overlay) {
+                        overlay.style.opacity = '';
+                    }
+                    setTimeout(function() {
+                        sheet.classList.remove('resetting');
+                    }, 300);
+                }
+                sheetCurrentTransform = 0;
+            }, { passive: true });
+
+            var isDraggingMouse = false;
+            var mouseStartY = 0;
+            var mouseCurrentY = 0;
+
+            sheet.addEventListener('mousedown', function(e) {
+                if (e.target.closest('.close-btn') || e.target.closest('.toast-close')) return;
+                if (body && body.scrollTop > 0) {
+                    return;
+                }
+                isDraggingMouse = true;
+                mouseStartY = e.clientY;
+                mouseCurrentY = e.clientY;
+                sheetCurrentTransform = 0;
+                sheet.classList.add('dragging');
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDraggingMouse) return;
+                if (body && body.scrollTop > 0) {
+                    isDraggingMouse = false;
+                    sheet.classList.remove('dragging');
+                    sheet.style.transform = '';
+                    sheet.style.opacity = '';
+                    if (overlay) {
+                        overlay.style.opacity = '';
+                    }
+                    return;
+                }
+                mouseCurrentY = e.clientY;
+                var deltaY = mouseCurrentY - mouseStartY;
+                if (deltaY > 0) {
+                    sheetCurrentTransform = deltaY;
+                    var progress = Math.min(deltaY / 200, 1);
+                    sheet.style.transform = 'translateY(' + deltaY + 'px)';
+                    sheet.style.opacity = 1 - (progress * 0.5);
+                    if (overlay) {
+                        overlay.style.opacity = 1 - progress;
+                    }
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (!isDraggingMouse) return;
+                isDraggingMouse = false;
+                sheet.classList.remove('dragging');
+                sheet.classList.add('resetting');
+
+                if (sheetCurrentTransform > 100) {
+                    closeDuplicateSheet();
+                } else {
+                    sheet.style.transform = '';
+                    sheet.style.opacity = '';
+                    if (overlay) {
+                        overlay.style.opacity = '';
+                    }
+                    setTimeout(function() {
+                        sheet.classList.remove('resetting');
+                    }, 300);
+                }
+                sheetCurrentTransform = 0;
+            });
+        }
+
+        // ============================================================
+        // SHOW CHANGE NOTIFICATION - MOBILE
+        // ============================================================
+        function showChangeNotificationMobile(changeHistory) {
+            var summary = changeHistory.summary;
+            var hasChanges = summary.newRecords > 0 || summary.updatedRecords > 0 ||
+                summary.deletedRecords > 0 || summary.criticalUpdates > 0 ||
+                summary.identityUpdates > 0;
+
+            if (!hasChanges) return;
+
+            var parts = [];
+            if (summary.newRecords > 0) parts.push('🆕 ' + summary.newRecords + ' New');
+            if (summary.criticalUpdates > 0) parts.push('⚠️ ' + summary.criticalUpdates + ' Critical');
+            if (summary.identityUpdates > 0) parts.push('🆔 ' + summary.identityUpdates + ' Identity');
+            if (summary.masterUpdates > 0) parts.push('📝 ' + summary.masterUpdates + ' Master');
+            if (summary.deletedRecords > 0) parts.push('🗑️ ' + summary.deletedRecords + ' Deleted');
+
+            var message = 'Data Updated • ' + parts.join(' • ');
+            showToast(message, 'info', 2500);
+        }
+
+        // ============================================================
+        // OOS / LOW STOCK BADGE - MOBILE
+        // ============================================================
+        function getStockStatusBadge(stockValue) {
+            var val = parseInt(stockValue) || 0;
+            var threshold = UI_CONFIG.LOW_STOCK_THRESHOLD || 2;
+
+            if (val === 0) {
+                return '<span class="badge-oos-mobile"><i class="fa-regular fa-circle-xmark"></i> OOS</span>';
+            } else if (val <= threshold) {
+                return '<span class="badge-low-stock-mobile"><i class="fa-regular fa-triangle-exclamation"></i> Low Stock</span>';
+            }
+            return '';
+        }
+
+        // ============================================================
+        // PRODUCT ICON HELPER
+        // ============================================================
+        function getProductIcon(skuName) {
+            if (!skuName) return 'fa-solid fa-mobile-screen-button';
+            var name = skuName.toLowerCase();
+            if (name.includes('iphone')) {
+                return 'fa-solid fa-mobile-screen-button';
+            } else if (name.includes('ipad')) {
+                return 'fa-solid fa-tablet-screen-button';
+            } else if (name.includes('mac') || name.includes('macbook') || name.includes('imac') || name.includes(
+                    'mac mini')) {
+                return 'fa-solid fa-laptop';
+            } else if (name.includes('watch') || name.includes('apple watch')) {
+                return 'fa-solid fa-clock';
+            } else if (name.includes('airpods') || name.includes('airpods pro') || name.includes('airpods max')) {
+                return 'fa-solid fa-headphones';
+            } else if (name.includes('adapter') || name.includes('charger') || name.includes('power') || name.includes(
+                    'usb-c')) {
+                return 'fa-solid fa-plug';
+            } else if (name.includes('pencil') || name.includes('apple pencil')) {
+                return 'fa-solid fa-pen';
+            } else if (name.includes('airtag')) {
+                return 'fa-solid fa-location-dot';
+            } else {
+                return 'fa-solid fa-mobile-screen-button';
+            }
         }
 
         // ============================================================
         // RENDER CUSTOMER CARDS
         // ============================================================
-        function renderCustomerCards(rows) {
+        function renderCustomerCards(data) {
             var container = document.getElementById('customerCardsContainer');
-            container.innerHTML = '';
+            if (!container) return;
 
-            if (rows.length === 0) {
+            if (!data || !Array.isArray(data) || data.length === 0) {
                 container.innerHTML = `
-                    <div style="background:var(--bg-card);border-radius:var(--radius-card);padding:30px 20px;text-align:center;border:1px solid var(--border-color);">
-                        <i class="fas fa-inbox" style="font-size:1.8rem;color:var(--text-muted);opacity:0.3;"></i>
-                        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;">Data tidak ditemukan</p>
+                    <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+                        <i class="fas fa-box-open" style="font-size:2rem;opacity:0.3;display:block;margin-bottom:12px;"></i>
+                        <span style="font-weight:600;font-size:0.8rem;">Tidak ada data</span>
+                        <div style="font-size:0.6rem;margin-top:4px;">Silakan refresh atau periksa koneksi</div>
                     </div>
                 `;
                 return;
             }
 
-            var grouped = {};
-            rows.forEach(function(r) {
-                var key = r.depo + "|" + r.customer;
-                if (!grouped[key]) {
-                    grouped[key] = {
-                        depo: r.depo,
-                        customer: r.customer,
-                        sellThru: 0,
-                        sellOut: 0,
-                        stockCI: 0,
-                        avgSellOutWeekly: 0,
-                        kategoriList: []
-                    };
-                }
-                grouped[key].sellThru += r.sellThru || 0;
-                grouped[key].sellOut += r.sellOut || 0;
-                grouped[key].stockCI += r.stockCI || 0;
-                grouped[key].avgSellOutWeekly += r.avgSellOutWeekly || 0;
-                grouped[key].kategoriList.push({
-                    kategori: r.kategori,
-                    sellThru: r.sellThru || 0,
-                    sellOut: r.sellOut || 0,
-                    stockCI: r.stockCI || 0,
-                    wos: r.wos || 0,
-                    originalIndex: r.originalIndex !== undefined ? r.originalIndex : rawData.indexOf(r),
-                    isExcluded: r.isExcluded || false
-                });
-            });
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i];
+                var customer = row.customer || '-';
+                var depo = row.depo || '-';
+                var sellThru = row.sellThru || 0;
+                var sellOut = row.sellOut || 0;
+                var stockCI = row.stockCI || 0;
+                var wos = row.wos || 0;
+                var kategori = row.kategori || '-';
+                var namaBarang = row.namaBarang || getSKUName(row);
 
-            var cardHtml = '';
-            var cardIndex = 0;
-            for (var key in grouped) {
-                var g = grouped[key];
-                cardIndex++;
-                var collapseId = "cc" + cardIndex;
+                var wosClass = 'bg-success';
+                if (wos > 8) wosClass = 'bg-danger';
+                else if (wos > 4) wosClass = 'bg-warning';
 
-                var customerWos = g.avgSellOutWeekly > 0 ?
-                    parseFloat((g.stockCI / g.avgSellOutWeekly).toFixed(2)) :
-                    (g.stockCI > 0 ? 99.9 : 0);
-                var wosBadge = getWosBadge(customerWos, g.stockCI);
-                var stockClass = getStockClass(g.stockCI);
+                var stockBadge = getStockStatusBadge(stockCI);
 
-                cardHtml += `
-                    <div class="customer-card" id="card_${collapseId}">
-                        <div class="main" onclick="toggleCustomerCard('${collapseId}')">
+                html += `
+                    <div class="customer-card" data-customer="${escapeHtml(customer)}">
+                        <div class="main" onclick="toggleCard(this)">
                             <div class="left">
-                                <div class="depo"><i class="fas fa-map-marker-alt" style="font-size:0.35rem;margin-right:3px;"></i>${g.depo}</div>
-                                <div class="name">${g.customer}</div>
+                                <div class="depo">${safeText(depo)}</div>
+                                <div class="name">${safeText(customer)} ${stockBadge}</div>
                             </div>
                             <div class="stats">
                                 <div class="stat">
-                                    <span class="num">${g.sellThru}</span>
-                                    <span class="lbl">ST</span>
+                                    <span class="num">${sellThru}</span>
+                                    <span class="lbl">Sell Thru</span>
                                 </div>
                                 <div class="stat">
-                                    <span class="num text-success">${g.sellOut}</span>
-                                    <span class="lbl">SO</span>
+                                    <span class="num text-success">${sellOut}</span>
+                                    <span class="lbl">Sell Out</span>
                                 </div>
                                 <div class="stat">
-                                    <span class="num ${stockClass}">${g.stockCI}</span>
-                                    <span class="lbl">CI</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="num">${wosBadge}</span>
-                                    <span class="lbl">WOS</span>
+                                    <span class="num">${stockCI}</span>
+                                    <span class="lbl">Stock</span>
                                 </div>
                             </div>
-                            <div class="chevron" id="chevron_${collapseId}">
+                            <div class="chevron">
                                 <i class="fas fa-chevron-down"></i>
                             </div>
                         </div>
-                        <div class="body-collapse" id="body_${collapseId}">
+                        <div class="body-collapse">
                             <div class="inner">
-                `;
-
-                g.kategoriList.forEach(function(kat) {
-                    var katWosBadge = getWosBadge(kat.wos, kat.stockCI);
-                    var katStockClass = getStockClass(kat.stockCI);
-                    var excludedBadge = kat.isExcluded ? '<span class="badge-excluded">Excluded</span>' : '';
-
-                    cardHtml += `
-                        <div class="kategori-row" onclick="event.stopPropagation();showBarangDetail(${kat.originalIndex})">
-                            <div class="kname">
-                                <i class="fas fa-tag" style="font-size:0.4rem;opacity:0.5;"></i>
-                                ${kat.kategori} ${excludedBadge}
-                            </div>
-                            <div class="kstats">
-                                <span class="ks"><span class="num">${kat.sellThru}</span>ST</span>
-                                <span class="ks"><span class="num text-success">${kat.sellOut}</span>SO</span>
-                                <span class="ks"><span class="num ${katStockClass}">${kat.stockCI}</span>CI</span>
-                                <span class="ks">${katWosBadge}</span>
-                                <button class="btn-detail" onclick="event.stopPropagation();showBarangDetail(${kat.originalIndex})">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                cardHtml += `
+                                ${renderKategoriRows(row)}
                             </div>
                         </div>
                     </div>
                 `;
             }
 
-            container.innerHTML = cardHtml;
-        }
-
-        function toggleCustomerCard(collapseId) {
-            var body = document.getElementById('body_' + collapseId);
-            var chevron = document.getElementById('chevron_' + collapseId);
-            if (!body) return;
-            var isOpen = body.classList.contains('open');
-
-            if (isOpen) {
-                body.classList.remove('open');
-                if (chevron) chevron.classList.remove('open');
-            } else {
-                body.classList.add('open');
-                if (chevron) chevron.classList.add('open');
-            }
+            container.innerHTML = html;
         }
 
         // ============================================================
-        // SHOW BARANG DETAIL
+        // RENDER KATEGORI ROWS
         // ============================================================
-        function showBarangDetail(rowIndex) {
-            var row = rawData[rowIndex];
-            if (!row) {
-                for (var i = 0; i < rawData.length; i++) {
-                    if (rawData[i].originalIndex === rowIndex) { row = rawData[i]; break; }
-                }
-                if (!row) { alert('Data tidak ditemukan!'); return; }
+        function renderKategoriRows(row) {
+            if (!row.barang || !Array.isArray(row.barang) || row.barang.length === 0) {
+                return '<div style="font-size:0.55rem;color:var(--text-muted);padding:8px 0;">Tidak ada SKU</div>';
             }
-            document.getElementById('modalTitle').innerHTML =
-                `<i class="fas fa-circle-info me-2"></i>${row.depo || '-'} - ${row.customer || '-'} (${row.kategori || '-'})`;
 
-            var body = '';
-            var barangList = row.barang || [];
-            if (barangList.length === 0) {
-                body = '<div class="text-muted p-3" style="font-size:0.6rem;">Tidak ada detail SKU.</div>';
-            } else {
-                barangList.forEach(function(b) {
-                    var valWos = parseFloat(b.wos);
-                    var stockVal = parseInt(b.stockCI) || 0;
-                    var displayWos = b.wos;
-                    var wosClass = 'bg-dark';
-                    if (stockVal > 0 && (valWos === 0 || isNaN(valWos))) {
-                        displayWos = '99+';
-                        wosClass = 'bg-danger';
-                    }
+            var html = '';
+            for (var i = 0; i < row.barang.length; i++) {
+                var barang = row.barang[i];
+                if (!barang) continue;
+                var nama = barang.nama || '-';
+                var qty = barang.qty || 0;
+                var sellThruQty = barang.sellThruQty || 0;
+                var sellOutQty = barang.sellOutQty || 0;
+                var stockCI = barang.stockCI || 0;
+                var wos = barang.wos || 0;
 
-                    body += `
-                        <div class="imei-card">
-                            <div class="imei-header">
-                                <span class="imei-name">${b.nama}</span>
-                                <div class="imei-badges">
-                                    <span class="badge bg-primary">ST: ${b.sellThru}</span>
-                                    <span class="badge bg-success">SO: ${b.sellOut}</span>
-                                    <span class="badge bg-warning text-dark">CI: ${b.stockCI}</span>
-                                    <span class="badge ${wosClass}">WOS: ${displayWos}</span>
-                                </div>
-                            </div>
-                            <div class="imei-table-wrap">
-                                ${renderImeiTable(b.details)}
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            document.getElementById('modalBody').innerHTML = body;
-            myModal.show();
-        }
-
-        function renderImeiTable(details) {
-            if (!details || details.length === 0) {
-                return '<div class="text-muted p-2" style="font-size:0.55rem;">Tidak ada detail IMEI.</div>';
-            }
-            var html = `
-                <table class="table table-sm mb-0">
-                    <thead><tr>
-                        <th width="24">#</th>
-                        <th>IMEI</th>
-                        <th class="text-center" width="80">ST</th>
-                        <th class="text-center" width="70">Status</th>
-                        <th class="text-center" width="80">Aging</th>
-                    </tr></thead>
-                    <tbody>
-            `;
-            details.forEach(function(item, i) {
-                var statusBadge = '';
-                var st = String(item.status || '').toUpperCase().trim();
-                if (st === 'AKTIF') statusBadge = '<span class="badge bg-success" style="font-size:0.4rem;">AKTIF</span>';
-                else if (st === 'BELUM AKTIF') statusBadge =
-                    '<span class="badge bg-warning text-dark" style="font-size:0.4rem;">BELUM</span>';
-                else statusBadge = '<span class="badge bg-secondary" style="font-size:0.4rem;">-</span>';
-
-                var agingHtml = getAgingBadge(item.tanggal, item.status);
-
-                var tanggalST = '-';
-                if (item.tanggalST) tanggalST = formatTanggalST(item.tanggalST);
-                else if (item.tanggal_st) tanggalST = formatTanggalST(item.tanggal_st);
-                else if (item.tanggal_sellthru) tanggalST = formatTanggalST(item.tanggal_sellthru);
-                else if (item.sellThruDate) tanggalST = formatTanggalST(item.sellThruDate);
-                else if (item.tanggal) tanggalST = formatTanggalST(item.tanggal);
+                var wosBadgeClass = 'bg-success';
+                if (wos > 8) wosBadgeClass = 'bg-danger';
+                else if (wos > 4) wosBadgeClass = 'bg-warning';
 
                 html += `
-                    <tr>
-                        <td class="text-muted text-center" style="font-size:0.45rem;">${i+1}</td>
-                        <td><span class="imei-code" title="Klik untuk select">${item.imei || '-'}</span></td>
-                        <td class="text-center" style="font-size:0.5rem;font-weight:600;">${tanggalST}</td>
-                        <td class="text-center">${statusBadge}</td>
-                        <td class="text-center">${agingHtml}</td>
-                    </tr>
+                    <div class="kategori-row" onclick="showSkuDetail('${escapeJsString(nama)}', ${i}, '${escapeJsString(row.customer || '')}', '${escapeJsString(row.depo || '')}')">
+                        <div class="kname">
+                            <i class="${getProductIcon(nama)}" style="font-size:0.6rem;color:var(--text-muted);width:16px;"></i>
+                            ${safeText(nama)}
+                            <span class="wos-badge-mini ${wosBadgeClass}">${wos}</span>
+                        </div>
+                        <div class="kstats">
+                            <div class="ks">
+                                <span class="num">${sellThruQty}</span>
+                                <span>ST</span>
+                            </div>
+                            <div class="ks">
+                                <span class="num text-success">${sellOutQty}</span>
+                                <span>SO</span>
+                            </div>
+                            <div class="ks">
+                                <span class="num">${stockCI}</span>
+                                <span>Stock</span>
+                            </div>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
                 `;
-            });
-            html += '</tbody></table>';
+            }
+
             return html;
         }
 
-        function getAgingBadge(dateStr, status) {
-            var currentStatus = String(status || '-').toUpperCase().trim();
-            if (currentStatus === 'AKTIF') {
-                return `<span class="badge-aging-soft aging-sold">✔️ Terjual</span>`;
-            }
-            var itemDate = parseDateString(dateStr);
-            if (!itemDate) return `<span class="badge-aging-soft aging-na">N/A</span>`;
-            var today = new Date();
-            today.setHours(0, 0, 0, 0);
-            itemDate.setHours(0, 0, 0, 0);
-            var days = Math.floor((today - itemDate) / (1000 * 60 * 60 * 24));
-            if (days < 0) days = 0;
+        // ============================================================
+        // TOGGLE CARD
+        // ============================================================
+        function toggleCard(el) {
+            var card = el.closest('.customer-card');
+            if (!card) return;
+            var body = card.querySelector('.body-collapse');
+            var chevron = card.querySelector('.chevron');
+            if (!body) return;
 
-            if (days <= 30) return `<span class="badge-aging-soft aging-normal">🟢 ${days} Hari</span>`;
-            else if (days <= 60) return `<span class="badge-aging-soft aging-slow">🟡 ${days} Hari</span>`;
-            else if (days <= 90) return `<span class="badge-aging-soft aging-critical">🟠 ${days} Hari</span>`;
-            else return `<span class="badge-aging-soft aging-dead">🔴 ${days} Hari</span>`;
-        }
+            var isOpen = body.classList.contains('open');
+            body.classList.toggle('open');
+            if (chevron) chevron.classList.toggle('open');
 
-        function parseDateString(dateStr) {
-            if (!dateStr || typeof dateStr !== 'string') return null;
-            var months = { jan: 0, feb: 1, mar: 2, apr: 3, mei: 4, may: 4, jun: 5, jul: 6, agu: 7, aug: 7, sep: 8, okt: 9,
-                oct: 9, nov: 10, des: 11, dec: 11 };
-            var parts = dateStr.trim().split(/\s+/);
-            if (parts.length < 3) return null;
-            var day = parseInt(parts[0], 10);
-            var monthStr = parts[1].toLowerCase().substring(0, 3);
-            var year = parseInt(parts[2], 10);
-            var month = months[monthStr];
-            if (isNaN(day) || month === undefined || isNaN(year)) return null;
-            return new Date(year, month, day);
-        }
-
-        function formatTanggalST(dateStr) {
-            if (!dateStr) return '-';
-            try {
-                var parts = dateStr.split('-');
-                if (parts.length === 3) {
-                    var day = parts[0].padStart(2, '0');
-                    var month = parts[1].padStart(2, '0');
-                    var year = parts[2];
-                    if (!isNaN(day) && !isNaN(month) && !isNaN(year) && year.length === 4) {
-                        return `${day}-${month}-${year}`;
+            if (!isOpen) {
+                var allCards = document.querySelectorAll('.customer-card');
+                for (var i = 0; i < allCards.length; i++) {
+                    var otherCard = allCards[i];
+                    if (otherCard !== card) {
+                        var otherBody = otherCard.querySelector('.body-collapse');
+                        var otherChevron = otherCard.querySelector('.chevron');
+                        if (otherBody) otherBody.classList.remove('open');
+                        if (otherChevron) otherChevron.classList.remove('open');
                     }
                 }
-                return dateStr;
-            } catch (e) { return dateStr || '-'; }
+            }
         }
 
         // ============================================================
-        // SKELETON LOADING
+        // SHOW SKU DETAIL
         // ============================================================
-        function showSkeleton() {
-            var container = document.getElementById('customerCardsContainer');
+        function showSkuDetail(skuName, index, customer, depo) {
+            var modalTitle = document.getElementById('modalTitle');
+            var modalBody = document.getElementById('modalBody');
+            if (!modalTitle || !modalBody) return;
+
+            var record = null;
+            for (var i = 0; i < rawData.length; i++) {
+                var row = rawData[i];
+                if (row.customer === customer && row.depo === depo) {
+                    record = row;
+                    break;
+                }
+            }
+
+            if (!record || !record.barang || !record.barang[index]) {
+                modalTitle.innerHTML = '<i class="fas fa-circle-info me-2"></i>' + safeText(skuName);
+                modalBody.innerHTML = '<div style="padding:12px;text-align:center;color:var(--text-muted);">Data tidak ditemukan</div>';
+                myModal.show();
+                return;
+            }
+
+            var barang = record.barang[index];
+            modalTitle.innerHTML = '<i class="fas fa-circle-info me-2"></i>' + safeText(skuName);
+
             var html = '';
-            for (var i = 0; i < 4; i++) {
+            html += `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:0.6rem;">
+                    <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
+                        <div style="color:var(--text-muted);font-weight:600;">Qty</div>
+                        <div style="font-weight:700;font-size:0.8rem;">${barang.qty || 0}</div>
+                    </div>
+                    <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
+                        <div style="color:var(--text-muted);font-weight:600;">Sell Thru</div>
+                        <div style="font-weight:700;font-size:0.8rem;">${barang.sellThruQty || 0}</div>
+                    </div>
+                    <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
+                        <div style="color:var(--text-muted);font-weight:600;">Sell Out</div>
+                        <div style="font-weight:700;font-size:0.8rem;color:var(--success);">${barang.sellOutQty || 0}</div>
+                    </div>
+                    <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
+                        <div style="color:var(--text-muted);font-weight:600;">Stock CI</div>
+                        <div style="font-weight:700;font-size:0.8rem;">${barang.stockCI || 0}</div>
+                    </div>
+                </div>
+            `;
+
+            if (barang.details && Array.isArray(barang.details) && barang.details.length > 0) {
                 html += `
-                    <div class="skeleton-card">
-                        <div class="skeleton-line short"></div>
-                        <div class="skeleton-line long"></div>
-                        <div class="skeleton-row">
-                            <div class="skeleton-box"></div>
-                            <div class="skeleton-box"></div>
-                            <div class="skeleton-box"></div>
-                            <div class="skeleton-box"></div>
+                    <div class="imei-card">
+                        <div class="imei-header">
+                            <span class="imei-name"><i class="fas fa-sim-card me-2"></i>IMEI Details</span>
+                            <span class="badge bg-secondary">${barang.details.length}</span>
+                        </div>
+                        <div class="imei-table-wrap" style="overflow-x:auto;">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>IMEI</th>
+                                        <th>Sell Thru</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                for (var j = 0; j < barang.details.length; j++) {
+                    var detail = barang.details[j];
+                    var imei = detail.imei || detail.serial || '-';
+                    var tanggal = detail.tanggalSellThru || '-';
+                    var isValid = detail.isValidCoverage !== false;
+                    var statusLabel = isValid ? 'Terjual' : 'Stock';
+                    var statusClass = isValid ? 'aging-normal' : 'aging-dead';
+
+                    html += `
+                        <tr>
+                            <td>${j + 1}</td>
+                            <td><span class="imei-code" onclick="copyIMEI('${escapeJsString(imei)}')">${safeText(imei)}</span></td>
+                            <td>${safeText(tanggal)}</td>
+                            <td><span class="badge-aging-soft ${statusClass}">${statusLabel}</span></td>
+                        </tr>
+                    `;
+                }
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div style="padding:12px;text-align:center;color:var(--text-muted);font-size:0.6rem;">
+                        <i class="fas fa-info-circle me-1"></i> Tidak ada detail IMEI
+                    </div>
+                `;
+            }
+
+            modalBody.innerHTML = html;
+            myModal.show();
+        }
+
+        // ============================================================
+        // COPY IMEI
+        // ============================================================
+        function copyIMEI(imei) {
+            if (!imei) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(imei)
+                    .then(function() {
+                        showToast('IMEI copied: ' + imei, 'success', 2000);
+                    })
+                    .catch(function() {
+                        fallbackCopy(imei);
+                    });
+            } else {
+                fallbackCopy(imei);
+            }
+        }
+
+        function fallbackCopy(text) {
+            var textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            textarea.style.left = '-9999px';
+            textarea.style.top = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('IMEI copied: ' + text, 'success', 2000);
+            } catch (e) {
+                showToast('Gagal menyalin IMEI', 'error', 2000);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // ============================================================
+        // UPDATE KPI FROM DATA
+        // ============================================================
+        function updateKPIFromData(data) {
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                document.getElementById('kpiSellThru').innerText = '0';
+                document.getElementById('kpiSellOut').innerText = '0';
+                document.getElementById('kpiStockCI').innerText = '0';
+                document.getElementById('kpiAvgWOS').innerText = '0';
+                return;
+            }
+
+            var totalSellThru = 0;
+            var totalSellOut = 0;
+            var totalStockCI = 0;
+            var wosSum = 0;
+            var wosCount = 0;
+
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i];
+                if (row.sellThru) totalSellThru += parseInt(row.sellThru) || 0;
+                if (row.sellOut) totalSellOut += parseInt(row.sellOut) || 0;
+                if (row.stockCI) totalStockCI += parseInt(row.stockCI) || 0;
+                if (row.wos !== undefined && row.wos !== null) {
+                    wosSum += parseFloat(row.wos) || 0;
+                    wosCount++;
+                }
+            }
+
+            document.getElementById('kpiSellThru').innerText = totalSellThru.toLocaleString();
+            document.getElementById('kpiSellOut').innerText = totalSellOut.toLocaleString();
+            document.getElementById('kpiStockCI').innerText = totalStockCI.toLocaleString();
+
+            var avgWOS = wosCount > 0 ? (wosSum / wosCount) : 0;
+            document.getElementById('kpiAvgWOS').innerText = avgWOS.toFixed(1);
+        }
+
+        // ============================================================
+        // UPDATE WORST WOS
+        // ============================================================
+        function updateWorstWos(data) {
+            var container = document.getElementById('worstWosList');
+            var countBadge = document.getElementById('worstCount');
+            if (!container) return;
+
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                container.innerHTML = '<div class="worst-empty">Tidak ada data</div>';
+                if (countBadge) countBadge.innerText = '0';
+                return;
+            }
+
+            var skuWosList = [];
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i];
+                if (!row.barang || !Array.isArray(row.barang)) continue;
+                for (var j = 0; j < row.barang.length; j++) {
+                    var barang = row.barang[j];
+                    if (!barang) continue;
+                    var wos = parseFloat(barang.wos) || 0;
+                    var nama = barang.nama || '-';
+                    var customer = row.customer || '-';
+                    var depo = row.depo || '-';
+                    skuWosList.push({
+                        nama: nama,
+                        wos: wos,
+                        customer: customer,
+                        depo: depo,
+                        stockCI: barang.stockCI || 0
+                    });
+                }
+            }
+
+            skuWosList.sort(function(a, b) {
+                return b.wos - a.wos;
+            });
+
+            var top5 = skuWosList.slice(0, 5);
+            if (countBadge) countBadge.innerText = top5.length;
+
+            if (top5.length === 0) {
+                container.innerHTML = '<div class="worst-empty">Semua SKU memiliki WOS yang baik</div>';
+                return;
+            }
+
+            var html = '';
+            for (var k = 0; k < top5.length; k++) {
+                var item = top5[k];
+                var rank = k + 1;
+                var wosClass = 'bg-danger';
+                if (item.wos <= 4) wosClass = 'bg-success';
+                else if (item.wos <= 8) wosClass = 'bg-warning';
+
+                html += `
+                    <div class="worst-item" onclick="showWorstDetail('${escapeJsString(item.nama)}', '${escapeJsString(item.customer)}', '${escapeJsString(item.depo)}')">
+                        <div class="left">
+                            <span class="rank">#${rank}</span>
+                            <span class="name">${safeText(item.nama)}</span>
+                            <span class="wos-badge-mini ${wosClass}" style="font-size:0.4rem;">${item.wos.toFixed(1)}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:4px;">
+                            <span style="font-size:0.45rem;color:var(--text-muted);">${safeText(item.customer)}</span>
+                            <span class="arrow"><i class="fa-regular fa-chevron-right"></i></span>
                         </div>
                     </div>
                 `;
             }
-            container.innerHTML = html;
 
-            // Skeleton untuk worst WOS
-            var worstList = document.getElementById('worstWosList');
-            var worstHtml = '';
-            for (var i = 0; i < 3; i++) {
-                worstHtml += `
-                    <div style="display:flex;align-items:center;gap:8px;padding:4px 8px;">
-                        <div class="skeleton" style="height:10px;width:20px;"></div>
-                        <div class="skeleton" style="height:10px;flex:1;"></div>
-                        <div class="skeleton" style="height:10px;width:30px;"></div>
-                    </div>
-                `;
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        // SHOW WORST DETAIL
+        // ============================================================
+        function showWorstDetail(skuName, customer, depo) {
+            var record = null;
+            for (var i = 0; i < rawData.length; i++) {
+                var row = rawData[i];
+                if (row.customer === customer && row.depo === depo) {
+                    record = row;
+                    break;
+                }
             }
-            worstList.innerHTML = worstHtml;
+
+            if (!record) {
+                showToast('Data tidak ditemukan', 'error', 2000);
+                return;
+            }
+
+            var skuIndex = -1;
+            if (record.barang && Array.isArray(record.barang)) {
+                for (var j = 0; j < record.barang.length; j++) {
+                    if (record.barang[j].nama === skuName) {
+                        skuIndex = j;
+                        break;
+                    }
+                }
+            }
+
+            if (skuIndex === -1) {
+                showToast('SKU tidak ditemukan', 'error', 2000);
+                return;
+            }
+
+            showSkuDetail(skuName, skuIndex, customer, depo);
+        }
+
+        // ============================================================
+        // UPDATE WOS BADGE
+        // ============================================================
+        function updateWosBadge(data) {
+            var wosBadge = document.getElementById('wosBadge');
+            if (!wosBadge) return;
+
+            var hasWosProblem = false;
+            if (data && Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    var row = data[i];
+                    if (row && row.wos !== undefined && row.wos !== null) {
+                        var wos = parseFloat(row.wos);
+                        if (wos > 8) {
+                            hasWosProblem = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            wosBadge.style.display = hasWosProblem ? 'block' : 'none';
+        }
+
+        // ============================================================
+        // FETCH DATA - MAIN
+        // ============================================================
+        function fetchData() {
+            if (isRefreshing) return;
+            isRefreshing = true;
+
+            var fab = document.getElementById('fabRefresh');
+            if (fab) fab.classList.add('loading');
+
+            showToast('Mengambil data terbaru...', 'info', 2000);
+
+            setTimeout(function() {
+                var sampleData = generateSampleData();
+                processData(sampleData);
+                var now = getCurrentTime();
+                document.getElementById('syncTime').innerText = now;
+                showToast('Data berhasil diperbarui • ' + sampleData.length + ' record', 'success', 2000);
+                isRefreshing = false;
+                if (fab) fab.classList.remove('loading');
+                scheduleAutoRefresh();
+            }, 1500);
+        }
+
+        // ============================================================
+        // GENERATE SAMPLE DATA - FOR DEMONSTRATION
+        // ============================================================
+        function generateSampleData() {
+            var customers = [
+                'Apple Premium Reseller',
+                'iBox Indonesia',
+                'Erajaya Digital',
+                'Toko Apple Online',
+                'Digimap',
+                'Apple Store Jakarta',
+                'iStore Bali',
+                'Mac Center Surabaya'
+            ];
+
+            var depoList = ['D1', 'D2', 'D3', 'D4', 'D5'];
+            var skuNames = [
+                'iPhone 15 Pro Max',
+                'iPhone 15 Pro',
+                'iPhone 15',
+                'iPhone 14 Pro Max',
+                'iPhone 14',
+                'iPad Pro M4',
+                'iPad Air M2',
+                'MacBook Pro M3',
+                'MacBook Air M3',
+                'Apple Watch Ultra 2',
+                'Apple Watch Series 10',
+                'AirPods Pro 2',
+                'AirPods 4'
+            ];
+
+            var data = [];
+            var imeiCounter = 0;
+
+            for (var i = 0; i < customers.length; i++) {
+                var customer = customers[i];
+                var depo = depoList[i % depoList.length];
+                var numBarang = Math.floor(Math.random() * 4) + 2;
+
+                var barangList = [];
+                var totalSellThru = 0;
+                var totalSellOut = 0;
+                var totalStockCI = 0;
+                var totalWOS = 0;
+                var wosCount = 0;
+
+                var shuffledSku = skuNames.slice().sort(function() { return Math.random() - 0.5; });
+
+                for (var j = 0; j < Math.min(numBarang, shuffledSku.length); j++) {
+                    var skuName = shuffledSku[j];
+                    var qty = Math.floor(Math.random() * 20) + 5;
+                    var sellThruQty = Math.floor(Math.random() * qty);
+                    var sellOutQty = Math.floor(Math.random() * (qty - sellThruQty));
+                    var stockCI = qty - sellThruQty - sellOutQty;
+                    var wos = parseFloat((Math.random() * 12 + 1).toFixed(1));
+
+                    totalSellThru += sellThruQty;
+                    totalSellOut += sellOutQty;
+                    totalStockCI += stockCI;
+                    totalWOS += wos;
+                    wosCount++;
+
+                    var details = [];
+                    for (var k = 0; k < qty; k++) {
+                        imeiCounter++;
+                        var imei = '35' + String(imeiCounter).padStart(13, '0');
+                        var isSold = k < sellThruQty + sellOutQty;
+                        var isValidCoverage = isSold ? Math.random() > 0.2 : false;
+                        var tanggal = isSold ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
+                            'id-ID') : '-';
+
+                        details.push({
+                            imei: imei,
+                            serial: imei,
+                            tanggalSellThru: tanggal,
+                            coverage: isValidCoverage ? 'Active' : '-',
+                            isValidCoverage: isValidCoverage
+                        });
+                    }
+
+                    barangList.push({
+                        nama: skuName,
+                        qty: qty,
+                        sellThruQty: sellThruQty,
+                        sellOutQty: sellOutQty,
+                        stockCI: stockCI,
+                        wos: wos,
+                        details: details
+                    });
+                }
+
+                var avgWOS = wosCount > 0 ? (totalWOS / wosCount) : 0;
+
+                data.push({
+                    customer: customer,
+                    depo: depo,
+                    sellThru: totalSellThru,
+                    sellOut: totalSellOut,
+                    stockCI: totalStockCI,
+                    wos: parseFloat(avgWOS.toFixed(1)),
+                    kategori: 'Electronics',
+                    namaBarang: barangList.length > 0 ? barangList[0].nama : '-',
+                    barang: barangList
+                });
+            }
+
+            return data;
+        }
+
+        // ============================================================
+        // PROCESS DATA
+        // ============================================================
+        function processData(data) {
+            var previousRawData = rawData;
+            rawData = data;
+
+            imeiIndex = buildIMEIIndex(data);
+
+            var dupResult = buildDuplicateMap(data);
+            duplicateMap = dupResult.map;
+            duplicateImeiList = dupResult.list;
+
+            updateProgress(100);
+            hideLoadingScreen();
+
+            var depos = [];
+            data.forEach(function(row) {
+                if (row.depo && depos.indexOf(row.depo) === -1) {
+                    depos.push(row.depo);
+                }
+            });
+            setupChips(depos);
+
+            applyAllFilters();
+
+            showDuplicateAlertMobile();
+
+            if (previousRawData && previousRawData.length > 0) {
+                var changeResult = detectChanges(previousRawData, data);
+                if (changeResult.updatedRecords.length > 0 || changeResult.newRecords.length > 0 || changeResult
+                    .deletedRecords.length > 0) {
+                    var changeHistory = buildChangeHistory(changeResult);
+                    showChangeNotificationMobile(changeHistory);
+                }
+            }
+
+            updateWosBadge(data);
+
+            isDataLoaded = true;
+        }
+
+        // ============================================================
+        // AUTO REFRESH - SETTIMEOUT CHAIN
+        // ============================================================
+        function scheduleAutoRefresh() {
+            if (autoRefreshTimeout) {
+                clearTimeout(autoRefreshTimeout);
+                autoRefreshTimeout = null;
+            }
+
+            autoRefreshTimeout = setTimeout(function() {
+                if (navigator.onLine) {
+                    fetchData();
+                } else {
+                    showToast('Tidak ada koneksi internet. Refresh otomatis ditunda.', 'warning', 3000);
+                    scheduleAutoRefresh();
+                }
+            }, AUTO_REFRESH_INTERVAL);
+        }
+
+        // ============================================================
+        // NETWORK STATUS
+        // ============================================================
+        function handleNetworkStatus() {
+            if (navigator.onLine) {
+                showToast('Koneksi internet kembali', 'success', 2000);
+                if (!isDataLoaded) {
+                    fetchData();
+                }
+            } else {
+                showToast('Koneksi internet terputus', 'error', 3000);
+            }
+        }
+
+        // ============================================================
+        // VISIBILITY API
+        // ============================================================
+        function handleVisibilityChange() {
+            if (!document.hidden && !isDataLoaded) {
+                fetchData();
+            }
+            if (!document.hidden && navigator.onLine) {
+                if (isDataLoaded) {
+                    fetchData();
+                }
+            }
         }
 
         // ============================================================
         // INIT
         // ============================================================
-        showSkeleton();
-        detectSystemTheme();
+        function init() {
+            detectSystemTheme();
+            initSwipeToClose();
+
+            window.addEventListener('online', handleNetworkStatus);
+            window.addEventListener('offline', handleNetworkStatus);
+
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+
+            fetchData();
+
+            var progress = 0;
+            var progressInterval = setInterval(function() {
+                progress += 5;
+                if (progress <= 90) {
+                    updateProgress(progress);
+                } else {
+                    clearInterval(progressInterval);
+                }
+            }, 100);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
