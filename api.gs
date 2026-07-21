@@ -80,7 +80,7 @@ function doGet(e) {
 }
 
 // ============================================================
-// LOAD DASHBOARD OPTIMIZED - PANGGIL CODE.GS
+// LOAD DASHBOARD OPTIMIZED
 // ============================================================
 
 /**
@@ -103,9 +103,11 @@ function loadDashboardOptimized() {
             try {
                 var parsed = JSON.parse(cached);
                 debugLog("[loadDashboardOptimized] ✅ Cache HIT");
-                if (parsed.rows) {
+                
+                if (parsed.rows && Array.isArray(parsed.rows)) {
                     parsed.rows = removeDetailsFromRows(parsed.rows);
                 }
+                
                 return parsed;
             } catch (e) {
                 debugLog("[loadDashboardOptimized] ⚠️ Cache parse error");
@@ -115,22 +117,32 @@ function loadDashboardOptimized() {
             }
         }
 
-        // Panggil loadDashboard() dari Code.gs (business logic tetap sama)
+        // Panggil loadDashboard() dari Code.gs
+        debugLog("[loadDashboardOptimized] Calling loadDashboard() from Code.gs...");
         var result = loadDashboard();
 
-        // Hapus details dari response
-        if (result && result.success && result.rows) {
+        // Log hasil
+        if (result) {
+            debugLog("[loadDashboardOptimized] loadDashboard() success: " + result.success);
+            if (result.kpi) {
+                debugLog("[loadDashboardOptimized] KPI: " + JSON.stringify(result.kpi));
+            }
+            if (result.rows) {
+                debugLog("[loadDashboardOptimized] Rows: " + result.rows.length);
+            }
+        }
+
+        // Hanya hapus details jika rows ada
+        if (result && result.success && result.rows && Array.isArray(result.rows)) {
             result.rows = removeDetailsFromRows(result.rows);
             
+            // Simpan ke cache
             try {
                 var jsonString = JSON.stringify(result);
                 CACHE.put(CACHE_KEY, jsonString, CONFIG.CACHE_TTL);
                 debugLog("[loadDashboardOptimized] ✅ Cache SAVE for " + CONFIG.CACHE_TTL + "s");
             } catch (e) {
                 debugLog("[loadDashboardOptimized] ⚠️ Cache save error: " + e.toString());
-                if (CONFIG.DEBUG) {
-                    debugLog("[loadDashboardOptimized] Cache save stack: " + e.stack);
-                }
             }
         }
 
@@ -146,6 +158,52 @@ function loadDashboardOptimized() {
             error: "[loadDashboardOptimized] " + error.toString()
         };
     }
+}
+
+// ============================================================
+// REMOVE DETAILS FROM ROWS - AMAN
+// ============================================================
+
+/**
+ * ==========================================================
+ * REMOVE DETAILS FROM ROWS
+ * Business Rule v1.0
+ * Do Not Modify Without Version Increment
+ * ==========================================================
+ * HANYA menghapus properti details dari setiap SKU.
+ * TIDAK menghapus rows, barang, atau data agregasi lainnya.
+ * 
+ * @param {Array} rows - Data rows
+ * @return {Array} Rows tanpa details
+ */
+function removeDetailsFromRows(rows) {
+    if (!rows || !Array.isArray(rows)) {
+        debugLog("[removeDetailsFromRows] rows is not an array, returning as-is");
+        return rows;
+    }
+
+    debugLog("[removeDetailsFromRows] Processing " + rows.length + " rows");
+
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        if (!row) continue;
+
+        if (row.barang && Array.isArray(row.barang)) {
+            for (var j = 0; j < row.barang.length; j++) {
+                var sku = row.barang[j];
+                if (!sku) continue;
+
+                if (sku.details !== undefined) {
+                    var detailCount = Array.isArray(sku.details) ? sku.details.length : 0;
+                    delete sku.details;
+                    sku.imeiCount = detailCount;
+                }
+            }
+        }
+    }
+
+    debugLog("[removeDetailsFromRows] Completed processing " + rows.length + " rows");
+    return rows;
 }
 
 // ============================================================
@@ -255,33 +313,6 @@ function getDetailData(params) {
             error: "[getDetailData] " + error.toString()
         };
     }
-}
-
-// ============================================================
-// HELPER: REMOVE DETAILS FROM ROWS
-// ============================================================
-
-/**
- * Remove details dari rows untuk memastikan cache bersih
- * @param {Array} rows - Data rows
- * @return {Array} Rows tanpa details
- */
-function removeDetailsFromRows(rows) {
-    if (!rows || !Array.isArray(rows)) return rows;
-
-    for (var i = 0; i < rows.length; i++) {
-        if (rows[i].barang && Array.isArray(rows[i].barang)) {
-            for (var j = 0; j < rows[i].barang.length; j++) {
-                if (rows[i].barang[j].details) {
-                    delete rows[i].barang[j].details;
-                }
-                if (rows[i].barang[j].imeiCount === undefined) {
-                    rows[i].barang[j].imeiCount = 0;
-                }
-            }
-        }
-    }
-    return rows;
 }
 
 // ============================================================
@@ -614,6 +645,31 @@ function outputJson(data) {
                 error: 'Failed to serialize response'
             }))
             .setMimeType(ContentService.MimeType.JSON);
+    }
+}
+
+// ============================================================
+// INCLUDE HELPER - UNTUK HTML FALLBACK
+// ============================================================
+
+/**
+ * ==========================================================
+ * INCLUDE - HTML HELPER
+ * Business Rule v1.0
+ * Do Not Modify Without Version Increment
+ * ==========================================================
+ * @param {string} file - Nama file tanpa ekstensi
+ * @return {string} Konten file
+ */
+function include(file) {
+    try {
+        return HtmlService.createHtmlOutputFromFile(file).getContent();
+    } catch (error) {
+        debugLog('[include] ERROR: ' + error.toString());
+        if (CONFIG.DEBUG) {
+            debugLog('[include] Stack: ' + error.stack);
+        }
+        return '';
     }
 }
 
