@@ -2,7 +2,7 @@
  * =========================================================
  * APPLE COVERAGE DASHBOARD - FRONTEND CONFIG
  * 
- * Production Final v1.0.1
+ * Production Final v1.0.2
  * 
  * ⚠️ VERSION INFO: Backend adalah SOURCE OF TRUTH
  *    Frontend hanya mengkonsumsi versi dari backend.
@@ -21,7 +21,7 @@
 const APP_CONFIG = Object.freeze({
     // ⚠️ VERSION: Gunakan dari backend via ?action=version
     // Nilai di sini hanya FALLBACK jika backend tidak merespon
-    FALLBACK_VERSION: "1.0.1",
+    FALLBACK_VERSION: "1.0.2",
     
     ENVIRONMENT: "Production",
     DEBUG: false,
@@ -29,7 +29,7 @@ const APP_CONFIG = Object.freeze({
     // ⚠️ WEB APP URL - Google Apps Script Endpoint
     WEB_APP_URL: "https://script.google.com/macros/s/AKfycbzGnCtAadudtfkPpGVYZTsorXEO1-Wi7-7cByoq5ijylBt3IfpcXwvlL3WQ15Btbdhp/exec",
     
-    // API Endpoints - Simplified (versioned endpoint removed)
+    // API Endpoints - Simplified
     ENDPOINTS: Object.freeze({
         DASHBOARD: "?action=dashboard",
         HEALTH: "?action=health",
@@ -38,13 +38,13 @@ const APP_CONFIG = Object.freeze({
     
     // Fetch Configuration
     FETCH: Object.freeze({
-        TIMEOUT: 10000,           // 10 detik
+        TIMEOUT: 10000,
         MAX_RETRIES: 2,
-        RETRY_DELAY: 1000         // 1 detik antar retry
+        RETRY_DELAY: 1000
     }),
     
     // Auto Refresh Interval (ms)
-    AUTO_REFRESH_INTERVAL: 60000  // 60 detik
+    AUTO_REFRESH_INTERVAL: 60000
 });
 
 // ============================================================
@@ -53,10 +53,6 @@ const APP_CONFIG = Object.freeze({
 
 var _versionCache = null;
 
-/**
- * Get application version from cache or fallback
- * @return {string} Version string
- */
 function getAppVersion() {
     if (_versionCache) {
         return _versionCache;
@@ -64,10 +60,6 @@ function getAppVersion() {
     return APP_CONFIG.FALLBACK_VERSION;
 }
 
-/**
- * Update version from backend - SOURCE OF TRUTH
- * @return {Promise<string>} Version string
- */
 function updateVersionFromBackend() {
     if (APP_CONFIG.DEBUG) {
         debugLog('[Config] Fetching version from backend...');
@@ -93,23 +85,15 @@ function updateVersionFromBackend() {
 }
 
 // ============================================================
-// DEBUG LOGGING WRAPPER - PRODUCTION MODE (DEBUG=false) NO LOGGING
+// DEBUG LOGGING WRAPPER
 // ============================================================
 
-/**
- * Debug log wrapper - only logs when DEBUG is true
- * @param {string} message - Message to log
- */
 function debugLog(message) {
     if (APP_CONFIG.DEBUG) {
         console.log('[DEBUG] ' + message);
     }
 }
 
-/**
- * Debug error wrapper - only logs when DEBUG is true
- * @param {string} message - Error message to log
- */
 function debugError(message) {
     if (APP_CONFIG.DEBUG) {
         console.error('[DEBUG] ' + message);
@@ -117,15 +101,10 @@ function debugError(message) {
 }
 
 // ============================================================
-// API HELPER - SINGLE SOURCE OF TRUTH FOR API CALLS
+// API HELPER
 // ============================================================
 
 var ApiHelper = {
-    /**
-     * Fetch dashboard data dengan retry & timeout
-     * @param {number} retryCount - Jumlah retry saat ini
-     * @return {Promise} Promise dengan data dashboard
-     */
     fetchDashboard: function(retryCount) {
         retryCount = retryCount || 0;
         var maxRetries = APP_CONFIG.FETCH.MAX_RETRIES;
@@ -157,7 +136,6 @@ var ApiHelper = {
                     debugError('[ApiHelper] Error: ' + error.message);
                 }
                 
-                // Retry logic
                 if (retryCount < maxRetries) {
                     if (APP_CONFIG.DEBUG) {
                         debugLog('[ApiHelper] Retrying... (' + (retryCount + 1) + '/' + maxRetries + ')');
@@ -173,10 +151,6 @@ var ApiHelper = {
             });
     },
     
-    /**
-     * Fetch health check data
-     * @return {Promise} Promise dengan health data
-     */
     fetchHealth: function() {
         var url = APP_CONFIG.WEB_APP_URL + APP_CONFIG.ENDPOINTS.HEALTH;
         
@@ -199,10 +173,6 @@ var ApiHelper = {
             });
     },
     
-    /**
-     * Fetch version info - BACKEND SEBAGAI SOURCE OF TRUTH
-     * @return {Promise} Promise dengan version data
-     */
     fetchVersion: function() {
         var url = APP_CONFIG.WEB_APP_URL + APP_CONFIG.ENDPOINTS.VERSION;
         
@@ -225,13 +195,6 @@ var ApiHelper = {
             });
     },
     
-    /**
-     * Fetch dengan timeout menggunakan AbortController
-     * - Target: Chrome, Edge, Safari, Samsung Internet (modern browsers)
-     * @param {string} url - URL yang akan di-fetch
-     * @param {number} timeout - Timeout dalam milidetik
-     * @return {Promise} Promise dengan response
-     */
     _fetchWithTimeout: function(url, timeout) {
         var controller = new AbortController();
         var signal = controller.signal;
@@ -263,17 +226,11 @@ var ApiHelper = {
 };
 
 // ============================================================
-// AUTO REFRESH HELPER - SINGLE SOURCE OF TRUTH
+// AUTO REFRESH HELPER
 // ============================================================
 
 var _refreshTimeout = null;
 
-/**
- * Schedule auto refresh dengan chain timeout
- * @param {Function} callback - Fungsi yang akan dipanggil saat refresh
- * @param {number} interval - Interval dalam milidetik
- * @return {number} Timeout ID
- */
 function scheduleAutoRefresh(callback, interval) {
     if (_refreshTimeout) {
         clearTimeout(_refreshTimeout);
@@ -291,9 +248,6 @@ function scheduleAutoRefresh(callback, interval) {
     return _refreshTimeout;
 }
 
-/**
- * Clear auto refresh timeout
- */
 function clearAutoRefresh() {
     if (_refreshTimeout) {
         clearTimeout(_refreshTimeout);
@@ -304,10 +258,6 @@ function clearAutoRefresh() {
     }
 }
 
-/**
- * Get current auto refresh timeout
- * @return {number|null} Timeout ID or null
- */
 function getAutoRefreshTimeout() {
     return _refreshTimeout;
 }
