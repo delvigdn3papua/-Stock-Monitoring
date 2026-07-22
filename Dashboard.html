@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CONFIG - Production v1.0.2 -->
+    <!-- CONFIG - Production v1.0.3 -->
     <script src="config.js"></script>
     
     <style>
@@ -96,11 +96,17 @@
             color: var(--text-primary);
             margin: 0;
             padding: 0;
-            padding-bottom: 80px;
+            padding-bottom: 0;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             transition: background-color var(--transition-slow), color var(--transition-slow);
             overflow-x: hidden;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 80px;
+            }
         }
 
         ::-webkit-scrollbar { width: 3px; height: 3px; }
@@ -308,6 +314,12 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 12px 12px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                max-width: 560px;
+            }
         }
 
         /* ============================================================
@@ -775,7 +787,7 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid var(--border-color);
-            display: flex;
+            display: none;
             justify-content: space-around;
             align-items: center;
             padding: 6px 0 env(safe-area-inset-bottom, 8px);
@@ -783,6 +795,13 @@
             box-shadow: var(--shadow-nav);
             transition: background-color var(--transition-slow), border-color var(--transition-slow);
         }
+
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: flex;
+            }
+        }
+
         .bottom-nav .nav-item {
             display: flex;
             flex-direction: column;
@@ -1306,6 +1325,24 @@
             .bottom-nav .nav-item { padding: 2px 6px; }
             .bottom-nav .nav-item i { font-size: 0.9rem; }
             .fab-refresh { width: 36px; height: 36px; font-size: 0.8rem; bottom: 56px; right: 10px; }
+        }
+
+        /* ============================================================
+           PRODUCTION FIX - DESKTOP OVERRIDE
+           Version : 1.0.3
+           Purpose : Force desktop layout only
+           Do NOT remove without regression testing.
+           ============================================================ */
+        @media screen and (min-width:769px){
+            .main-content{
+                max-width:1200px !important;
+            }
+            .bottom-nav{
+                display:none !important;
+            }
+            body{
+                padding-bottom:0 !important;
+            }
         }
     </style>
 </head>
