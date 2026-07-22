@@ -2,7 +2,7 @@
  * =========================================================
  * APPLE COVERAGE DASHBOARD - FRONTEND CONFIG
  * 
- * Production Final v1.0.2
+ * Production Final v1.0.3
  * 
  * ⚠️ VERSION INFO: Backend adalah SOURCE OF TRUTH
  *    Frontend hanya mengkonsumsi versi dari backend.
@@ -21,7 +21,7 @@
 const APP_CONFIG = Object.freeze({
     // ⚠️ VERSION: Gunakan dari backend via ?action=version
     // Nilai di sini hanya FALLBACK jika backend tidak merespon
-    FALLBACK_VERSION: "1.0.2",
+    FALLBACK_VERSION: "1.0.3",
     
     ENVIRONMENT: "Production",
     DEBUG: false,
