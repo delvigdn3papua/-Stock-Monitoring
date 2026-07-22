@@ -2,604 +2,3374 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Apple Coverage Monitoring</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0e14">
+    <title>Apple Coverage · Mobile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- CONFIG - Production v1.0.3 -->
+    <script src="config.js"></script>
+    
     <style>
+        /* ============================================================
+           CSS VARIABLES - DESIGN SYSTEM
+           ============================================================ */
+        :root {
+            --bg-body: #f0f4fa;
+            --bg-card: rgba(255,255,255,0.88);
+            --bg-card-solid: #ffffff;
+            --bg-nav: rgba(255,255,255,0.92);
+            --bg-nav-bottom: rgba(255,255,255,0.94);
+            --bg-input: #f2f6fb;
+            --bg-skeleton: #e8edf4;
+            --bg-skeleton-shine: #dce3ed;
+            --bg-secondary: rgba(240, 244, 250, 0.5);
+            --text-primary: #0a1a2b;
+            --text-secondary: #2c4b6f;
+            --text-muted: #5e6f86;
+            --text-light: #8a9bb0;
+            --border-color: rgba(200, 215, 230, 0.3);
+            --shadow-card: 0 2px 16px rgba(0,0,0,0.04);
+            --shadow-nav: 0 -2px 20px rgba(0,0,0,0.06);
+            --radius-card: 20px;
+            --radius-btn: 14px;
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.25s ease;
+            --transition-slow: 0.35s ease;
+            --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+            
+            --danger: #DC2626;
+            --danger-bg: rgba(220, 38, 38, 0.08);
+            --success: #16A34A;
+            --success-bg: rgba(22, 163, 74, 0.08);
+            --warning: #EA580C;
+            --warning-bg: rgba(234, 88, 12, 0.08);
+            --primary: #2563EB;
+            --primary-bg: rgba(37, 99, 235, 0.08);
+        }
+
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --bg-body: #0a0e14;
+            --bg-card: rgba(20, 27, 36, 0.92);
+            --bg-card-solid: #141b24;
+            --bg-nav: rgba(15, 22, 32, 0.92);
+            --bg-nav-bottom: rgba(15, 22, 32, 0.94);
+            --bg-input: #1a2330;
+            --bg-skeleton: #1e2a3a;
+            --bg-skeleton-shine: #2a3a4a;
+            --bg-secondary: rgba(20, 27, 36, 0.5);
+            --text-primary: #e8edf4;
+            --text-secondary: #a0b8d0;
+            --text-muted: #6a7f9a;
+            --text-light: #5a6f8a;
+            --border-color: rgba(48, 60, 80, 0.4);
+            --shadow-card: 0 2px 16px rgba(0,0,0,0.3);
+            --shadow-nav: 0 -2px 20px rgba(0,0,0,0.4);
+            --danger: #EF4444;
+            --danger-bg: rgba(239, 68, 68, 0.12);
+            --success: #22C55E;
+            --success-bg: rgba(34, 197, 94, 0.12);
+            --warning: #F97316;
+            --warning-bg: rgba(249, 115, 22, 0.12);
+            --primary: #3B82F6;
+            --primary-bg: rgba(59, 130, 246, 0.12);
+        }
+
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
         * {
-            margin: 0;
-            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important;
             box-sizing: border-box;
         }
-
+        ::selection { background: transparent !important; }
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf5 100%);
-            min-height: 100vh;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color var(--transition-slow), color var(--transition-slow);
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 3px; height: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 10px; }
+
+        /* ============================================================
+           LOADING SCREEN
+           ============================================================ */
+        #loadingScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a0e14;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity var(--transition-slow), visibility var(--transition-slow);
+        }
+        #loadingScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #loadingScreen .loader-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
             padding: 20px;
         }
-
-        .loading-container {
-            max-width: 420px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 48px 36px 40px 36px;
-            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.10);
-            text-align: center;
-            position: relative;
+        .loader-icon {
+            width: 56px;
+            height: 56px;
+            animation: pulse-loader 1.2s ease-in-out infinite;
+        }
+        @keyframes pulse-loader {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.92); opacity: 0.6; }
+        }
+        .loader-icon svg { width: 100%; height: 100%; }
+        .loader-icon .fill-primary { fill: #ff6b35; }
+        .loader-icon .fill-secondary { fill: #ff8c5a; }
+        #loadingScreen .loader-title {
+            color: #e8edf4;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        #loadingScreen .loader-subtitle {
+            color: #6a7f9a;
+            font-size: 0.6rem;
+            font-weight: 500;
+        }
+        #loadingScreen .loader-progress {
+            width: 160px;
+            height: 3px;
+            background: #1a2330;
+            border-radius: 4px;
             overflow: hidden;
         }
+        #loadingScreen .loader-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff6b35, #ff8c5a);
+            border-radius: 4px;
+            transition: width var(--transition-normal);
+        }
 
-        .loading-container::before {
-            content: '';
-            position: absolute;
+        /* ============================================================
+           NAVBAR
+           ============================================================ */
+        .navbar-app {
+            background: var(--bg-nav);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #007aff, #00c6ff, #007aff);
-            background-size: 200% 100%;
-            animation: shimmer 2s infinite linear;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .loading-container::before {
-                animation: none;
-                background: linear-gradient(90deg, #007aff, #00c6ff, #007aff);
-            }
-            .spinner {
-                animation: none;
-                border-top-color: #007aff;
-                border-right-color: #007aff;
-                border-bottom-color: #007aff;
-                border-left-color: #007aff;
-                border: 3px solid #007aff;
-                opacity: 0.5;
-            }
-            @keyframes shimmer {
-                0%, 100% { background-position: 0 0; }
-            }
-            @keyframes spin {
-                to { transform: rotate(0deg); }
-            }
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        .logo {
-            font-size: 56px;
-            color: #007aff;
-            margin-bottom: 12px;
-        }
-
-        .app-name {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 4px;
-        }
-
-        .app-sub {
-            font-size: 13px;
-            color: #8293a6;
-            font-weight: 500;
-            margin-bottom: 28px;
-        }
-
-        .spinner-wrapper {
+            z-index: 100;
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
+            justify-content: space-between;
+            min-height: 56px;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
         }
-
-        .spinner {
-            width: 28px;
-            height: 28px;
-            border: 3px solid #e9ecef;
-            border-top-color: #007aff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .spinner-text {
-            font-size: 14px;
-            font-weight: 500;
-            color: #475569;
-        }
-
-        .device-info {
+        .navbar-app .brand {
             display: flex;
-            justify-content: center;
-            gap: 24px;
-            margin-bottom: 16px;
-            padding: 12px 0;
-            border-top: 1px solid #eef2f6;
-            border-bottom: 1px solid #eef2f6;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
         }
-
-        .device-item {
+        .navbar-app .brand .icon {
+            background: linear-gradient(145deg, #1a1a1a, #2c2c2c);
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .navbar-app .brand .title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+        .navbar-app .brand .subtitle {
+            font-size: 0.5rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: block;
+        }
+        .navbar-actions {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #475569;
         }
-
-        .device-item i {
-            font-size: 14px;
-            color: #8293a6;
+        .navbar-actions .sync-badge {
+            background: var(--bg-input);
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background-color var(--transition-fast), color var(--transition-fast);
         }
+        .navbar-actions .btn-icon {
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+        }
+        .navbar-actions .btn-icon:active { transform: scale(0.88); }
+        .navbar-actions .btn-icon:hover { background: var(--bg-input); }
 
-        .device-item .badge-device {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 700;
+        /* ============================================================
+           STICKY KPI
+           ============================================================ */
+        .kpi-sticky-wrapper {
+            position: sticky;
+            top: 56px;
+            z-index: 90;
+            background: var(--bg-body);
+            padding: 8px 12px 8px;
+            transition: background-color var(--transition-slow);
+        }
+        .kpi-sticky-wrapper .kpi-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 2px 0;
+        }
+        .kpi-sticky-wrapper .kpi-scroll::-webkit-scrollbar { display: none; }
+        .kpi-sticky-wrapper .kpi-mini {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 14px;
+            padding: 8px 14px;
+            flex: 0 0 auto;
+            min-width: 80px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
+        }
+        .kpi-sticky-wrapper .kpi-mini .label {
+            font-size: 0.45rem;
+            font-weight: 600;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
+        .kpi-sticky-wrapper .kpi-mini .value {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        .kpi-sticky-wrapper .kpi-mini .value.text-success { color: var(--success); }
+        .kpi-sticky-wrapper .kpi-mini .value.text-danger { color: var(--danger); }
+        .kpi-sticky-wrapper .kpi-mini .value.text-warning { color: var(--warning); }
 
-        .badge-device.desktop {
-            background: #e8f0fe;
-            color: #1a73e8;
+        /* ============================================================
+           MAIN CONTENT
+           ============================================================ */
+        .main-content {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 0 12px 12px;
         }
 
-        .badge-device.mobile {
-            background: #fce8e6;
-            color: #d93025;
-        }
-
-        .badge-device.tablet {
-            background: #e6f4ea;
-            color: #1e8e3e;
-        }
-
-        .redirect-info {
-            font-size: 12px;
-            color: #8293a6;
-            margin-top: 8px;
-        }
-
-        .redirect-info i {
-            margin-right: 4px;
-        }
-
-        .redirect-info a {
-            color: #007aff;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .redirect-info a:hover {
-            text-decoration: underline;
-        }
-
-        .manual-buttons {
+        /* ============================================================
+           DUPLICATE ALERT - MOBILE
+           ============================================================ */
+        .duplicate-alert-mobile {
+            background: var(--danger-bg);
+            border: 1px solid var(--danger);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
             display: flex;
+            align-items: center;
             gap: 10px;
-            margin-top: 16px;
-            justify-content: center;
-            flex-wrap: wrap;
+            cursor: pointer;
+            animation: slideDownAlert var(--transition-fast) var(--ease-standard);
+            -webkit-tap-highlight-color: transparent;
+            transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+        }
+        .duplicate-alert-mobile:active {
+            transform: scale(0.97);
+            background: rgba(220, 38, 38, 0.12);
+        }
+        @keyframes slideDownAlert {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .duplicate-alert-mobile .icon {
+            color: var(--danger);
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .duplicate-alert-mobile .content {
+            flex: 1;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--danger);
+        }
+        .duplicate-alert-mobile .content .desc {
+            font-weight: 400;
+            opacity: 0.7;
+            display: block;
+            font-size: 0.55rem;
+        }
+        .duplicate-alert-mobile .arrow {
+            color: var(--danger);
+            font-size: 0.6rem;
+            opacity: 0.5;
         }
 
-        .btn-manual {
-            padding: 8px 18px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
-            color: #475569;
-            font-size: 12px;
-            font-weight: 600;
+        /* ============================================================
+           SEARCH BAR
+           ============================================================ */
+        .search-bar {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: var(--radius-card);
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
+        }
+        .search-bar i {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            outline: none;
+            padding: 4px 0;
+        }
+        .search-bar input::placeholder {
+            color: var(--text-light);
+            font-weight: 400;
+        }
+        .search-bar .clear-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
             cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
+            padding: 0 4px;
+            display: none;
+        }
+        .search-bar .clear-btn.show { display: block; }
+
+        /* ============================================================
+           QUICK FILTER CHIPS
+           ============================================================ */
+        .chips-wrapper {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 2px 0 10px;
+            margin-bottom: 2px;
+        }
+        .chips-wrapper::-webkit-scrollbar { display: none; }
+        .chip {
+            background: var(--bg-input);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+            flex-shrink: 0;
+        }
+        .chip:active { transform: scale(0.94); }
+        .chip.active {
+            background: #2b8c5e;
+            color: #ffffff;
+            border-color: #2b8c5e;
+        }
+        .chip.active:active { transform: scale(0.94); }
+        [data-theme="dark"] .chip.active { background: #2b8c5e; }
+
+        /* ============================================================
+           WORST WOS CARD
+           ============================================================ */
+        .worst-wos-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: var(--radius-card);
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 12px;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
+        }
+        .worst-wos-card .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .worst-wos-card .header .title {
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: var(--danger);
+            display: flex;
             align-items: center;
             gap: 6px;
         }
-
-        .btn-manual:hover {
-            border-color: #007aff;
-            background: #e8f0fe;
-            color: #007aff;
+        .worst-wos-card .header .title i { font-size: 0.6rem; animation: pulse-warning 2s infinite; }
+        @keyframes pulse-warning { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .worst-wos-card .header .badge-count {
+            background: var(--bg-input);
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
         }
-
-        .btn-manual.primary {
-            background: #007aff;
-            border-color: #007aff;
-            color: #fff;
+        .worst-wos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
         }
-
-        .btn-manual.primary:hover {
-            background: #0066d6;
-            border-color: #0066d6;
-        }
-
-        .error-message {
-            display: none;
-            margin-top: 12px;
-            padding: 10px 14px;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
+        .worst-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 10px;
             border-radius: 10px;
-            font-size: 12px;
-            color: #dc2626;
-            font-weight: 500;
+            background: rgba(220, 53, 69, 0.04);
+            cursor: pointer;
+            transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+            border: 1px solid transparent;
+        }
+        .worst-item:active { transform: scale(0.97); background: rgba(220, 53, 69, 0.1); }
+        .worst-item .left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+        .worst-item .rank {
+            font-weight: 700;
+            font-size: 0.5rem;
+            color: var(--danger);
+            min-width: 20px;
+        }
+        .worst-item .name {
+            font-weight: 600;
+            font-size: 0.55rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .worst-item .wos-value {
+            font-weight: 700;
+            font-size: 0.5rem;
+            color: var(--danger);
+            background: rgba(220, 53, 69, 0.08);
+            padding: 1px 10px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        .worst-item .arrow {
+            color: var(--text-light);
+            font-size: 0.4rem;
+            margin-left: 4px;
+            opacity: 0.3;
+        }
+        [data-theme="dark"] .worst-item { background: rgba(220, 53, 69, 0.06); }
+        [data-theme="dark"] .worst-item:active { background: rgba(220, 53, 69, 0.12); }
+        [data-theme="dark"] .worst-item .name { color: #c8d2e0; }
+        .worst-empty {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 6px 0;
         }
 
-        .error-message.show {
+        /* ============================================================
+           CUSTOMER CARDS
+           ============================================================ */
+        .customer-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        .customer-card:active { transform: scale(0.99); }
+        .customer-card .main {
+            padding: 12px 14px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .customer-card .main .left {
+            flex: 1;
+            min-width: 0;
+        }
+        .customer-card .main .left .depo {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .customer-card .main .left .name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-top: 1px;
+        }
+        .customer-card .main .stats {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .customer-card .main .stats .stat {
+            text-align: center;
+        }
+        .customer-card .main .stats .stat .num {
+            font-weight: 800;
+            font-size: 0.8rem;
+            color: var(--text-primary);
             display: block;
+            line-height: 1.1;
+        }
+        .customer-card .main .stats .stat .num.text-success { color: var(--success); }
+        .customer-card .main .stats .stat .num.text-danger { color: var(--danger); }
+        .customer-card .main .stats .stat .lbl {
+            font-size: 0.4rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+        .customer-card .main .chevron {
+            width: 26px; height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--bg-input);
+            transition: background-color var(--transition-normal), transform var(--transition-normal);
+            flex-shrink: 0;
+            margin-left: 4px;
+        }
+        .customer-card .main .chevron i {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            transition: transform var(--transition-normal);
+        }
+        .customer-card .main .chevron.open i { transform: rotate(180deg); }
+
+        .customer-card .body-collapse {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height var(--transition-slow) var(--ease-standard), opacity var(--transition-normal);
+            opacity: 0;
+        }
+        .customer-card .body-collapse.open {
+            max-height: 2000px;
+            opacity: 1;
+        }
+        .customer-card .body-collapse .inner {
+            padding: 4px 14px 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        .customer-card .body-collapse .kategori-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 4px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color var(--transition-fast), transform var(--transition-fast);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .customer-card .body-collapse .kategori-row:active { transform: scale(0.98); }
+        .customer-card .body-collapse .kategori-row:last-child { border-bottom: none; }
+        .customer-card .body-collapse .kategori-row .kname {
+            font-weight: 600;
+            font-size: 0.65rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .customer-card .body-collapse .kategori-row .kname .badge-excluded {
+            font-size: 0.4rem;
+            background: var(--bg-input);
+            color: var(--text-muted);
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .customer-card .body-collapse .kategori-row .kstats {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .customer-card .body-collapse .kategori-row .kstats .ks {
+            text-align: center;
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 20px;
+        }
+        .customer-card .body-collapse .kategori-row .kstats .ks .num {
+            display: block;
+            font-weight: 800;
+            font-size: 0.6rem;
+            color: var(--text-primary);
+        }
+        .customer-card .body-collapse .kategori-row .kstats .ks .num.text-success { color: var(--success); }
+        .customer-card .body-collapse .kategori-row .kstats .ks .num.text-danger { color: var(--danger); }
+        .customer-card .body-collapse .kategori-row .kstats .btn-detail {
+            background: var(--bg-input);
+            border: none;
+            border-radius: 8px;
+            padding: 2px 10px;
+            font-size: 0.45rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+        }
+        .customer-card .body-collapse .kategori-row .kstats .btn-detail:active { transform: scale(0.92); }
+
+        /* WOS Badge Mini */
+        .wos-badge-mini {
+            display: inline-block;
+            padding: 1px 8px;
+            font-size: 0.5rem;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 6px;
+            min-width: 28px;
+            text-align: center;
+        }
+        .wos-badge-mini.bg-success { background: var(--success); }
+        .wos-badge-mini.bg-danger { background: var(--danger); }
+        .wos-badge-mini.bg-warning { background: var(--warning); color: #1a1a1a; }
+        .wos-badge-mini.bg-secondary { background: var(--text-muted); }
+
+        /* ============================================================
+           OOS & LOW STOCK BADGE - MOBILE
+           ============================================================ */
+        .badge-oos-mobile {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 1px 10px 1px 8px;
+            border-radius: 20px;
+            font-size: 0.45rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+        .badge-oos-mobile i { font-size: 0.4rem; }
+
+        .badge-low-stock-mobile {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--warning-bg);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+            padding: 1px 10px 1px 8px;
+            border-radius: 20px;
+            font-size: 0.45rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+        .badge-low-stock-mobile i { font-size: 0.4rem; }
+
+        [data-theme="dark"] .badge-oos-mobile {
+            background: #3a1a1a;
+            color: #f87171;
+            border-color: #7f1d1d;
+        }
+        [data-theme="dark"] .badge-low-stock-mobile {
+            background: #3a2a1a;
+            color: #fbbf24;
+            border-color: #78350f;
         }
 
-        .error-message i {
-            margin-right: 6px;
+        /* ============================================================
+           BOTTOM NAVIGATION
+           ============================================================ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-nav-bottom);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 0 env(safe-area-inset-bottom, 8px);
+            z-index: 200;
+            box-shadow: var(--shadow-nav);
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.45rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 12px;
+            transition: color var(--transition-fast);
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .bottom-nav .nav-item i {
+            font-size: 1.2rem;
+            transition: transform var(--transition-fast);
+        }
+        .bottom-nav .nav-item:active i { transform: scale(0.85); }
+        .bottom-nav .nav-item.active {
+            color: #2b8c5e;
+        }
+        .bottom-nav .nav-item.active i { transform: scale(1.05); }
+        .bottom-nav .nav-item .badge-dot {
+            position: absolute;
+            top: 2px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--bg-nav-bottom);
         }
 
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: linear-gradient(135deg, #0f172a 0%, #1a2332 100%);
-            }
-            .loading-container {
-                background: #1e293b;
-                box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
-            }
-            .app-name {
-                color: #f8fafc;
-            }
-            .app-sub {
-                color: #94a3b8;
-            }
-            .spinner-text {
-                color: #cbd5e1;
-            }
-            .device-info {
-                border-color: #334155;
-            }
-            .device-item {
-                color: #cbd5e1;
-            }
-            .device-item i {
-                color: #94a3b8;
-            }
-            .redirect-info {
-                color: #94a3b8;
-            }
-            .btn-manual {
-                background: #1e293b;
-                border-color: #334155;
-                color: #cbd5e1;
-            }
-            .btn-manual:hover {
-                border-color: #007aff;
-                background: #1a2a3a;
-                color: #60a5fa;
-            }
-            .btn-manual.primary {
-                background: #007aff;
-                border-color: #007aff;
-                color: #fff;
-            }
-            .btn-manual.primary:hover {
-                background: #0066d6;
-                border-color: #0066d6;
-            }
-            .badge-device.desktop {
-                background: #1a2a3a;
-                color: #60a5fa;
-            }
-            .badge-device.mobile {
-                background: #3a1a1a;
-                color: #f87171;
-            }
-            .badge-device.tablet {
-                background: #1a3a2a;
-                color: #34a853;
-            }
-            .error-message {
-                background: #3a1a1a;
-                border-color: #7f1d1d;
-                color: #f87171;
-            }
+        /* ============================================================
+           FLOATING ACTION BUTTON - REFRESH
+           ============================================================ */
+        .fab-refresh {
+            position: fixed;
+            bottom: 80px;
+            right: 16px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #2b8c5e;
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 20px rgba(43, 140, 94, 0.35);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 150;
+            transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .fab-refresh:active { transform: scale(0.88); }
+        .fab-refresh.loading {
+            transition: transform var(--transition-slow);
+        }
+        .fab-refresh .spinner {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        .fab-refresh.loading .icon { display: none; }
+        .fab-refresh.loading .spinner { display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ============================================================
+           SKELETON LOADING
+           ============================================================ */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-skeleton) 4%, var(--bg-skeleton-shine) 25%, var(--bg-skeleton) 36%);
+            background-size: 1200px 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 8px;
+        }
+        @keyframes shimmer {
+            0% { background-position: -600px 0; }
+            100% { background-position: 600px 0; }
+        }
+        .skeleton-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 14px 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+        .skeleton-card .skeleton-line { height: 12px; border-radius: 6px; margin-bottom: 6px; }
+        .skeleton-card .skeleton-line.short { width: 60px; }
+        .skeleton-card .skeleton-line.medium { width: 120px; }
+        .skeleton-card .skeleton-line.long { width: 180px; }
+        .skeleton-card .skeleton-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .skeleton-card .skeleton-row .skeleton-box {
+            height: 32px;
+            width: 48px;
+            border-radius: 8px;
         }
 
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-content {
+            border-radius: 24px;
+            border: none;
+            background: var(--bg-card-solid) !important;
+            transition: background-color var(--transition-slow);
+        }
+        .modal-header-custom {
+            background: var(--bg-input) !important;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
+        }
+        .modal-header-custom h5 {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-primary) !important;
+            margin: 0;
+        }
+        .modal-body-custom {
+            padding: 14px;
+            background: transparent !important;
+        }
+        .modal-body-custom .imei-card {
+            background: var(--bg-card) !important;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
+        }
+        .modal-body-custom .imei-card .imei-header {
+            padding: 8px 12px;
+            background: var(--bg-input) !important;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+            transition: background-color var(--transition-slow), border-color var(--transition-slow);
+        }
+        .modal-body-custom .imei-card .imei-header .imei-name {
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: var(--text-primary) !important;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .modal-body-custom .imei-card .imei-header .badge {
+            font-size: 0.45rem;
+            font-weight: 700;
+            padding: 2px 8px;
+        }
+        .modal-body-custom .imei-table-wrap table {
+            font-size: 0.55rem;
+            margin-bottom: 0;
+        }
+        .modal-body-custom .imei-table-wrap table thead th {
+            background: #2d3a4a !important;
+            color: #e8edf4 !important;
+            font-size: 0.45rem;
+            text-transform: uppercase;
+            padding: 5px 8px;
+            border: none;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        .modal-body-custom .imei-table-wrap table tbody td {
+            padding: 5px 8px;
+            font-size: 0.55rem;
+            border-color: var(--border-color);
+            color: var(--text-secondary) !important;
+            background: transparent !important;
+            font-weight: 600;
+        }
+        .modal-body-custom .imei-table-wrap table tbody td .imei-code {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-primary) !important;
+            cursor: pointer;
+            user-select: all !important;
+            -webkit-user-select: all !important;
+        }
+        .modal-body-custom .imei-table-wrap table tbody td .badge-aging-soft {
+            font-size: 0.45rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            font-weight: 700;
+        }
+        .badge-aging-soft.aging-sold { background: var(--success-bg); color: var(--success); }
+        .badge-aging-soft.aging-na { background: var(--bg-input); color: var(--text-muted); }
+        .badge-aging-soft.aging-normal { background: var(--success-bg); color: var(--success); }
+        .badge-aging-soft.aging-slow { background: var(--warning-bg); color: var(--warning); }
+        .badge-aging-soft.aging-critical { background: var(--warning-bg); color: var(--warning); }
+        .badge-aging-soft.aging-dead { background: var(--danger-bg); color: var(--danger); }
+
+        [data-theme="dark"] .modal-content { background: var(--bg-card-solid) !important; }
+        [data-theme="dark"] .modal-header-custom { background: var(--bg-input) !important; }
+        [data-theme="dark"] .modal-body-custom .imei-card { background: var(--bg-card) !important; }
+        [data-theme="dark"] .modal-body-custom .imei-card .imei-header { background: var(--bg-input) !important; }
+        [data-theme="dark"] .modal-body-custom .imei-table-wrap table tbody td { color: #c8d2e0 !important; }
+        [data-theme="dark"] .modal-body-custom .imei-table-wrap table tbody td .imei-code { color: #e8edf4 !important; }
+
+        /* ============================================================
+           BOTTOM SHEET - DUPLICATE DETAIL
+           ============================================================ */
+        .duplicate-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card-solid);
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            max-height: 70vh;
+            transform: translateY(100%);
+            transition: transform var(--transition-slow) var(--ease-standard), opacity var(--transition-normal);
+            opacity: 0;
+            overflow: hidden;
+            border-top: 1px solid var(--border-color);
+        }
+        .duplicate-sheet.open {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .duplicate-sheet.dragging {
+            transition: none !important;
+        }
+        .duplicate-sheet.resetting {
+            transition: transform var(--transition-normal) var(--ease-standard), opacity var(--transition-normal) !important;
+        }
+        .duplicate-sheet .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+        .duplicate-sheet .sheet-header .title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .duplicate-sheet .sheet-header .title i {
+            color: var(--danger);
+            font-size: 0.9rem;
+        }
+        .duplicate-sheet .sheet-header .close-btn {
+            background: var(--bg-input);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color var(--transition-fast), transform var(--transition-fast);
+        }
+        .duplicate-sheet .sheet-header .close-btn:active { transform: scale(0.88); }
+        .duplicate-sheet .sheet-body {
+            padding: 12px 16px 20px;
+            max-height: calc(70vh - 60px);
+            overflow-y: auto;
+            background: var(--bg-card);
+        }
+        .duplicate-sheet .dup-item-sheet {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .duplicate-sheet .dup-item-sheet .dup-imei {
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: var(--danger);
+            font-family: 'SF Mono', monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-imei .badge-count {
+            background: var(--danger-bg);
+            color: var(--danger);
+            font-size: 0.5rem;
+            font-weight: 700;
+            padding: 1px 10px;
+            border-radius: 12px;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-locations {
+            margin-top: 6px;
+            padding-left: 4px;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 0.8fr 0.8fr;
+            gap: 4px;
+            padding: 3px 0;
+            font-size: 0.5rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location:last-child {
+            border-bottom: none;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location .header-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.45rem;
+            text-transform: uppercase;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location .status-badge {
+            font-size: 0.4rem;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location .status-badge.stock {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+        .duplicate-sheet .dup-item-sheet .dup-location .status-badge.sold {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        .duplicate-sheet .dup-empty {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+        .duplicate-sheet .dup-empty i {
+            font-size: 1.8rem;
+            opacity: 0.3;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .duplicate-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 9998;
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+            pointer-events: none;
+        }
+        .duplicate-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        [data-theme="dark"] .duplicate-sheet {
+            background: var(--bg-card-solid);
+            border-top-color: var(--border-color);
+        }
+        [data-theme="dark"] .duplicate-sheet .dup-item-sheet {
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        [data-theme="dark"] .duplicate-sheet .dup-item-sheet .dup-location {
+            border-bottom-color: rgba(255,255,255,0.03);
+        }
+
+        /* ============================================================
+           TOAST SNACKBAR - SINGLE ELEMENT
+           ============================================================ */
+        #appToast {
+            position: fixed;
+            bottom: 90px;
+            left: 16px;
+            right: 16px;
+            background: var(--bg-card-solid);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            font-size: 12px;
+            font-weight: 500;
+            z-index: 10000;
+            border: 1px solid var(--border-color);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--transition-normal), transform var(--transition-normal);
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+        }
+        #appToast.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        #appToast.hiding {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        #appToast .toast-icon { flex-shrink: 0; font-size: 1rem; }
+        #appToast .toast-icon.success { color: var(--success); }
+        #appToast .toast-icon.error { color: var(--danger); }
+        #appToast .toast-icon.warning { color: var(--warning); }
+        #appToast .toast-icon.info { color: var(--primary); }
+        #appToast .toast-content { flex: 1; }
+        #appToast .toast-title {
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+        }
+        #appToast .toast-message {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            margin-top: 1px;
+        }
+        #appToast .toast-close {
+            background: var(--bg-input);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            cursor: pointer;
+            pointer-events: auto;
+            flex-shrink: 0;
+            transition: background-color var(--transition-fast), transform var(--transition-fast);
+        }
+        #appToast .toast-close:active { transform: scale(0.85); }
+
+        [data-theme="dark"] #appToast {
+            background: var(--bg-card-solid);
+            border-color: var(--border-color);
+        }
+        [data-theme="dark"] #appToast .toast-close {
+            background: var(--bg-secondary);
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
         @media (max-width: 480px) {
-            .loading-container {
-                padding: 32px 20px 28px 20px;
-                border-radius: 16px;
+            .navbar-app .brand .title { font-size: 0.75rem; }
+            .navbar-app .brand .icon { width: 30px; height: 30px; font-size: 0.85rem; }
+            .kpi-sticky-wrapper .kpi-mini { padding: 6px 10px; min-width: 64px; }
+            .kpi-sticky-wrapper .kpi-mini .value { font-size: 0.8rem; }
+            .customer-card .main { padding: 10px 12px; }
+            .customer-card .main .left .name { font-size: 0.75rem; }
+            .customer-card .main .stats .stat .num { font-size: 0.7rem; }
+            .customer-card .main .stats { gap: 6px; }
+            .bottom-nav .nav-item { font-size: 0.4rem; padding: 2px 8px; }
+            .bottom-nav .nav-item i { font-size: 1rem; }
+            .fab-refresh { width: 44px; height: 44px; font-size: 1rem; bottom: 72px; right: 12px; }
+            .search-bar { padding: 8px 12px; }
+            .search-bar input { font-size: 0.7rem; }
+            .main-content { padding: 0 8px 8px; }
+            .chip { font-size: 0.5rem; padding: 3px 10px; }
+            .worst-item .name { font-size: 0.5rem; }
+            .modal-dialog { margin: 8px; }
+            .duplicate-sheet { max-height: 75vh; }
+            .duplicate-sheet .sheet-body { max-height: calc(75vh - 60px); padding: 10px 12px 16px; }
+            .duplicate-sheet .dup-item-sheet .dup-location {
+                grid-template-columns: 0.8fr 1fr 0.7fr 0.7fr;
+                font-size: 0.45rem;
+                gap: 2px;
             }
-            .logo {
-                font-size: 44px;
-            }
-            .app-name {
-                font-size: 18px;
-            }
-            .device-info {
-                flex-direction: column;
-                gap: 8px;
-                padding: 10px 0;
-            }
-            .device-item {
-                justify-content: center;
-            }
-            .manual-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            .btn-manual {
-                width: 100%;
-                justify-content: center;
-            }
+        }
+        @media (max-width: 380px) {
+            .kpi-sticky-wrapper .kpi-mini { padding: 4px 8px; min-width: 54px; }
+            .kpi-sticky-wrapper .kpi-mini .value { font-size: 0.7rem; }
+            .kpi-sticky-wrapper .kpi-mini .label { font-size: 0.4rem; }
+            .customer-card .main .left .name { font-size: 0.65rem; }
+            .customer-card .main .stats .stat .num { font-size: 0.6rem; }
+        }
+        @media (min-width: 601px) {
+            .main-content { max-width: 640px; }
+            .kpi-sticky-wrapper .kpi-mini { min-width: 100px; }
+            .kpi-sticky-wrapper .kpi-mini .value { font-size: 1.1rem; }
+        }
+        @media (max-height: 500px) and (orientation: landscape) {
+            .kpi-sticky-wrapper { top: 48px; padding: 4px 8px; }
+            .kpi-sticky-wrapper .kpi-mini { padding: 4px 8px; min-width: 56px; }
+            .kpi-sticky-wrapper .kpi-mini .value { font-size: 0.7rem; }
+            .customer-card .main { padding: 6px 10px; }
+            .customer-card .main .left .name { font-size: 0.65rem; }
+            .customer-card .body-collapse .inner { padding: 2px 10px 6px; }
+            .bottom-nav { padding: 2px 0; }
+            .bottom-nav .nav-item { padding: 2px 6px; }
+            .bottom-nav .nav-item i { font-size: 0.9rem; }
+            .fab-refresh { width: 36px; height: 36px; font-size: 0.8rem; bottom: 56px; right: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="loading-container" id="loadingContainer" role="main" aria-label="Loading and device detection">
-        <div class="logo" aria-hidden="true">
-            <i class="fa-brands fa-apple"></i>
-        </div>
-        <div class="app-name">Apple Coverage Monitoring</div>
-        <div class="app-sub">Mendeteksi perangkat Anda...</div>
-
-        <div class="spinner-wrapper" role="status" aria-live="polite">
-            <div class="spinner" aria-hidden="true"></div>
-            <span class="spinner-text" id="statusText">Memeriksa perangkat...</span>
-        </div>
-
-        <div class="device-info" role="group" aria-label="Device detection status">
-            <div class="device-item">
-                <i class="fa-solid fa-desktop" aria-hidden="true"></i>
-                <span>Desktop</span>
-                <span class="badge-device desktop" id="desktopBadge">○</span>
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen">
+        <div class="loader-wrapper">
+            <div class="loader-icon">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="20" width="10" height="30" rx="2" class="fill-primary">
+                        <animate attributeName="height" values="30;40;30" dur="0.8s" repeatCount="indefinite"/>
+                    </rect>
+                    <rect x="25" y="12" width="10" height="38" rx="2" class="fill-secondary">
+                        <animate attributeName="height" values="38;48;38" dur="0.8s" repeatCount="indefinite" begin="0.15s"/>
+                    </rect>
+                    <rect x="40" y="18" width="10" height="32" rx="2" class="fill-primary">
+                        <animate attributeName="height" values="32;42;32" dur="0.8s" repeatCount="indefinite" begin="0.3s"/>
+                    </rect>
+                </svg>
             </div>
-            <div class="device-item">
-                <i class="fa-solid fa-tablet-screen-button" aria-hidden="true"></i>
-                <span>Tablet</span>
-                <span class="badge-device tablet" id="tabletBadge">○</span>
+            <div class="loader-title">Apple Coverage</div>
+            <div class="loader-subtitle">Mobile Channel Inventory Monitoring</div>
+            <div class="loader-progress">
+                <div class="loader-progress-bar" id="progressBar"></div>
             </div>
-            <div class="device-item">
-                <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i>
-                <span>Mobile</span>
-                <span class="badge-device mobile" id="mobileBadge">○</span>
-            </div>
-        </div>
-
-        <div class="redirect-info" id="redirectInfo" aria-live="polite">
-            <i class="fa-regular fa-arrow-right" aria-hidden="true"></i>
-            Mengarahkan ke <span id="targetPage">Dashboard</span>...
-        </div>
-
-        <div class="error-message" id="errorMessage" role="alert">
-            <i class="fa-regular fa-circle-exclamation" aria-hidden="true"></i>
-            Redirect gagal. Silakan klik tombol di bawah.
-        </div>
-
-        <div class="manual-buttons">
-            <a href="Dashboard.html" class="btn-manual primary" id="btnDesktop" role="button" aria-label="Buka versi Desktop Dashboard" title="Buka Dashboard untuk Desktop">
-                <i class="fa-solid fa-desktop" aria-hidden="true"></i> Desktop View
-            </a>
-            <a href="mobile.html" class="btn-manual" id="btnMobile" role="button" aria-label="Buka versi Mobile" title="Buka Mobile View">
-                <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Mobile View
-            </a>
         </div>
     </div>
 
+    <!-- NAVBAR -->
+    <nav class="navbar-app">
+        <a class="brand" href="#">
+            <div class="icon"><i class="fab fa-apple"></i></div>
+            <div>
+                <span class="title">Coverage</span>
+                <span class="subtitle"><i class="fas fa-circle" style="color:#2b8c5e;font-size:0.25rem;"></i> Mobile</span>
+            </div>
+        </a>
+        <div class="navbar-actions">
+            <span class="sync-badge"><i class="far fa-clock"></i> <span id="syncTime">-</span></span>
+            <button class="btn-icon" onclick="toggleDarkMode()" title="Mode Malam" aria-label="Toggle Dark Mode">
+                <i class="fas fa-moon" id="darkIcon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- STICKY KPI -->
+    <div class="kpi-sticky-wrapper">
+        <div class="kpi-scroll">
+            <div class="kpi-mini">
+                <div class="label"><i class="fas fa-chart-line me-1"></i>Sell Thru</div>
+                <div class="value" id="kpiSellThru">0</div>
+            </div>
+            <div class="kpi-mini">
+                <div class="label"><i class="fas fa-store-alt me-1"></i>Sell Out</div>
+                <div class="value text-success" id="kpiSellOut">0</div>
+            </div>
+            <div class="kpi-mini">
+                <div class="label"><i class="fas fa-boxes me-1"></i>Stock CI</div>
+                <div class="value" id="kpiStockCI">0</div>
+            </div>
+            <div class="kpi-mini">
+                <div class="label"><i class="fas fa-clock me-1"></i>Avg WOS</div>
+                <div class="value" id="kpiAvgWOS">0</div>
+            </div>
+            <div class="kpi-mini" style="min-width:60px;">
+                <div class="label"><i class="fas fa-tag me-1"></i>Item</div>
+                <div class="value" id="kpiItemCount">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <!-- DUPLICATE ALERT CONTAINER -->
+        <div id="duplicateAlertContainer"></div>
+
+        <!-- SEARCH BAR -->
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Cari Customer..." oninput="handleSearch()">
+            <button class="clear-btn" id="clearBtn" onclick="clearSearch()" aria-label="Clear Search"><i class="fas fa-times-circle"></i></button>
+        </div>
+
+        <!-- QUICK FILTER CHIPS -->
+        <div class="chips-wrapper" id="chipsContainer">
+            <span class="chip active" data-depo="" onclick="filterChip(this, '')">All</span>
+        </div>
+
+        <!-- WORST WOS CARD -->
+        <div class="worst-wos-card" id="worstWosCard">
+            <div class="header">
+                <span class="title"><i class="fas fa-triangle-exclamation"></i> Top 5 Worst WOS</span>
+                <span class="badge-count" id="worstCount">0</span>
+            </div>
+            <div class="worst-wos-list" id="worstWosList"></div>
+        </div>
+
+        <!-- CUSTOMER CARDS -->
+        <div id="customerCardsContainer"></div>
+
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')" aria-label="Dashboard">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="summary" onclick="switchTab('summary')" aria-label="Summary">
+            <i class="fas fa-chart-simple"></i>
+            <span>Summary</span>
+        </button>
+        <button class="nav-item" data-tab="wos" onclick="switchTab('wos')" aria-label="WOS">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>WOS</span>
+            <span class="badge-dot" id="wosBadge" style="display:none;"></span>
+        </button>
+        <button class="nav-item" data-tab="more" onclick="switchTab('more')" aria-label="More">
+            <i class="fas fa-ellipsis-h"></i>
+            <span>More</span>
+        </button>
+    </div>
+
+    <!-- FLOATING ACTION BUTTON - REFRESH -->
+    <button class="fab-refresh" id="fabRefresh" onclick="fetchData()" aria-label="Refresh Data">
+        <span class="icon"><i class="fas fa-sync"></i></span>
+        <span class="spinner"></span>
+    </button>
+
+    <!-- MODAL DETAIL -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:520px;margin:10px;">
+            <div class="modal-content">
+                <div class="modal-header-custom d-flex align-items-center justify-content-between">
+                    <h5 id="modalTitle"><i class="fas fa-circle-info me-2"></i>Detail SKU</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body-custom" id="modalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LOKASI SKU -->
+    <div class="modal fade" id="skuLocationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:520px;margin:10px;">
+            <div class="modal-content">
+                <div class="modal-header-custom d-flex align-items-center justify-content-between">
+                    <h5 id="skuLocationTitle"><i class="fas fa-map-pin me-2"></i>Lokasi SKU</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body-custom" id="skuLocationBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM SHEET - DUPLICATE DETAIL -->
+    <div class="duplicate-overlay" id="duplicateOverlay" onclick="closeDuplicateSheet()"></div>
+    <div class="duplicate-sheet" id="duplicateSheet">
+        <div class="sheet-header">
+            <div class="title">
+                <i class="fa-regular fa-triangle-exclamation"></i>
+                Duplicate IMEI
+                <span id="dupSheetCount" style="font-size:0.6rem;font-weight:400;color:var(--text-muted);"></span>
+            </div>
+            <button class="close-btn" onclick="closeDuplicateSheet()" aria-label="Close">
+                <i class="fa-regular fa-xmark"></i>
+            </button>
+        </div>
+        <div class="sheet-body" id="dupSheetBody"></div>
+    </div>
+
+    <!-- SINGLE TOAST ELEMENT -->
+    <div id="appToast">
+        <span class="toast-icon info"><i class="fa-regular fa-circle-info"></i></span>
+        <div class="toast-content">
+            <div class="toast-title">Informasi</div>
+            <div class="toast-message"></div>
+        </div>
+        <button class="toast-close" onclick="hideToast()" aria-label="Close Toast">
+            <i class="fa-regular fa-xmark"></i>
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+    </script>
     <script>
-        var elements = {
-            desktopBadge: document.getElementById('desktopBadge'),
-            tabletBadge: document.getElementById('tabletBadge'),
-            mobileBadge: document.getElementById('mobileBadge'),
-            statusText: document.getElementById('statusText'),
-            targetPage: document.getElementById('targetPage'),
-            redirectInfo: document.getElementById('redirectInfo'),
-            errorMessage: document.getElementById('errorMessage'),
-            loadingContainer: document.getElementById('loadingContainer')
+        // ============================================================
+        // KONFIGURASI - Dari APP_CONFIG
+        // ============================================================
+        var AUTO_REFRESH_INTERVAL = APP_CONFIG.AUTO_REFRESH_INTERVAL;
+
+        // ============================================================
+        // DEBUG LOGGING
+        // ============================================================
+        function debugLog(message) {
+            if (APP_CONFIG.DEBUG) {
+                console.log('[Mobile] ' + message);
+            }
+        }
+
+        function debugError(message) {
+            if (APP_CONFIG.DEBUG) {
+                console.error('[Mobile] ' + message);
+            }
+        }
+
+        // ============================================================
+        // PROTEKSI
+        // ============================================================
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'PrintScreen' || e.keyCode === 44 || e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P')) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        document.addEventListener('copy', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('cut', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('paste', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; });
+
+        // ============================================================
+        // VARIABLES
+        // ============================================================
+        var rawData = [];
+        var filteredData = [];
+        var previousData = null;
+        var searchQuery = '';
+        var selectedChip = '';
+        var myModal = new bootstrap.Modal(document.getElementById('detailModal'));
+        var isDarkMode = false;
+        var isDataLoaded = false;
+        var isRefreshing = false;
+        var autoRefreshTimeout = null;
+
+        var imeiIndex = {};
+        var duplicateMap = {};
+        var duplicateImeiList = [];
+        var UI_CONFIG = { LOW_STOCK_THRESHOLD: 2 };
+
+        // ============================================================
+        // SECURITY HELPERS
+        // ============================================================
+        function escapeHtml(text) {
+            if (!text) return '';
+            var map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        function escapeJsString(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/\\/g, '\\\\')
+                .replace(/"/g, '\\"')
+                .replace(/'/g, "\\'")
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
+        }
+
+        function safeAttr(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function safeText(value) {
+            if (value === undefined || value === null) return '-';
+            return escapeHtml(String(value));
+        }
+
+        // ============================================================
+        // TOAST SNACKBAR - SINGLE ELEMENT
+        // ============================================================
+        var toastTimeout = null;
+        var toastElement = null;
+
+        function getToastElement() {
+            if (!toastElement) {
+                toastElement = document.getElementById('appToast');
+            }
+            return toastElement;
+        }
+
+        function showToast(message, type, duration) {
+            type = type || 'info';
+            duration = duration || 3000;
+
+            var toast = getToastElement();
+            if (!toast) return;
+
+            var icons = {
+                success: 'fa-regular fa-circle-check',
+                error: 'fa-regular fa-circle-xmark',
+                warning: 'fa-regular fa-triangle-exclamation',
+                info: 'fa-regular fa-circle-info'
+            };
+
+            var titles = {
+                success: 'Sukses',
+                error: 'Error',
+                warning: 'Peringatan',
+                info: 'Informasi'
+            };
+
+            if (toastTimeout) {
+                clearTimeout(toastTimeout);
+                toastTimeout = null;
+            }
+
+            toast.classList.remove('show', 'hiding');
+
+            var icon = toast.querySelector('.toast-icon');
+            var title = toast.querySelector('.toast-title');
+            var msg = toast.querySelector('.toast-message');
+
+            if (icon) {
+                icon.className = 'toast-icon ' + type;
+                icon.innerHTML = '<i class="' + (icons[type] || icons.info) + '"></i>';
+            }
+            if (title) title.textContent = titles[type] || 'Info';
+            if (msg) msg.textContent = message;
+
+            void toast.offsetWidth;
+
+            toast.classList.add('show');
+
+            toastTimeout = setTimeout(function() {
+                toast.classList.remove('show');
+                toast.classList.add('hiding');
+                setTimeout(function() {
+                    toast.classList.remove('hiding');
+                }, 300);
+            }, duration);
+        }
+
+        function hideToast() {
+            var toast = getToastElement();
+            if (!toast) return;
+            if (toastTimeout) {
+                clearTimeout(toastTimeout);
+                toastTimeout = null;
+            }
+            toast.classList.remove('show');
+            toast.classList.add('hiding');
+            setTimeout(function() {
+                toast.classList.remove('hiding');
+            }, 300);
+        }
+
+        // ============================================================
+        // LOADING
+        // ============================================================
+        function updateProgress(percent) {
+            var progressBar = document.getElementById('progressBar');
+            if (progressBar) progressBar.style.width = Math.min(percent, 100) + '%';
+        }
+
+        function hideLoadingScreen() {
+            var loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) loadingScreen.classList.add('hidden');
+        }
+
+        // ============================================================
+        // DARK MODE
+        // ============================================================
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+            var icon = document.getElementById('darkIcon');
+            icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+            localStorage.setItem('darkMode', isDarkMode ? 'true' : 'false');
+        }
+
+        function detectSystemTheme() {
+            var saved = localStorage.getItem('darkMode');
+            if (saved !== null) {
+                isDarkMode = saved === 'true';
+            } else {
+                isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+            document.getElementById('darkIcon').className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // ============================================================
+        // PULL TO REFRESH
+        // ============================================================
+        var pullStartY = 0;
+        var isPulling = false;
+
+        document.addEventListener('touchstart', function(e) {
+            if (window.scrollY === 0) {
+                pullStartY = e.touches[0].clientY;
+                isPulling = true;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function(e) {
+            if (isPulling && window.scrollY === 0) {
+                var deltaY = e.touches[0].clientY - pullStartY;
+                if (deltaY > 60) {
+                    isPulling = false;
+                    fetchData();
+                }
+            }
+        }, { passive: true });
+
+        // ============================================================
+        // BOTTOM NAVIGATION
+        // ============================================================
+        function switchTab(tab) {
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(function(el) {
+                el.classList.toggle('active', el.dataset.tab === tab);
+            });
+            if (tab === 'dashboard') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (tab === 'summary') {
+                document.getElementById('customerCardsContainer').scrollIntoView({ behavior: 'smooth' });
+            } else if (tab === 'wos') {
+                document.getElementById('worstWosCard').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // ============================================================
+        // SEARCH
+        // ============================================================
+        function handleSearch() {
+            var input = document.getElementById('searchInput');
+            searchQuery = input.value.toLowerCase().trim();
+            document.getElementById('clearBtn').classList.toggle('show', searchQuery.length > 0);
+            applyAllFilters();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            document.getElementById('clearBtn').classList.remove('show');
+            applyAllFilters();
+        }
+
+        // ============================================================
+        // CHIPS FILTER
+        // ============================================================
+        function filterChip(el, depo) {
+            document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+            el.classList.add('active');
+            selectedChip = depo;
+            applyAllFilters();
+        }
+
+        function setupChips(depos) {
+            var container = document.getElementById('chipsContainer');
+            container.innerHTML = '<span class="chip active" data-depo="" onclick="filterChip(this, \'\')">All</span>';
+            var uniqueDepos = [];
+            depos.forEach(function(d) {
+                if (d && uniqueDepos.indexOf(d) === -1) uniqueDepos.push(d);
+            });
+            uniqueDepos.sort();
+            uniqueDepos.forEach(function(d) {
+                var escaped = escapeJsString(d);
+                container.innerHTML +=
+                    `<span class="chip" data-depo="${escaped}" onclick="filterChip(this, '${escaped}')">${safeAttr(d)}</span>`;
+            });
+        }
+
+        // ============================================================
+        // APPLY ALL FILTERS
+        // ============================================================
+        function applyAllFilters() {
+            var chipDepo = selectedChip || '';
+
+            filteredData = [];
+            rawData.forEach(function(row) {
+                var matchDepo = !chipDepo || row.depo === chipDepo;
+                var matchSearch = !searchQuery || row.customer.toLowerCase().includes(searchQuery);
+                if (matchDepo && matchSearch) {
+                    filteredData.push(row);
+                }
+            });
+
+            renderCustomerCards(filteredData);
+            updateKPIFromData(filteredData);
+            updateWorstWos(filteredData);
+            document.getElementById('kpiItemCount').innerText = filteredData.length;
+        }
+
+        // ============================================================
+        // BUSINESS KEY - STABLE IDENTIFIER
+        // ============================================================
+        function generateBusinessKey(record) {
+            if (!record) return '';
+
+            var imei = extractIMEI(record);
+            if (imei) {
+                return 'IMEI|' + imei.toString().trim().toUpperCase();
+            }
+
+            if (record.barang && Array.isArray(record.barang)) {
+                for (var i = 0; i < record.barang.length; i++) {
+                    var barang = record.barang[i];
+                    if (barang && barang.details && Array.isArray(barang.details)) {
+                        for (var j = 0; j < barang.details.length; j++) {
+                            var detail = barang.details[j];
+                            if (detail) {
+                                var detailImei = detail.imei || detail.serial || '';
+                                if (detailImei) {
+                                    return 'IMEI|' + detailImei.toString().trim().toUpperCase();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (record._id && record._id.toString().trim() !== '') {
+                return 'ID|' + record._id.toString().trim();
+            }
+            if (record.recordId && record.recordId.toString().trim() !== '') {
+                return 'ID|' + record.recordId.toString().trim();
+            }
+            if (record.id && record.id.toString().trim() !== '') {
+                return 'ID|' + record.id.toString().trim();
+            }
+
+            var depo = record.depo || '';
+            var customer = record.customer || '';
+            var sku = getSKUName(record) || '';
+
+            var parts = [
+                depo.toString().trim().toUpperCase(),
+                customer.toString().trim().toUpperCase(),
+                sku.toString().trim().toUpperCase()
+            ];
+            parts = parts.filter(function(p) { return p !== ''; });
+
+            if (parts.length >= 2) {
+                return 'COMBO|' + parts.join('|');
+            }
+
+            return '';
+        }
+
+        function extractIMEI(record) {
+            if (!record) return '';
+            if (record.imei) return record.imei;
+            if (record.serial) return record.serial;
+            if (record.barang && Array.isArray(record.barang)) {
+                for (var i = 0; i < record.barang.length; i++) {
+                    var barang = record.barang[i];
+                    if (barang && barang.details && Array.isArray(barang.details)) {
+                        for (var j = 0; j < barang.details.length; j++) {
+                            var detail = barang.details[j];
+                            if (detail) {
+                                var imei = detail.imei || detail.serial || '';
+                                if (imei) return imei;
+                            }
+                        }
+                    }
+                }
+            }
+            return '';
+        }
+
+        function getSKUName(record) {
+            if (!record) return '-';
+            if (record.namaBarang) return record.namaBarang;
+            if (record.sku) return record.sku;
+            if (record.barang && Array.isArray(record.barang) && record.barang.length > 0) {
+                return record.barang[0].nama || '-';
+            }
+            return '-';
+        }
+
+        function normalizeValue(value) {
+            if (value === undefined || value === null) return '';
+            if (typeof value === 'string') return value.trim();
+            if (typeof value === 'number') return value.toString();
+            if (typeof value === 'boolean') return value.toString();
+            if (value instanceof Date) return value.toISOString();
+            return String(value);
+        }
+
+        function getNestedValue(obj, key) {
+            if (!obj) return undefined;
+            if (key.indexOf('.') > -1) {
+                var parts = key.split('.');
+                var current = obj;
+                for (var i = 0; i < parts.length; i++) {
+                    if (current === undefined || current === null) return undefined;
+                    current = current[parts[i]];
+                }
+                return current;
+            }
+            return obj[key];
+        }
+
+        // ============================================================
+        // FIELD CLASSIFICATION
+        // ============================================================
+        var FIELD_CLASSIFICATION = {
+            critical: [
+                'Sell Thru', 'Sell Out', 'Stock C.I', 'Coverage Active', 'Average Weekly', 'WOS'
+            ],
+            master: [
+                'Customer', 'Depo', 'Nama Barang', 'SKU', 'Brand', 'Kategori', 'Sub Kategori'
+            ],
+            identity: [
+                'IMEI', 'Serial Number'
+            ]
         };
 
-        function detectDevice() {
-            var ua = navigator.userAgent || navigator.vendor || window.opera || '';
+        // ============================================================
+        // COMPARE RECORDS
+        // ============================================================
+        function compareRecords(oldRecord, newRecord) {
+            var changes = [];
 
-            var isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop|Mobile|webOS/i.test(ua);
-            var isTablet = /iPad|Android(?!.*Mobile)|Kindle|Silk/i.test(ua);
+            var criticalFields = [
+                { key: 'sellThru', label: 'Sell Thru' },
+                { key: 'sellOut', label: 'Sell Out' },
+                { key: 'stockCI', label: 'Stock C.I' },
+                { key: 'coverageActive', label: 'Coverage Active' },
+                { key: 'avgSellOutWeekly', label: 'Average Weekly' },
+                { key: 'wos', label: 'WOS' }
+            ];
 
-            if (isTablet) {
-                isMobile = false;
+            var masterFields = [
+                { key: 'depo', label: 'Depo' },
+                { key: 'customer', label: 'Customer' },
+                { key: 'namaBarang', label: 'Nama Barang' },
+                { key: 'barang', label: 'SKU' },
+                { key: 'brand', label: 'Brand' },
+                { key: 'kategori', label: 'Kategori' },
+                { key: 'subKategori', label: 'Sub Kategori' }
+            ];
+
+            var identityFields = [
+                { key: 'imei', label: 'IMEI' },
+                { key: 'serial', label: 'Serial Number' }
+            ];
+
+            for (var i = 0; i < criticalFields.length; i++) {
+                var field = criticalFields[i];
+                var oldValue = getNestedValue(oldRecord, field.key);
+                var newValue = getNestedValue(newRecord, field.key);
+                if ((oldValue === undefined || oldValue === null || oldValue === '') &&
+                    (newValue === undefined || newValue === null || newValue === '')) {
+                    continue;
+                }
+                var oldNorm = normalizeValue(oldValue);
+                var newNorm = normalizeValue(newValue);
+                if (oldNorm !== newNorm) {
+                    changes.push({
+                        field: field.label,
+                        oldValue: oldNorm !== '' ? oldNorm : '(kosong)',
+                        newValue: newNorm !== '' ? newNorm : '(kosong)',
+                        category: 'critical'
+                    });
+                }
             }
 
-            if (/Mobile/i.test(ua)) {
-                isMobile = true;
-                isTablet = false;
+            for (var i = 0; i < masterFields.length; i++) {
+                var field = masterFields[i];
+                var oldValue = getNestedValue(oldRecord, field.key);
+                var newValue = getNestedValue(newRecord, field.key);
+                if ((oldValue === undefined || oldValue === null || oldValue === '') &&
+                    (newValue === undefined || newValue === null || newValue === '')) {
+                    continue;
+                }
+                var oldNorm = normalizeValue(oldValue);
+                var newNorm = normalizeValue(newValue);
+                if (oldNorm !== newNorm) {
+                    changes.push({
+                        field: field.label,
+                        oldValue: oldNorm !== '' ? oldNorm : '(kosong)',
+                        newValue: newNorm !== '' ? newNorm : '(kosong)',
+                        category: 'master'
+                    });
+                }
             }
 
-            var isSmallScreen = window.innerWidth < 768;
-            var deviceType = 'desktop';
+            for (var i = 0; i < identityFields.length; i++) {
+                var field = identityFields[i];
+                var oldValue = getNestedValue(oldRecord, field.key);
+                var newValue = getNestedValue(newRecord, field.key);
+                if ((oldValue === undefined || oldValue === null || oldValue === '') &&
+                    (newValue === undefined || newValue === null || newValue === '')) {
+                    continue;
+                }
+                var oldNorm = normalizeValue(oldValue);
+                var newNorm = normalizeValue(newValue);
+                if (oldNorm !== newNorm) {
+                    changes.push({
+                        field: field.label,
+                        oldValue: oldNorm !== '' ? oldNorm : '(kosong)',
+                        newValue: newNorm !== '' ? newNorm : '(kosong)',
+                        category: 'identity'
+                    });
+                }
+            }
 
-            if (isTablet) {
-                deviceType = 'tablet';
-            } else if (isMobile) {
-                deviceType = 'mobile';
-            } else if (isSmallScreen) {
-                deviceType = 'mobile';
+            if (newRecord.barang && oldRecord.barang) {
+                for (var j = 0; j < newRecord.barang.length; j++) {
+                    var newBarang = newRecord.barang[j];
+                    var oldBarang = oldRecord.barang[j] || {};
+                    if (newBarang.details && oldBarang.details) {
+                        for (var k = 0; k < newBarang.details.length; k++) {
+                            var newDetail = newBarang.details[k];
+                            var oldDetail = oldBarang.details[k] || {};
+                            if (newDetail.imei !== oldDetail.imei) {
+                                changes.push({
+                                    field: 'IMEI (' + (k + 1) + ')',
+                                    oldValue: oldDetail.imei || '(kosong)',
+                                    newValue: newDetail.imei || '(kosong)',
+                                    category: 'identity'
+                                });
+                            }
+                            if (newDetail.tanggalSellThru !== oldDetail.tanggalSellThru) {
+                                changes.push({
+                                    field: 'Sell Thru (' + (k + 1) + ')',
+                                    oldValue: oldDetail.tanggalSellThru || '(kosong)',
+                                    newValue: newDetail.tanggalSellThru || '(kosong)',
+                                    category: 'critical'
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            return changes;
+        }
+
+        // ============================================================
+        // CHANGE DETECTION
+        // ============================================================
+        function detectChanges(oldData, newData) {
+            var oldIndex = new Map();
+            var newIndex = new Map();
+            var oldKeys = new Set();
+            var newKeys = new Set();
+            var skippedOld = 0;
+            var skippedNew = 0;
+
+            for (var i = 0; i < oldData.length; i++) {
+                var record = oldData[i];
+                var key = generateBusinessKey(record);
+                if (key) {
+                    oldIndex.set(key, record);
+                    oldKeys.add(key);
+                } else {
+                    skippedOld++;
+                }
+            }
+
+            for (var i = 0; i < newData.length; i++) {
+                var record = newData[i];
+                var key = generateBusinessKey(record);
+                if (key) {
+                    newIndex.set(key, record);
+                    newKeys.add(key);
+                } else {
+                    skippedNew++;
+                }
+            }
+
+            if (skippedOld > 0) {
+                debugLog('⚠️ ' + skippedOld + ' record(s) di-skip dari oldData karena tidak memiliki Business Key');
+            }
+            if (skippedNew > 0) {
+                debugLog('⚠️ ' + skippedNew + ' record(s) di-skip dari newData karena tidak memiliki Business Key');
+            }
+
+            var result = {
+                newRecords: [],
+                updatedRecords: [],
+                deletedRecords: [],
+                existingRecords: [],
+                criticalUpdates: [],
+                masterUpdates: [],
+                identityUpdates: [],
+                skipped: {
+                    old: skippedOld,
+                    new: skippedNew
+                }
+            };
+
+            newKeys.forEach(function(key) {
+                var newRecord = newIndex.get(key);
+                if (oldIndex.has(key)) {
+                    var oldRecord = oldIndex.get(key);
+                    var changes = compareRecords(oldRecord, newRecord);
+                    if (changes.length > 0) {
+                        var criticalChanges = changes.filter(function(c) { return c.category === 'critical'; });
+                        var masterChanges = changes.filter(function(c) { return c.category === 'master'; });
+                        var identityChanges = changes.filter(function(c) { return c.category === 'identity'; });
+
+                        var updatedInfo = {
+                            businessKey: key,
+                            depo: newRecord.depo || '-',
+                            customer: newRecord.customer || '-',
+                            sku: getSKUName(newRecord),
+                            namaBarang: getSKUName(newRecord),
+                            imei: extractIMEI(newRecord),
+                            changes: changes,
+                            criticalChanges: criticalChanges,
+                            masterChanges: masterChanges,
+                            identityChanges: identityChanges,
+                            hasCriticalChange: criticalChanges.length > 0,
+                            hasMasterChange: masterChanges.length > 0,
+                            hasIdentityChange: identityChanges.length > 0
+                        };
+
+                        result.updatedRecords.push(updatedInfo);
+
+                        if (criticalChanges.length > 0) {
+                            result.criticalUpdates.push(updatedInfo);
+                        }
+                        if (masterChanges.length > 0) {
+                            result.masterUpdates.push(updatedInfo);
+                        }
+                        if (identityChanges.length > 0) {
+                            result.identityUpdates.push(updatedInfo);
+                        }
+                    } else {
+                        result.existingRecords.push({
+                            businessKey: key,
+                            depo: newRecord.depo || '-',
+                            customer: newRecord.customer || '-',
+                            sku: getSKUName(newRecord)
+                        });
+                    }
+                } else {
+                    result.newRecords.push({
+                        businessKey: key,
+                        depo: newRecord.depo || '-',
+                        customer: newRecord.customer || '-',
+                        sku: getSKUName(newRecord),
+                        namaBarang: getSKUName(newRecord),
+                        imei: extractIMEI(newRecord),
+                        data: newRecord
+                    });
+                }
+            });
+
+            oldKeys.forEach(function(key) {
+                if (!newIndex.has(key)) {
+                    var oldRecord = oldIndex.get(key);
+                    result.deletedRecords.push({
+                        businessKey: key,
+                        depo: oldRecord.depo || '-',
+                        customer: oldRecord.customer || '-',
+                        sku: getSKUName(oldRecord),
+                        namaBarang: getSKUName(oldRecord),
+                        imei: extractIMEI(oldRecord),
+                        data: oldRecord
+                    });
+                }
+            });
+
+            result.totalData = newData.length;
+
+            return result;
+        }
+
+        // ============================================================
+        // BUILD CHANGE HISTORY
+        // ============================================================
+        function buildChangeHistory(changeResult, lastSync) {
+            var criticalUpdates = changeResult.criticalUpdates ? changeResult.criticalUpdates.length : 0;
+            var masterUpdates = changeResult.masterUpdates ? changeResult.masterUpdates.length : 0;
+            var identityUpdates = changeResult.identityUpdates ? changeResult.identityUpdates.length : 0;
+
+            var timestamp = lastSync || getCurrentTime();
+
+            if (changeResult.newRecords) {
+                changeResult.newRecords.forEach(function(r) { r.timestamp = timestamp; });
+            }
+            if (changeResult.criticalUpdates) {
+                changeResult.criticalUpdates.forEach(function(r) { r.timestamp = timestamp; });
+            }
+            if (changeResult.identityUpdates) {
+                changeResult.identityUpdates.forEach(function(r) { r.timestamp = timestamp; });
+            }
+            if (changeResult.masterUpdates) {
+                changeResult.masterUpdates.forEach(function(r) { r.timestamp = timestamp; });
+            }
+            if (changeResult.deletedRecords) {
+                changeResult.deletedRecords.forEach(function(r) { r.timestamp = timestamp; });
             }
 
             return {
-                type: deviceType,
-                isMobile: deviceType === 'mobile',
-                isDesktop: deviceType === 'desktop',
-                isTablet: deviceType === 'tablet',
-                userAgent: ua,
-                screenWidth: window.innerWidth
+                timestamp: timestamp,
+                summary: {
+                    newRecords: changeResult.newRecords ? changeResult.newRecords.length : 0,
+                    updatedRecords: changeResult.updatedRecords ? changeResult.updatedRecords.length : 0,
+                    deletedRecords: changeResult.deletedRecords ? changeResult.deletedRecords.length : 0,
+                    totalData: changeResult.totalData || 0,
+                    criticalUpdates: criticalUpdates,
+                    masterUpdates: masterUpdates,
+                    identityUpdates: identityUpdates
+                },
+                details: changeResult
             };
         }
 
-        function updateUI(device) {
-            var desktopBadge = elements.desktopBadge;
-            var tabletBadge = elements.tabletBadge;
-            var mobileBadge = elements.mobileBadge;
-            var statusText = elements.statusText;
-            var targetPage = elements.targetPage;
+        // ============================================================
+        // GET CURRENT TIME
+        // ============================================================
+        function getCurrentTime() {
+            var now = new Date();
+            return now.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit',
+                minute: '2-digit' });
+        }
 
-            desktopBadge.textContent = '○';
-            tabletBadge.textContent = '○';
-            mobileBadge.textContent = '○';
-
-            if (device.type === 'desktop') {
-                desktopBadge.textContent = '✓';
-                statusText.textContent = 'Desktop terdeteksi ✓';
-                targetPage.textContent = 'Dashboard (Desktop)';
-            } else if (device.type === 'tablet') {
-                tabletBadge.textContent = '✓';
-                statusText.textContent = 'Tablet terdeteksi ✓';
-                targetPage.textContent = 'Dashboard (Tablet)';
-            } else {
-                mobileBadge.textContent = '✓';
-                statusText.textContent = 'Mobile terdeteksi ✓';
-                targetPage.textContent = 'Mobile View';
+        // ============================================================
+        // BUILD IMEI INDEX
+        // ============================================================
+        function buildIMEIIndex(data) {
+            var index = {};
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                return index;
             }
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i];
+                if (!row || !row.barang || !Array.isArray(row.barang)) continue;
+                var depo = row.depo || '-';
+                var customer = row.customer || '-';
+                var kategori = row.kategori || '-';
+                for (var j = 0; j < row.barang.length; j++) {
+                    var barang = row.barang[j];
+                    if (!barang || !barang.details || !Array.isArray(barang.details)) continue;
+                    var namaBarang = barang.nama || '-';
+                    for (var k = 0; k < barang.details.length; k++) {
+                        var detail = barang.details[k];
+                        if (!detail) continue;
+                        var imei = detail.imei || detail.serial || '';
+                        if (!imei) continue;
+                        var normalizedImei = imei.toString().trim();
+                        if (!index[normalizedImei]) {
+                            index[normalizedImei] = [];
+                        }
+                        index[normalizedImei].push({
+                            depo: depo,
+                            customer: customer,
+                            kategori: kategori,
+                            namaBarang: namaBarang,
+                            imei: imei,
+                            tanggalSellThru: detail.tanggalSellThru || '-',
+                            coverageActive: detail.coverage || '-',
+                            isValidCoverage: detail.isValidCoverage,
+                            status: detail.isValidCoverage === false ? 'Stock' : 'Terjual'
+                        });
+                    }
+                }
+            }
+            return index;
         }
 
-        function showError() {
-            var errorMessage = elements.errorMessage;
-            var statusText = elements.statusText;
-            var redirectInfo = elements.redirectInfo;
-
-            errorMessage.classList.add('show');
-            statusText.textContent = '⏳ Redirect gagal';
-            redirectInfo.innerHTML = '<i class="fa-regular fa-circle-exclamation" aria-hidden="true"></i> Gunakan tombol di bawah untuk memilih tampilan.';
+        // ============================================================
+        // BUILD DUPLICATE MAP
+        // ============================================================
+        function buildDuplicateMap(duplicateData) {
+            var map = {};
+            var uniqueList = [];
+            if (!duplicateData || !Array.isArray(duplicateData) || duplicateData.length === 0) {
+                return { map: map, list: uniqueList };
+            }
+            var uniqueImeiMap = {};
+            for (var i = 0; i < duplicateData.length; i++) {
+                var item = duplicateData[i];
+                if (!item) continue;
+                var imei = item.imei || item.serial || item.serialNumber || '';
+                if (!imei) continue;
+                var normalizedImei = imei.toString().trim();
+                if (!uniqueImeiMap[normalizedImei]) {
+                    uniqueImeiMap[normalizedImei] = true;
+                    uniqueList.push(normalizedImei);
+                }
+            }
+            for (var j = 0; j < uniqueList.length; j++) {
+                var imei = uniqueList[j];
+                var locations = imeiIndex[imei] || [];
+                if (locations.length > 0) {
+                    map[imei] = locations;
+                } else {
+                    map[imei] = [{
+                        depo: '-',
+                        customer: '-',
+                        kategori: '-',
+                        namaBarang: '-',
+                        imei: imei,
+                        tanggalSellThru: '-',
+                        coverageActive: '-',
+                        isValidCoverage: null,
+                        status: 'Unknown'
+                    }];
+                }
+            }
+            for (var key in map) {
+                if (map.hasOwnProperty(key)) {
+                    if (map[key].length < 2) {
+                        debugLog("   ⚠️ WARNING: " + key + " hanya memiliki", map[key].length,
+                            "record (minimal 2 diperlukan)");
+                    }
+                }
+            }
+            return { map: map, list: uniqueList };
         }
 
-        function redirectToAppropriatePage(device) {
-            var targetUrl = '';
-            var delay = 600;
+        // ============================================================
+        // GET VALID DUPLICATE COUNT - SINGLE SOURCE OF TRUTH
+        // ============================================================
+        function getValidDuplicateCount() {
+            if (!duplicateMap || typeof duplicateMap !== 'object') {
+                return 0;
+            }
+            return Object.keys(duplicateMap).length;
+        }
 
-            if (device.type === 'desktop' || device.type === 'tablet') {
-                targetUrl = 'Dashboard.html';
-            } else {
-                targetUrl = 'mobile.html';
+        // ============================================================
+        // DUPLICATE ALERT - MOBILE
+        // ============================================================
+        function showDuplicateAlertMobile() {
+            var count = getValidDuplicateCount();
+            var container = document.getElementById('duplicateAlertContainer');
+            if (!container) return;
+
+            if (count === 0) {
+                container.innerHTML = '';
+                return;
             }
 
-            var statusText = elements.statusText;
-            var redirectInfo = elements.redirectInfo;
-
-            statusText.textContent = 'Mengarahkan ke ' + targetUrl + '...';
-            redirectInfo.innerHTML = '<i class="fa-regular fa-arrow-right" aria-hidden="true"></i> Mengarahkan ke <strong>' + targetUrl + '</strong>...';
-
-            setTimeout(function() {
-                try {
-                    window.location.replace(targetUrl);
-                } catch (e) {
-                    showError();
-                }
-            }, delay);
-        }
-
-        function isOnCorrectPage(device) {
-            var currentPath = window.location.pathname;
-            var currentFile = currentPath.split('/').pop() || 'index.html';
-
-            if (device.type === 'desktop' || device.type === 'tablet') {
-                if (currentFile === 'mobile.html') {
-                    return false;
-                }
-                if (currentFile === 'index.html' || currentFile === '') {
-                    return false;
-                }
-                return true;
-            } else {
-                if (currentFile === 'Dashboard.html' || currentFile === 'index.html' || currentFile === '') {
-                    return false;
-                }
-                return true;
+            var sampleImei = duplicateImeiList.slice(0, 2);
+            var previewText = sampleImei.map(function(imei) { return safeText(imei); }).join(', ');
+            if (duplicateImeiList.length > 2) {
+                previewText += ' ...';
             }
+
+            container.innerHTML = `
+                <div class="duplicate-alert-mobile" onclick="showDuplicateDetailMobile()">
+                    <span class="icon"><i class="fa-regular fa-triangle-exclamation"></i></span>
+                    <div class="content">
+                        ⚠️ Ditemukan ${count} IMEI Duplicate
+                        <span class="desc">Tap untuk lihat detail • ${previewText}</span>
+                    </div>
+                    <span class="arrow"><i class="fa-regular fa-chevron-right"></i></span>
+                </div>
+            `;
         }
 
-        (function main() {
-            try {
-                var device = detectDevice();
-                updateUI(device);
+        // ============================================================
+        // DUPLICATE BOTTOM SHEET
+        // ============================================================
+        function openDuplicateSheet() {
+            var sheet = document.getElementById('duplicateSheet');
+            var overlay = document.getElementById('duplicateOverlay');
+            var body = document.getElementById('dupSheetBody');
+            var count = document.getElementById('dupSheetCount');
 
-                if (isOnCorrectPage(device)) {
-                    var statusText = elements.statusText;
-                    var redirectInfo = elements.redirectInfo;
-                    statusText.textContent = 'Sudah di halaman yang benar ✓';
-                    redirectInfo.innerHTML = '<i class="fa-regular fa-circle-check" style="color: #28a745;" aria-hidden="true"></i> Anda sudah berada di halaman yang tepat.';
+            if (!sheet || !overlay || !body) return;
+
+            var validCount = getValidDuplicateCount();
+            if (validCount === 0) {
+                body.innerHTML = `
+                    <div class="dup-empty">
+                        <i class="fa-regular fa-circle-check"></i>
+                        Tidak ada duplicate IMEI
+                    </div>
+                `;
+                if (count) count.textContent = '(0)';
+            } else {
+                if (count) count.textContent = '(' + validCount + ')';
+                var html = '';
+                var totalRecords = 0;
+
+                for (var i = 0; i < duplicateImeiList.length; i++) {
+                    var imei = duplicateImeiList[i];
+                    var locations = duplicateMap[imei] || [];
+                    totalRecords += locations.length;
+
+                    html += `
+                        <div class="dup-item-sheet">
+                            <div class="dup-imei">
+                                <span>🔹 ${safeText(imei)}</span>
+                                <span class="badge-count">${locations.length} Data</span>
+                            </div>
+                            <div class="dup-locations">
+                                <div class="dup-location">
+                                    <span class="header-label">Depo</span>
+                                    <span class="header-label">Customer</span>
+                                    <span class="header-label">SellThru</span>
+                                    <span class="header-label">Status</span>
+                                </div>
+                    `;
+
+                    for (var j = 0; j < locations.length; j++) {
+                        var loc = locations[j];
+                        var statusClass = loc.status === 'Stock' ? 'stock' : 'sold';
+                        html += `
+                            <div class="dup-location">
+                                <span>${safeText(loc.depo)}</span>
+                                <span>${safeText(loc.customer)}</span>
+                                <span>${safeText(loc.tanggalSellThru)}</span>
+                                <span><span class="status-badge ${statusClass}">${safeText(loc.status)}</span></span>
+                            </div>
+                        `;
+                    }
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div style="font-size:0.5rem;color:var(--text-muted);padding:8px 4px 0;border-top:1px solid var(--border-color);margin-top:4px;">
+                        📊 Total ${totalRecords} record duplicate • Data tidak dihitung pada dashboard.
+                    </div>
+                `;
+
+                body.innerHTML = html;
+            }
+
+            body.scrollTop = 0;
+
+            sheet.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDuplicateSheet() {
+            var sheet = document.getElementById('duplicateSheet');
+            var overlay = document.getElementById('duplicateOverlay');
+            if (sheet) {
+                sheet.classList.remove('open', 'dragging', 'resetting');
+                sheet.style.transform = '';
+                sheet.style.opacity = '';
+            }
+            if (overlay) overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function showDuplicateDetailMobile() {
+            var count = getValidDuplicateCount();
+            if (count === 0) return;
+            openDuplicateSheet();
+        }
+
+        // ============================================================
+        // SWIPE TO CLOSE - BOTTOM SHEET
+        // ============================================================
+        var sheetTouchStartY = 0;
+        var sheetTouchCurrentY = 0;
+        var sheetIsDragging = false;
+        var sheetCurrentTransform = 0;
+
+        function initSwipeToClose() {
+            var sheet = document.getElementById('duplicateSheet');
+            var overlay = document.getElementById('duplicateOverlay');
+            var body = document.getElementById('dupSheetBody');
+            if (!sheet) return;
+
+            sheet.addEventListener('touchstart', function(e) {
+                if (body && body.scrollTop > 0) {
                     return;
                 }
+                var touch = e.touches[0];
+                sheetTouchStartY = touch.clientY;
+                sheetTouchCurrentY = touch.clientY;
+                sheetIsDragging = true;
+                sheetCurrentTransform = 0;
+                sheet.classList.add('dragging');
+            }, { passive: true });
 
-                redirectToAppropriatePage(device);
+            sheet.addEventListener('touchmove', function(e) {
+                if (!sheetIsDragging) return;
+                if (body && body.scrollTop > 0) {
+                    sheetIsDragging = false;
+                    sheet.classList.remove('dragging');
+                    sheet.style.transform = '';
+                    sheet.style.opacity = '';
+                    if (overlay) {
+                        overlay.style.opacity = '';
+                    }
+                    return;
+                }
+                var touch = e.touches[0];
+                sheetTouchCurrentY = touch.clientY;
+                var deltaY = sheetTouchCurrentY - sheetTouchStartY;
+
+                if (deltaY > 0) {
+                    sheetCurrentTransform = deltaY;
+                    var progress = Math.min(deltaY / 200, 1);
+                    sheet.style.transform = 'translateY(' + deltaY + 'px)';
+                    sheet.style.opacity = 1 - (progress * 0.5);
+                    if (overlay) {
+                        overlay.style.opacity = 1 - progress;
+                    }
+                }
+            }, { passive: true });
+
+            sheet.addEventListener('touchend', function() {
+                if (!sheetIsDragging) return;
+                sheetIsDragging = false;
+                sheet.classList.remove('dragging');
+                sheet.classList.add('resetting');
+
+                if (sheetCurrentTransform > 100) {
+                    closeDuplicateSheet();
+                } else {
+                    sheet.style.transform = '';
+                    sheet.style.opacity = '';
+                    if (overlay) {
+                        overlay.style.opacity = '';
+                    }
+                    setTimeout(function() {
+                        sheet.classList.remove('resetting');
+                    }, 300);
+                }
+                sheetCurrentTransform = 0;
+            }, { passive: true });
+
+            var isDraggingMouse = false;
+            var mouseStartY = 0;
+            var mouseCurrentY = 0;
+
+            sheet.addEventListener('mousedown', function(e) {
+                if (e.target.closest('.close-btn') || e.target.closest('.toast-close')) return;
+                if (body && body.scrollTop > 0) {
+                    return;
+                }
+                isDraggingMouse = true;
+                mouseStartY = e.clientY;
+                mouseCurrentY = e.clientY;
+                sheetCurrentTransform = 0;
+                sheet.classList.add('dragging');
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDraggingMouse) return;
+                if (body && body.scrollTop > 0) {
+                    isDraggingMouse = false;
+                    sheet.classList.remove('dragging');
+                    sheet.style.transform = '';
+                    sheet.style.opacity = '';
+                    if (overlay) {
+                        overlay.style.opacity = '';
+                    }
+                    return;
+                }
+                mouseCurrentY = e.clientY;
+                var deltaY = mouseCurrentY - mouseStartY;
+                if (deltaY > 0) {
+                    sheetCurrentTransform = deltaY;
+                    var progress = Math.min(deltaY / 200, 1);
+                    sheet.style.transform = 'translateY(' + deltaY + 'px)';
+                    sheet.style.opacity = 1 - (progress * 0.5);
+                    if (overlay) {
+                        overlay.style.opacity = 1 - progress;
+                    }
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (!isDraggingMouse) return;
+                isDraggingMouse = false;
+                sheet.classList.remove('dragging');
+                sheet.classList.add('resetting');
+
+                if (sheetCurrentTransform > 100) {
+                    closeDuplicateSheet();
+                } else {
+                    sheet.style.transform = '';
+                    sheet.style.opacity = '';
+                    if (overlay) {
+                        overlay.style.opacity = '';
+                    }
+                    setTimeout(function() {
+                        sheet.classList.remove('resetting');
+                    }, 300);
+                }
+                sheetCurrentTransform = 0;
+            });
+        }
+
+        // ============================================================
+        // SHOW CHANGE NOTIFICATION - MOBILE
+        // ============================================================
+        function showChangeNotificationMobile(changeHistory) {
+            var summary = changeHistory.summary;
+            var hasChanges = summary.newRecords > 0 || summary.updatedRecords > 0 ||
+                summary.deletedRecords > 0 || summary.criticalUpdates > 0 ||
+                summary.identityUpdates > 0;
+
+            if (!hasChanges) return;
+
+            var parts = [];
+            if (summary.newRecords > 0) parts.push('🆕 ' + summary.newRecords + ' New');
+            if (summary.criticalUpdates > 0) parts.push('⚠️ ' + summary.criticalUpdates + ' Critical');
+            if (summary.identityUpdates > 0) parts.push('🆔 ' + summary.identityUpdates + ' Identity');
+            if (summary.masterUpdates > 0) parts.push('📝 ' + summary.masterUpdates + ' Master');
+            if (summary.deletedRecords > 0) parts.push('🗑️ ' + summary.deletedRecords + ' Deleted');
+
+            var message = 'Data Updated • ' + parts.join(' • ');
+            showToast(message, 'info', 2500);
+        }
+
+        // ============================================================
+        // OOS / LOW STOCK BADGE - MOBILE
+        // ============================================================
+        function getStockStatusBadge(stockValue) {
+            var val = parseInt(stockValue) || 0;
+            var threshold = UI_CONFIG.LOW_STOCK_THRESHOLD || 2;
+
+            if (val === 0) {
+                return '<span class="badge-oos-mobile"><i class="fa-regular fa-circle-xmark"></i> OOS</span>';
+            } else if (val <= threshold) {
+                return '<span class="badge-low-stock-mobile"><i class="fa-regular fa-triangle-exclamation"></i> Low Stock</span>';
+            }
+            return '';
+        }
+
+        // ============================================================
+        // PRODUCT ICON HELPER
+        // ============================================================
+        function getProductIcon(skuName) {
+            if (!skuName) return 'fa-solid fa-mobile-screen-button';
+            var name = skuName.toLowerCase();
+            if (name.includes('iphone')) {
+                return 'fa-solid fa-mobile-screen-button';
+            } else if (name.includes('ipad')) {
+                return 'fa-solid fa-tablet-screen-button';
+            } else if (name.includes('mac') || name.includes('macbook') || name.includes('imac') || name.includes(
+                    'mac mini')) {
+                return 'fa-solid fa-laptop';
+            } else if (name.includes('watch') || name.includes('apple watch')) {
+                return 'fa-solid fa-clock';
+            } else if (name.includes('airpods') || name.includes('airpods pro') || name.includes('airpods max')) {
+                return 'fa-solid fa-headphones';
+            } else if (name.includes('adapter') || name.includes('charger') || name.includes('power') || name.includes(
+                    'usb-c')) {
+                return 'fa-solid fa-plug';
+            } else if (name.includes('pencil') || name.includes('apple pencil')) {
+                return 'fa-solid fa-pen';
+            } else if (name.includes('airtag')) {
+                return 'fa-solid fa-location-dot';
+            } else {
+                return 'fa-solid fa-mobile-screen-button';
+            }
+        }
+
+        // ============================================================
+        // RENDER CUSTOMER CARDS
+        // ============================================================
+        function renderCustomerCards(data) {
+            var container = document.getElementById('customerCardsContainer');
+            if (!container) return;
+
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+                        <i class="fas fa-box-open" style="font-size:2rem;opacity:0.3;display:block;margin-bottom:12px;"></i>
+                        <span style="font-weight:600;font-size:0.8rem;">Tidak ada data</span>
+                        <div style="font-size:0.6rem;margin-top:4px;">Silakan refresh atau periksa koneksi</div>
+                    </div>
+                `;
+                return;
+            }
+
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i];
+                var customer = row.customer || '-';
+                var depo = row.depo || '-';
+                var sellThru = row.sellThru || 0;
+                var sellOut = row.sellOut || 0;
+                var stockCI = row.stockCI || 0;
+                var wos = row.wos || 0;
+                var kategori = row.kategori || '-';
+                var namaBarang = row.namaBarang || getSKUName(row);
+
+                var wosClass = 'bg-success';
+                if (wos > 8) wosClass = 'bg-danger';
+                else if (wos > 4) wosClass = 'bg-warning';
+
+                var stockBadge = getStockStatusBadge(stockCI);
+
+                html += `
+                    <div class="customer-card" data-customer="${escapeHtml(customer)}">
+                        <div class="main" onclick="toggleCard(this)">
+                            <div class="left">
+                                <div class="depo">${safeText(depo)}</div>
+                                <div class="name">${safeText(customer)} ${stockBadge}</div>
+                            </div>
+                            <div class="stats">
+                                <div class="stat">
+                                    <span class="num">${sellThru}</span>
+                                    <span class="lbl">Sell Thru</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="num text-success">${sellOut}</span>
+                                    <span class="lbl">Sell Out</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="num">${stockCI}</span>
+                                    <span class="lbl">Stock</span>
+                                </div>
+                            </div>
+                            <div class="chevron">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="body-collapse">
+                            <div class="inner">
+                                ${renderKategoriRows(row)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        // RENDER KATEGORI ROWS
+        // ============================================================
+        function renderKategoriRows(row) {
+            if (!row.barang || !Array.isArray(row.barang) || row.barang.length === 0) {
+                return '<div style="font-size:0.55rem;color:var(--text-muted);padding:8px 0;">Tidak ada SKU</div>';
+            }
+
+            var html = '';
+            for (var i = 0; i < row.barang.length; i++) {
+                var barang = row.barang[i];
+                if (!barang) continue;
+                var nama = barang.nama || '-';
+                var qty = barang.qty || 0;
+                var sellThruQty = barang.sellThruQty || 0;
+                var sellOutQty = barang.sellOutQty || 0;
+                var stockCI = barang.stockCI || 0;
+                var wos = barang.wos || 0;
+
+                var wosBadgeClass = 'bg-success';
+                if (wos > 8) wosBadgeClass = 'bg-danger';
+                else if (wos > 4) wosBadgeClass = 'bg-warning';
+
+                html += `
+                    <div class="kategori-row" onclick="showSkuDetail('${escapeJsString(nama)}', ${i}, '${escapeJsString(row.customer || '')}', '${escapeJsString(row.depo || '')}')">
+                        <div class="kname">
+                            <i class="${getProductIcon(nama)}" style="font-size:0.6rem;color:var(--text-muted);width:16px;"></i>
+                            ${safeText(nama)}
+                            <span class="wos-badge-mini ${wosBadgeClass}">${wos}</span>
+                        </div>
+                        <div class="kstats">
+                            <div class="ks">
+                                <span class="num">${sellThruQty}</span>
+                                <span>ST</span>
+                            </div>
+                            <div class="ks">
+                                <span class="num text-success">${sellOutQty}</span>
+                                <span>SO</span>
+                            </div>
+                            <div class="ks">
+                                <span class="num">${stockCI}</span>
+                                <span>Stock</span>
+                            </div>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        // ============================================================
+        // TOGGLE CARD
+        // ============================================================
+        function toggleCard(el) {
+            var card = el.closest('.customer-card');
+            if (!card) return;
+            var body = card.querySelector('.body-collapse');
+            var chevron = card.querySelector('.chevron');
+            if (!body) return;
+
+            var isOpen = body.classList.contains('open');
+            body.classList.toggle('open');
+            if (chevron) chevron.classList.toggle('open');
+
+            if (!isOpen) {
+                var allCards = document.querySelectorAll('.customer-card');
+                for (var i = 0; i < allCards.length; i++) {
+                    var otherCard = allCards[i];
+                    if (otherCard !== card) {
+                        var otherBody = otherCard.querySelector('.body-collapse');
+                        var otherChevron = otherCard.querySelector('.chevron');
+                        if (otherBody) otherBody.classList.remove('open');
+                        if (otherChevron) otherChevron.classList.remove('open');
+                    }
+                }
+            }
+        }
+
+        // ============================================================
+        // SHOW SKU DETAIL - MOBILE DENGAN LAZY LOADING
+        // ============================================================
+
+        function showSkuDetail(skuName, index, customer, depo) {
+            var modalTitle = document.getElementById('modalTitle');
+            var modalBody = document.getElementById('modalBody');
+            if (!modalTitle || !modalBody) return;
+
+            // Cari data dari rawData (tanpa details)
+            var record = null;
+            var skuData = null;
+            
+            for (var i = 0; i < rawData.length; i++) {
+                var row = rawData[i];
+                if (row.customer === customer && row.depo === depo) {
+                    record = row;
+                    if (row.barang && row.barang[index]) {
+                        skuData = row.barang[index];
+                    }
+                    break;
+                }
+            }
+
+            if (!record || !skuData) {
+                modalTitle.innerHTML = '<i class="fas fa-circle-info me-2"></i>' + safeText(skuName);
+                modalBody.innerHTML = '<div style="padding:12px;text-align:center;color:var(--text-muted);">Data tidak ditemukan</div>';
+                myModal.show();
+                return;
+            }
+
+            modalTitle.innerHTML = '<i class="fas fa-circle-info me-2"></i>' + safeText(skuName);
+
+            // Tampilkan skeleton loading
+            modalBody.innerHTML = `
+                <div style="text-align:center;padding:20px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div style="margin-top:10px;color:var(--text-muted);font-size:0.7rem;">Memuat detail IMEI...</div>
+                </div>
+            `;
+
+            myModal.show();
+
+            // ✅ LAZY LOADING: Fetch detail dari endpoint terpisah
+            var url = APP_CONFIG.WEB_APP_URL + '?action=detail' +
+                '&customer=' + encodeURIComponent(customer) +
+                '&depo=' + encodeURIComponent(depo) +
+                '&sku=' + encodeURIComponent(skuName) +
+                '&kategori=' + encodeURIComponent(record.kategori || '');
+
+            if (APP_CONFIG.DEBUG) {
+                debugLog('Fetching detail for:', customer, depo, skuName);
+            }
+
+            ApiHelper._fetchWithTimeout(url, 10000)
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (!data || !data.success) {
+                        throw new Error(data.error || 'Gagal mengambil detail');
+                    }
+
+                    renderSkuDetailModalMobile(modalTitle, modalBody, skuName, skuData, data);
+                })
+                .catch(function(error) {
+                    if (APP_CONFIG.DEBUG) {
+                        debugError('Detail fetch error:', error);
+                    }
+                    modalBody.innerHTML = `
+                        <div style="padding:20px;text-align:center;color:var(--danger);font-size:0.8rem;">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Gagal memuat detail: ${error.message}
+                            <br><br>
+                            <button class="btn btn-sm btn-outline-primary" onclick="showSkuDetail('${escapeJsString(skuName)}', ${index}, '${escapeJsString(customer)}', '${escapeJsString(depo)}')">
+                                <i class="fas fa-redo me-1"></i> Coba Lagi
+                            </button>
+                        </div>
+                    `;
+                });
+        }
+
+        // ============================================================
+        // RENDER SKU DETAIL MODAL - MOBILE
+        // ============================================================
+
+        function renderSkuDetailModalMobile(modalTitle, modalBody, skuName, skuData, detailData) {
+            // Gunakan render yang sama dengan Dashboard
+            renderSkuDetailModal(modalTitle, modalBody, skuName, skuData, detailData);
+        }
+
+        // ============================================================
+        // RENDER SKU DETAIL MODAL (Shared)
+        // ============================================================
+
+        function renderSkuDetailModal(modalTitle, modalBody, skuName, skuData, detailData) {
+            var html = '';
+            
+            html += `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:0.6rem;">
+                    <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
+                        <div style="color:var(--text-muted);font-weight:600;">Qty</div>
+                        <div style="font-weight:700;font-size:0.8rem;">${skuData.sellThru || 0}</div>
+                    </div>
+                    <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
+                        <div style="color:var(--text-muted);font-weight:600;">Sell Out</div>
+                        <div style="font-weight:700;font-size:0.8rem;color:var(--success);">${skuData.sellOut || 0}</div>
+                    </div>
+                    <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
+                        <div style="color:var(--text-muted);font-weight:600;">Stock CI</div>
+                        <div style="font-weight:700;font-size:0.8rem;">${skuData.stockCI || 0}</div>
+                    </div>
+                    <div style="background:var(--bg-input);padding:8px 12px;border-radius:10px;">
+                        <div style="color:var(--text-muted);font-weight:600;">WOS</div>
+                        <div style="font-weight:700;font-size:0.8rem;">${skuData.wos || 0}</div>
+                    </div>
+                </div>
+            `;
+
+            if (detailData.details && detailData.details.length > 0) {
+                html += `
+                    <div class="imei-card">
+                        <div class="imei-header">
+                            <span class="imei-name"><i class="fas fa-sim-card me-2"></i>IMEI Details</span>
+                            <span class="badge bg-secondary">${detailData.details.length}</span>
+                        </div>
+                        <div class="imei-table-wrap" style="overflow-x:auto;">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>IMEI</th>
+                                        <th>Sell Thru</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                for (var j = 0; j < detailData.details.length; j++) {
+                    var detail = detailData.details[j];
+                    var statusClass = detail.status === 'Stock' ? 'aging-dead' : 'aging-normal';
+                    var statusLabel = detail.status || 'Terjual';
+
+                    html += `
+                        <tr>
+                            <td>${j + 1}</td>
+                            <td><span class="imei-code" onclick="copyIMEI('${escapeJsString(detail.imei)}')">${safeText(detail.imei)}</span></td>
+                            <td>${safeText(detail.tanggalSellThru)}</td>
+                            <td><span class="badge-aging-soft ${statusClass}">${statusLabel}</span></td>
+                        </tr>
+                    `;
+                }
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div style="padding:12px;text-align:center;color:var(--text-muted);font-size:0.6rem;">
+                        <i class="fas fa-info-circle me-1"></i> Tidak ada detail IMEI
+                    </div>
+                `;
+            }
+
+            modalBody.innerHTML = html;
+        }
+
+        // ============================================================
+        // COPY IMEI
+        // ============================================================
+        function copyIMEI(imei) {
+            if (!imei) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(imei)
+                    .then(function() {
+                        showToast('IMEI copied: ' + imei, 'success', 2000);
+                    })
+                    .catch(function() {
+                        fallbackCopy(imei);
+                    });
+            } else {
+                fallbackCopy(imei);
+            }
+        }
+
+        function fallbackCopy(text) {
+            var textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            textarea.style.left = '-9999px';
+            textarea.style.top = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('IMEI copied: ' + text, 'success', 2000);
             } catch (e) {
-                showError();
+                showToast('Gagal menyalin IMEI', 'error', 2000);
             }
-        })();
+            document.body.removeChild(textarea);
+        }
 
-        var resizeTimeout;
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(function() {
-                try {
-                    var device = detectDevice();
-                    var currentPath = window.location.pathname;
-                    var currentFile = currentPath.split('/').pop() || 'index.html';
-
-                    var shouldRedirect = false;
-                    if ((device.type === 'desktop' || device.type === 'tablet') && currentFile === 'mobile.html') {
-                        shouldRedirect = true;
-                    } else if (device.type === 'mobile' && (currentFile === 'Dashboard.html' || currentFile === 'index.html')) {
-                        shouldRedirect = true;
-                    }
-
-                    if (shouldRedirect) {
-                        redirectToAppropriatePage(device);
-                    }
-                } catch (e) {
-                    showError();
-                }
-            }, 500);
-        });
-
-        window.addEventListener('orientationchange', function() {
-            setTimeout(function() {
-                try {
-                    var device = detectDevice();
-                    var currentPath = window.location.pathname;
-                    var currentFile = currentPath.split('/').pop() || 'index.html';
-
-                    if (device.type === 'mobile' && currentFile === 'Dashboard.html') {
-                        redirectToAppropriatePage(device);
-                    } else if ((device.type === 'desktop' || device.type === 'tablet') && currentFile === 'mobile.html') {
-                        redirectToAppropriatePage(device);
-                    }
-                } catch (e) {
-                    showError();
-                }
-            }, 600);
-        });
-
-        setTimeout(function() {
-            var currentPath = window.location.pathname;
-            var currentFile = currentPath.split('/').pop() || 'index.html';
-            if (currentFile === 'index.html' || currentFile === '') {
-                showError();
+        // ============================================================
+        // UPDATE KPI FROM DATA
+        // ============================================================
+        function updateKPIFromData(data) {
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                document.getElementById('kpiSellThru').innerText = '0';
+                document.getElementById('kpiSellOut').innerText = '0';
+                document.getElementById('kpiStockCI').innerText = '0';
+                document.getElementById('kpiAvgWOS').innerText = '0';
+                return;
             }
-        }, 5000);
+
+            var totalSellThru = 0;
+            var totalSellOut = 0;
+            var totalStockCI = 0;
+            var wosSum = 0;
+            var wosCount = 0;
+
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i];
+                if (row.sellThru) totalSellThru += parseInt(row.sellThru) || 0;
+                if (row.sellOut) totalSellOut += parseInt(row.sellOut) || 0;
+                if (row.stockCI) totalStockCI += parseInt(row.stockCI) || 0;
+                if (row.wos !== undefined && row.wos !== null) {
+                    wosSum += parseFloat(row.wos) || 0;
+                    wosCount++;
+                }
+            }
+
+            document.getElementById('kpiSellThru').innerText = totalSellThru.toLocaleString();
+            document.getElementById('kpiSellOut').innerText = totalSellOut.toLocaleString();
+            document.getElementById('kpiStockCI').innerText = totalStockCI.toLocaleString();
+
+            var avgWOS = wosCount > 0 ? (wosSum / wosCount) : 0;
+            document.getElementById('kpiAvgWOS').innerText = avgWOS.toFixed(1);
+        }
+
+        // ============================================================
+        // UPDATE WORST WOS
+        // ============================================================
+        function updateWorstWos(data) {
+            var container = document.getElementById('worstWosList');
+            var countBadge = document.getElementById('worstCount');
+            if (!container) return;
+
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                container.innerHTML = '<div class="worst-empty">Tidak ada data</div>';
+                if (countBadge) countBadge.innerText = '0';
+                return;
+            }
+
+            var skuWosList = [];
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i];
+                if (!row.barang || !Array.isArray(row.barang)) continue;
+                for (var j = 0; j < row.barang.length; j++) {
+                    var barang = row.barang[j];
+                    if (!barang) continue;
+                    var wos = parseFloat(barang.wos) || 0;
+                    var nama = barang.nama || '-';
+                    var customer = row.customer || '-';
+                    var depo = row.depo || '-';
+                    skuWosList.push({
+                        nama: nama,
+                        wos: wos,
+                        customer: customer,
+                        depo: depo,
+                        stockCI: barang.stockCI || 0
+                    });
+                }
+            }
+
+            skuWosList.sort(function(a, b) {
+                return b.wos - a.wos;
+            });
+
+            var top5 = skuWosList.slice(0, 5);
+            if (countBadge) countBadge.innerText = top5.length;
+
+            if (top5.length === 0) {
+                container.innerHTML = '<div class="worst-empty">Semua SKU memiliki WOS yang baik</div>';
+                return;
+            }
+
+            var html = '';
+            for (var k = 0; k < top5.length; k++) {
+                var item = top5[k];
+                var rank = k + 1;
+                var wosClass = 'bg-danger';
+                if (item.wos <= 4) wosClass = 'bg-success';
+                else if (item.wos <= 8) wosClass = 'bg-warning';
+
+                html += `
+                    <div class="worst-item" onclick="showWorstDetail('${escapeJsString(item.nama)}', '${escapeJsString(item.customer)}', '${escapeJsString(item.depo)}')">
+                        <div class="left">
+                            <span class="rank">#${rank}</span>
+                            <span class="name">${safeText(item.nama)}</span>
+                            <span class="wos-badge-mini ${wosClass}" style="font-size:0.4rem;">${item.wos.toFixed(1)}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:4px;">
+                            <span style="font-size:0.45rem;color:var(--text-muted);">${safeText(item.customer)}</span>
+                            <span class="arrow"><i class="fa-regular fa-chevron-right"></i></span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        // SHOW WORST DETAIL
+        // ============================================================
+        function showWorstDetail(skuName, customer, depo) {
+            var record = null;
+            for (var i = 0; i < rawData.length; i++) {
+                var row = rawData[i];
+                if (row.customer === customer && row.depo === depo) {
+                    record = row;
+                    break;
+                }
+            }
+
+            if (!record) {
+                showToast('Data tidak ditemukan', 'error', 2000);
+                return;
+            }
+
+            var skuIndex = -1;
+            if (record.barang && Array.isArray(record.barang)) {
+                for (var j = 0; j < record.barang.length; j++) {
+                    if (record.barang[j].nama === skuName) {
+                        skuIndex = j;
+                        break;
+                    }
+                }
+            }
+
+            if (skuIndex === -1) {
+                showToast('SKU tidak ditemukan', 'error', 2000);
+                return;
+            }
+
+            showSkuDetail(skuName, skuIndex, customer, depo);
+        }
+
+        // ============================================================
+        // UPDATE WOS BADGE
+        // ============================================================
+        function updateWosBadge(data) {
+            var wosBadge = document.getElementById('wosBadge');
+            if (!wosBadge) return;
+
+            var hasWosProblem = false;
+            if (data && Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    var row = data[i];
+                    if (row && row.wos !== undefined && row.wos !== null) {
+                        var wos = parseFloat(row.wos);
+                        if (wos > 8) {
+                            hasWosProblem = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            wosBadge.style.display = hasWosProblem ? 'block' : 'none';
+        }
+
+        // ============================================================
+        // FETCH DATA - Menggunakan ApiHelper
+        // ============================================================
+        function fetchData() {
+            if (isRefreshing) return;
+            isRefreshing = true;
+
+            var fab = document.getElementById('fabRefresh');
+            if (fab) fab.classList.add('loading');
+
+            showToast('Mengambil data terbaru...', 'info', 2000);
+            debugLog('Fetching data...');
+
+            ApiHelper.fetchDashboard()
+                .then(function(data) {
+                    if (!data || !data.success) {
+                        throw new Error(data.error || 'Data tidak valid');
+                    }
+                    if (!data.rows || !Array.isArray(data.rows)) {
+                        throw new Error('Data rows tidak valid');
+                    }
+
+                    debugLog('Data received: ' + data.rows.length + ' rows');
+                    processData(data);
+
+                    var now = getCurrentTime();
+                    document.getElementById('syncTime').innerText = now;
+
+                    showToast('Data berhasil diperbarui • ' + data.rows.length + ' record', 'success', 2000);
+                    isRefreshing = false;
+                    if (fab) fab.classList.remove('loading');
+
+                    scheduleAutoRefresh();
+                })
+                .catch(function(error) {
+                    debugError('Fetch error: ' + error.message);
+                    showToast('Gagal mengambil data: ' + error.message, 'error', 3000);
+                    isRefreshing = false;
+                    if (fab) fab.classList.remove('loading');
+                    scheduleAutoRefresh();
+                });
+        }
+
+        // ============================================================
+        // PROCESS DATA
+        // ============================================================
+        function processData(data) {
+            var previousRawData = rawData;
+            rawData = data.rows;
+
+            imeiIndex = buildIMEIIndex(data.rows);
+
+            var dupResult = buildDuplicateMap(data.rows);
+            duplicateMap = dupResult.map;
+            duplicateImeiList = dupResult.list;
+
+            updateProgress(100);
+            hideLoadingScreen();
+
+            var depos = [];
+            data.rows.forEach(function(row) {
+                if (row.depo && depos.indexOf(row.depo) === -1) {
+                    depos.push(row.depo);
+                }
+            });
+            setupChips(depos);
+
+            applyAllFilters();
+
+            showDuplicateAlertMobile();
+
+            if (previousRawData && previousRawData.length > 0) {
+                var changeResult = detectChanges(previousRawData, data.rows);
+                if (changeResult.updatedRecords.length > 0 || changeResult.newRecords.length > 0 || changeResult
+                    .deletedRecords.length > 0) {
+                    var changeHistory = buildChangeHistory(changeResult);
+                    showChangeNotificationMobile(changeHistory);
+                }
+            }
+
+            updateWosBadge(data.rows);
+
+            isDataLoaded = true;
+        }
+
+        // ============================================================
+        // AUTO REFRESH - SETTIMEOUT CHAIN
+        // ============================================================
+        function scheduleAutoRefresh() {
+            if (autoRefreshTimeout) {
+                clearTimeout(autoRefreshTimeout);
+                autoRefreshTimeout = null;
+            }
+
+            autoRefreshTimeout = setTimeout(function() {
+                if (navigator.onLine) {
+                    fetchData();
+                } else {
+                    showToast('Tidak ada koneksi internet. Refresh otomatis ditunda.', 'warning', 3000);
+                    scheduleAutoRefresh();
+                }
+            }, AUTO_REFRESH_INTERVAL);
+        }
+
+        // ============================================================
+        // NETWORK STATUS
+        // ============================================================
+        function handleNetworkStatus() {
+            if (navigator.onLine) {
+                showToast('Koneksi internet kembali', 'success', 2000);
+                if (!isDataLoaded) {
+                    fetchData();
+                }
+            } else {
+                showToast('Koneksi internet terputus', 'error', 3000);
+            }
+        }
+
+        // ============================================================
+        // VISIBILITY API
+        // ============================================================
+        function handleVisibilityChange() {
+            if (!document.hidden && !isDataLoaded) {
+                fetchData();
+            }
+            if (!document.hidden && navigator.onLine) {
+                if (isDataLoaded) {
+                    fetchData();
+                }
+            }
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        function init() {
+            detectSystemTheme();
+            initSwipeToClose();
+
+            window.addEventListener('online', handleNetworkStatus);
+            window.addEventListener('offline', handleNetworkStatus);
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+
+            debugLog('Mobile initialized, version: ' + APP_CONFIG.FALLBACK_VERSION);
+            fetchData();
+
+            var progress = 0;
+            var progressInterval = setInterval(function() {
+                progress += 5;
+                if (progress <= 90) {
+                    updateProgress(progress);
+                } else {
+                    clearInterval(progressInterval);
+                }
+            }, 100);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
-
 </body>
 </html>
