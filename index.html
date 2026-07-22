@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Apple Coverage Monitoring</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ============================================================
-           GLOBAL STYLE
-           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -29,9 +24,6 @@
             padding: 20px;
         }
 
-        /* ============================================================
-           LOADING CARD
-           ============================================================ */
         .loading-container {
             max-width: 420px;
             width: 100%;
@@ -83,7 +75,6 @@
             100% { background-position: 200% 0; }
         }
 
-        /* Logo */
         .logo {
             font-size: 56px;
             color: #007aff;
@@ -104,7 +95,6 @@
             margin-bottom: 28px;
         }
 
-        /* Spinner */
         .spinner-wrapper {
             display: flex;
             justify-content: center;
@@ -132,7 +122,6 @@
             color: #475569;
         }
 
-        /* Device Info */
         .device-info {
             display: flex;
             justify-content: center;
@@ -182,7 +171,6 @@
             color: #1e8e3e;
         }
 
-        /* Redirect Info */
         .redirect-info {
             font-size: 12px;
             color: #8293a6;
@@ -203,7 +191,6 @@
             text-decoration: underline;
         }
 
-        /* Manual Override Buttons */
         .manual-buttons {
             display: flex;
             gap: 10px;
@@ -245,7 +232,6 @@
             border-color: #0066d6;
         }
 
-        /* Error State */
         .error-message {
             display: none;
             margin-top: 12px;
@@ -266,7 +252,6 @@
             margin-right: 6px;
         }
 
-        /* Dark Mode */
         @media (prefers-color-scheme: dark) {
             body {
                 background: linear-gradient(135deg, #0f172a 0%, #1a2332 100%);
@@ -334,9 +319,6 @@
             }
         }
 
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
         @media (max-width: 480px) {
             .loading-container {
                 padding: 32px 20px 28px 20px;
@@ -370,20 +352,17 @@
 <body>
 
     <div class="loading-container" id="loadingContainer" role="main" aria-label="Loading and device detection">
-        <!-- Logo -->
         <div class="logo" aria-hidden="true">
             <i class="fa-brands fa-apple"></i>
         </div>
         <div class="app-name">Apple Coverage Monitoring</div>
         <div class="app-sub">Mendeteksi perangkat Anda...</div>
 
-        <!-- Spinner -->
         <div class="spinner-wrapper" role="status" aria-live="polite">
             <div class="spinner" aria-hidden="true"></div>
             <span class="spinner-text" id="statusText">Memeriksa perangkat...</span>
         </div>
 
-        <!-- Device Info -->
         <div class="device-info" role="group" aria-label="Device detection status">
             <div class="device-item">
                 <i class="fa-solid fa-desktop" aria-hidden="true"></i>
@@ -402,19 +381,16 @@
             </div>
         </div>
 
-        <!-- Redirect Info -->
         <div class="redirect-info" id="redirectInfo" aria-live="polite">
             <i class="fa-regular fa-arrow-right" aria-hidden="true"></i>
             Mengarahkan ke <span id="targetPage">Dashboard</span>...
         </div>
 
-        <!-- Error Message -->
         <div class="error-message" id="errorMessage" role="alert">
             <i class="fa-regular fa-circle-exclamation" aria-hidden="true"></i>
             Redirect gagal. Silakan klik tombol di bawah.
         </div>
 
-        <!-- Manual Override -->
         <div class="manual-buttons">
             <a href="Dashboard.html" class="btn-manual primary" id="btnDesktop" role="button" aria-label="Buka versi Desktop Dashboard" title="Buka Dashboard untuk Desktop">
                 <i class="fa-solid fa-desktop" aria-hidden="true"></i> Desktop View
@@ -425,13 +401,7 @@
         </div>
     </div>
 
-    <!-- ============================================================
-         MAIN SCRIPT - DETEKSI PERANGKAT (USER AGENT PRIORITY)
-         ============================================================ -->
     <script>
-        // ============================================================
-        // DOM CACHE - OPTIMASI
-        // ============================================================
         var elements = {
             desktopBadge: document.getElementById('desktopBadge'),
             tabletBadge: document.getElementById('tabletBadge'),
@@ -443,48 +413,28 @@
             loadingContainer: document.getElementById('loadingContainer')
         };
 
-        // ============================================================
-        // 1. DETEKSI PERANGKAT - USER AGENT PRIORITY
-        // ============================================================
         function detectDevice() {
             var ua = navigator.userAgent || navigator.vendor || window.opera || '';
 
-            // ✅ PRIORITAS: Deteksi berdasarkan User Agent
-            // Mobile: Android, iPhone, iPod, BlackBerry, Opera Mini, IEMobile, WPDesktop, Mobile, webOS
-            var isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop|Mobile|webOS/i.test(ua);
-
-            // Tablet: iPad, Android Tablet (Android tanpa Mobile), Kindle, Silk
+            var isMobile = /Android|iPhone|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop|Mobile|webOS/i.test(ua);
             var isTablet = /iPad|Android(?!.*Mobile)|Kindle|Silk/i.test(ua);
 
-            // Jika iPad dengan userAgent iPad → tablet
             if (isTablet) {
                 isMobile = false;
             }
 
-            // Jika userAgent mengandung "Mobile" → mobile
             if (/Mobile/i.test(ua)) {
                 isMobile = true;
                 isTablet = false;
             }
 
-            // ✅ FALLBACK: Jika userAgent tidak terdeteksi sama sekali, gunakan lebar layar
-            var isSmallScreen = window.innerWidth < 768;
             var deviceType = 'desktop';
 
             if (isTablet) {
                 deviceType = 'tablet';
             } else if (isMobile) {
                 deviceType = 'mobile';
-            } else if (isSmallScreen) {
-                // Fallback: userAgent tidak mendeteksi apa pun, tapi layar kecil
-                // Anggap sebagai mobile
-                deviceType = 'mobile';
             }
-
-            // Log untuk debugging (hanya jika diperlukan)
-            // console.log('[Device Detection] UserAgent:', ua);
-            // console.log('[Device Detection] Type:', deviceType);
-            // console.log('[Device Detection] Width:', window.innerWidth);
 
             return {
                 type: deviceType,
@@ -496,9 +446,6 @@
             };
         }
 
-        // ============================================================
-        // 2. UPDATE UI
-        // ============================================================
         function updateUI(device) {
             var desktopBadge = elements.desktopBadge;
             var tabletBadge = elements.tabletBadge;
@@ -525,9 +472,6 @@
             }
         }
 
-        // ============================================================
-        // 3. SHOW ERROR
-        // ============================================================
         function showError() {
             var errorMessage = elements.errorMessage;
             var statusText = elements.statusText;
@@ -538,15 +482,10 @@
             redirectInfo.innerHTML = '<i class="fa-regular fa-circle-exclamation" aria-hidden="true"></i> Gunakan tombol di bawah untuk memilih tampilan.';
         }
 
-        // ============================================================
-        // 4. REDIRECT DENGAN REPLACE (HISTORY OPTIMIZATION)
-        // ============================================================
         function redirectToAppropriatePage(device) {
             var targetUrl = '';
             var delay = 600;
 
-            // ✅ Desktop dan Tablet → Dashboard.html
-            // ✅ Mobile → mobile.html
             if (device.type === 'desktop' || device.type === 'tablet') {
                 targetUrl = 'Dashboard.html';
             } else {
@@ -568,42 +507,31 @@
             }, delay);
         }
 
-        // ============================================================
-        // 5. CEK APAKAH SUDAH DI HALAMAN YANG BENAR
-        // ============================================================
         function isOnCorrectPage(device) {
             var currentPath = window.location.pathname;
             var currentFile = currentPath.split('/').pop() || 'index.html';
 
             if (device.type === 'desktop' || device.type === 'tablet') {
-                // Desktop/Tablet → HARUS di Dashboard.html
                 if (currentFile === 'mobile.html') {
                     return false;
                 }
                 if (currentFile === 'index.html' || currentFile === '') {
                     return false;
                 }
-                // Sudah di Dashboard.html → benar
                 return true;
             } else {
-                // Mobile → HARUS di mobile.html
                 if (currentFile === 'Dashboard.html' || currentFile === 'index.html' || currentFile === '') {
                     return false;
                 }
-                // Sudah di mobile.html → benar
                 return true;
             }
         }
 
-        // ============================================================
-        // 6. MAIN EXECUTION
-        // ============================================================
         (function main() {
             try {
                 var device = detectDevice();
                 updateUI(device);
 
-                // Cek apakah sudah di halaman yang benar
                 if (isOnCorrectPage(device)) {
                     var statusText = elements.statusText;
                     var redirectInfo = elements.redirectInfo;
@@ -618,11 +546,6 @@
             }
         })();
 
-        // ============================================================
-        // 7. HANDLE RESIZE (Deteksi ulang jika layar berubah)
-        // ============================================================
-        // ⚠️ Perhatikan: User Agent TIDAK berubah saat resize.
-        // Resize hanya untuk fallback jika userAgent tidak terdeteksi.
         var resizeTimeout;
         window.addEventListener('resize', function() {
             clearTimeout(resizeTimeout);
@@ -633,9 +556,6 @@
                     var currentFile = currentPath.split('/').pop() || 'index.html';
 
                     var shouldRedirect = false;
-                    // Jika device berubah (misal: tablet → desktop karena resize)
-                    // Tapi karena userAgent tidak berubah, seharusnya tidak ada redirect
-                    // kecuali fallback width yang berubah
                     if ((device.type === 'desktop' || device.type === 'tablet') && currentFile === 'mobile.html') {
                         shouldRedirect = true;
                     } else if (device.type === 'mobile' && (currentFile === 'Dashboard.html' || currentFile === 'index.html')) {
@@ -651,11 +571,6 @@
             }, 500);
         });
 
-        // ============================================================
-        // 8. HANDLE ORIENTATION CHANGE (Mobile)
-        // ============================================================
-        // ⚠️ Orientation change TIDAK mengubah userAgent
-        // Hanya untuk fallback jika perlu
         window.addEventListener('orientationchange', function() {
             setTimeout(function() {
                 try {
@@ -674,9 +589,6 @@
             }, 600);
         });
 
-        // ============================================================
-        // 9. FALLBACK - Jika redirect gagal, user bisa klik manual
-        // ============================================================
         setTimeout(function() {
             var currentPath = window.location.pathname;
             var currentFile = currentPath.split('/').pop() || 'index.html';
